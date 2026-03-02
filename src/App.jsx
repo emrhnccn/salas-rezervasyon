@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle
 } from 'lucide-react';
 
 // Firebase importları
@@ -115,7 +115,6 @@ export default function App() {
         id: doc.id,
         ...doc.data()
       }));
-      data.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
       setReservations(data);
       setLoading(false);
     }, (err) => {
@@ -165,7 +164,7 @@ export default function App() {
         await updateDoc(docRef, { ...cleanData, updatedAt: new Date().toISOString() });
         setIsEditing(null);
       } else {
-        await addDoc(collectionRef, { ...cleanData, createdAt: new Date().toISOString(), createdBy: user.uid });
+        await addDoc(collectionRef, { ...cleanData, createdAt: new Date().toISOString(), createdBy: user.uid, isArrived: false });
       }
 
       setFormData({ ...initialFormState, date: cleanData.date });
@@ -221,7 +220,35 @@ export default function App() {
     }, 150); // Ekranın güncellenmesi için çok kısa bir bekleme
   };
 
+  // WhatsApp Mesajı Gönderme Fonksiyonu
+  const sendWhatsApp = (res) => {
+    if (!res.phone) return;
+    
+    // Telefon numarasını sadece rakamlardan oluşacak şekilde temizle
+    let cleanPhone = res.phone.replace(/\D/g, '');
+    
+    // Numara formatını Türkiye formatına (90...) getir
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '9' + cleanPhone;
+    } else if (cleanPhone.length === 10) {
+      cleanPhone = '90' + cleanPhone;
+    }
+
+    const message = `Sayın ${res.name},\nSalaaş Cafe'ye ${res.date} tarihindeki ${res.table} nolu masanız için ${res.peopleCount} kişilik iftar rezervasyonunuz alınmıştır. Bizi tercih ettiğiniz için teşekkür ederiz. İyi iftarlar dileriz.`;
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    
+    window.open(url, '_blank');
+  };
+
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
+
+  // Akıllı Sıralama (Gelenler Alta Atılır)
+  const sortedReservations = [...filteredReservations].sort((a, b) => {
+    if (a.isArrived === b.isArrived) {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); // Aynı durumdaysa en yeniler üstte
+    }
+    return a.isArrived ? 1 : -1; // Gelenler listesinde alta kayar
+  });
 
   const dailySummary = filteredReservations.reduce((acc, res) => {
     acc.totalPeople += (parseInt(res.peopleCount) || 0);
@@ -380,16 +407,16 @@ export default function App() {
                 </div>
               </div>
               
-              {filteredReservations.length === 0 ? (
+              {sortedReservations.length === 0 ? (
                 <div className="bg-slate-50 rounded-2xl border-2 border-dashed p-10 text-center text-slate-400 print:hidden"><Search size={32} className="mx-auto mb-3 opacity-50" /><p className="font-medium">Bu tarihe ait kayıt bulunamadı.</p></div>
               ) : (
                 <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${printSingleId ? 'print:grid-cols-1 print:gap-0' : 'print:grid-cols-2 print:gap-2'}`}>
-                  {filteredReservations.map((res) => {
+                  {sortedReservations.map((res) => {
                     const isArrived = res.isArrived || false;
                     const isBeingPrintedSingularly = printSingleId === res.id;
                     
                     return (
-                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative print:border print:border-black print:border-dashed print:rounded-lg print:shadow-none print:break-inside-avoid print:bg-white print:p-2 print:mb-1 ${printSingleId && !isBeingPrintedSingularly ? 'hidden print:hidden' : ''} ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
+                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative print:border print:border-black print:border-dashed print:rounded-lg print:shadow-none print:break-inside-avoid print:bg-white print:p-2 print:mb-1 ${printSingleId && !isBeingPrintedSingularly ? 'hidden print:hidden' : ''} ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50 opacity-70 hover:opacity-100' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
                       
                       {/* Tekil yazdırma sırasında kartın içinde görünecek mini başlık */}
                       {isBeingPrintedSingularly && (
@@ -422,12 +449,18 @@ export default function App() {
                       )}
                       
                       {/* Fiş Formatı İçin Optimize Edilmiş Kart İçeriği */}
-                      <h3 className={`text-md font-bold pr-32 truncate print:pr-0 print:text-black print:text-[11px] print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
+                      <h3 className={`text-md font-bold pr-32 truncate print:pr-0 print:text-black print:text-[11px] print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900 line-through decoration-emerald-500' : 'text-slate-800'}`}>{res.name}</h3>
                       
+                      {/* TELEFON VE WHATSAPP BUTONU */}
                       {res.phone && (
-                        <p className={`text-xs font-medium mt-0.5 flex items-center gap-1 print:text-black print:text-[9px] print:mt-0 ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
-                          <Phone size={12} className="print:hidden" /> <span className="hidden print:inline font-bold">Tel:</span> {res.phone}
-                        </p>
+                        <div className="flex items-center gap-2 mt-0.5 print:mt-0">
+                          <p className={`text-xs font-medium flex items-center gap-1 print:text-black print:text-[9px] ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
+                            <Phone size={12} className="print:hidden" /> <span className="hidden print:inline font-bold">Tel:</span> {res.phone}
+                          </p>
+                          <button onClick={() => sendWhatsApp(res)} className="print:hidden bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 hover:scale-110 p-1 rounded-full transition-all" title="WhatsApp Onay Mesajı Gönder">
+                            <MessageCircle size={14} />
+                          </button>
+                        </div>
                       )}
 
                       <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 print:bg-transparent print:p-0 print:mt-1 print:text-black print:text-[10px] ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={`print:hidden ${isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'}`} /> <span className="hidden print:inline font-bold">Masa:</span> {res.table}</div>
