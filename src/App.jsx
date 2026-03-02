@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone
 } from 'lucide-react';
 
 // Firebase importları
@@ -40,7 +40,7 @@ export default function App() {
   const [countdown, setCountdown] = useState("Hesaplanıyor...");
   
   const initialFormState = {
-    name: '', peopleCount: 1, menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0, table: '', date: getToday(),
+    name: '', phone: '', peopleCount: 1, menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0, table: '', date: getToday(),
   };
   
   const [formData, setFormData] = useState(initialFormState);
@@ -140,6 +140,7 @@ export default function App() {
 
     const cleanData = {
       ...formData,
+      phone: formData.phone?.trim() || '',
       peopleCount: parseInt(formData.peopleCount) || 1,
       menuTavuk: parseInt(formData.menuTavuk) || 0,
       menuHunkar: parseInt(formData.menuHunkar) || 0,
@@ -168,6 +169,7 @@ export default function App() {
   const handleEditClick = (res) => {
     setFormData({ 
       ...res, 
+      phone: res.phone || '',
       menuCocuk: res.menuCocuk || 0
     });
     setIsEditing(res.id);
@@ -221,8 +223,8 @@ export default function App() {
           
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-[#FBE18D] overflow-hidden shrink-0">
-               {/* GitHub'a yükleyeceğiniz logo.jpg dosyası buradan çekilecek */}
-               <img src="/logo.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
+               {/* GitHub'a yükleyeceğiniz logo dosyası buradan çekilecek */}
+               <img src="/salaas logo.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
                <MoonStar className="text-[#0B3B2C] hidden" size={24} />
             </div>
             <div>
@@ -262,7 +264,7 @@ export default function App() {
               <div className={`px-6 py-4 border-b flex items-center justify-between ${isEditing ? 'bg-yellow-50' : 'bg-emerald-50'}`}>
                 <div className="flex items-center gap-2">
                   {isEditing ? <Edit2 className="text-yellow-600" size={20} /> : <Plus className="text-emerald-600" size={20} />}
-                  <h2 className={`text-lg font-bold ${isEditing ? 'text-yellow-800' : 'text-emerald-900'}`}>{isEditing ? 'Rezervasyonu Düzenle' : 'Yeni Kayıt'}</h2>
+                  <h2 className={`text-lg font-bold ${isEditing ? 'text-yellow-800' : 'text-emerald-900'}`}>{isEditing ? 'Rezervasyonu Düzenle' : 'Rezervasyon Oluştur'}</h2>
                 </div>
                 {isEditing && <button onClick={cancelEdit} className="text-slate-400 p-1 hover:bg-white rounded-full"><X size={18} /></button>}
               </div>
@@ -270,9 +272,18 @@ export default function App() {
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 {errorMsg && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100">{errorMsg}</div>}
                 
-                <div>
-                  <label className="block text-sm font-semibold mb-1">İsim</label>
-                  <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#0B3B2C] bg-slate-50" placeholder="Müşteri İsmi" />
+                <div className="flex gap-4">
+                  <div className="flex-[3]">
+                    <label className="block text-sm font-semibold mb-1">İsim</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#0B3B2C] bg-slate-50" placeholder="Müşteri İsmi" />
+                  </div>
+                  <div className="flex-[2]">
+                    <label className="block text-sm font-semibold mb-1">Telefon</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full pl-9 pr-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#0B3B2C] bg-slate-50" placeholder="05XX..." />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
@@ -359,6 +370,11 @@ export default function App() {
                       )}
                       
                       <h3 className={`text-md font-bold pr-32 truncate ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
+                      {res.phone && (
+                        <p className={`text-xs font-medium mt-0.5 flex items-center gap-1 ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
+                          <Phone size={12} /> {res.phone}
+                        </p>
+                      )}
                       <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'} /> Masa: {res.table}</div>
                       
                       <div className={`rounded-xl p-3 mt-3 border ${isArrived ? 'bg-emerald-100/50 border-emerald-200' : 'bg-slate-50 border-slate-100'}`}>
