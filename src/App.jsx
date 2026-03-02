@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle
 } from 'lucide-react';
 
 // Firebase importları
@@ -181,6 +181,17 @@ export default function App() {
     setErrorMsg('');
   };
 
+  // Müşteri Geldi/Gelmedi Durumunu Değiştirme
+  const handleToggleArrived = async (id, currentStatus) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'reservations', id);
+      await updateDoc(docRef, { isArrived: !currentStatus });
+    } catch (err) {
+      console.error("Durum güncellenemedi:", err);
+    }
+  };
+
   const executeDelete = async (id) => {
     if (!user) return;
     try {
@@ -209,8 +220,10 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border-2 border-[#FBE18D] overflow-hidden">
-               <MoonStar className="text-[#FBE18D]" size={24} />
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-[#FBE18D] overflow-hidden shrink-0">
+               {/* GitHub'a yükleyeceğiniz logo.jpg dosyası buradan çekilecek */}
+               <img src="/logo.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
+               <MoonStar className="text-[#0B3B2C] hidden" size={24} />
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold tracking-wide text-[#FBE18D]">Salaaş Cafe <span className="text-white">İftar</span></h1>
@@ -321,11 +334,18 @@ export default function App() {
                 <div className="bg-slate-50 rounded-2xl border-2 border-dashed p-10 text-center text-slate-400"><Search size={32} className="mx-auto mb-3 opacity-50" /><p className="font-medium">Bu tarihe ait kayıt bulunamadı.</p></div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredReservations.map((res) => (
-                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/20'}`}>
+                  {filteredReservations.map((res) => {
+                    const isArrived = res.isArrived || false;
+                    
+                    return (
+                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
                       <div className="absolute top-3 right-3 flex gap-1">
-                        <button onClick={() => handleEditClick(res)} className="p-1.5 text-slate-400 hover:text-blue-600 bg-slate-50 rounded"><Edit2 size={16} /></button>
-                        <button onClick={() => setDeleteConfirmId(res.id)} className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 rounded"><Trash2 size={16} /></button>
+                        <button onClick={() => handleToggleArrived(res.id, isArrived)} className={`p-1.5 rounded flex items-center gap-1 text-xs font-bold transition-colors ${isArrived ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 'text-slate-500 bg-slate-100 hover:text-emerald-600 hover:bg-emerald-50'}`} title={isArrived ? "İptal Et" : "Müşteri Geldi"}>
+                          <CheckCircle size={16} />
+                          <span className="hidden sm:inline">{isArrived ? "Geldi" : "Bekliyor"}</span>
+                        </button>
+                        <button onClick={() => handleEditClick(res)} className="p-1.5 text-slate-400 hover:text-blue-600 bg-slate-50 rounded border border-transparent"><Edit2 size={16} /></button>
+                        <button onClick={() => setDeleteConfirmId(res.id)} className="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 rounded border border-transparent"><Trash2 size={16} /></button>
                       </div>
                       
                       {deleteConfirmId === res.id && (
@@ -338,25 +358,24 @@ export default function App() {
                          </div>
                       )}
                       
-                      <h3 className="text-md font-bold text-slate-800 pr-16 truncate">{res.name}</h3>
-                      <div className="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-xs font-bold mt-1.5 text-slate-600"><Armchair size={12} className="text-[#0B3B2C]" /> Masa: {res.table}</div>
+                      <h3 className={`text-md font-bold pr-32 truncate ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
+                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'} /> Masa: {res.table}</div>
                       
-                      <div className="bg-slate-50 rounded-xl p-3 mt-3 border border-slate-100">
-                         <div className="flex items-center justify-between mb-2 border-b pb-1.5">
-                           <p className="text-[10px] font-bold text-slate-400 uppercase">Menü Detayı</p>
-                           {/* ANDROID CHROME FIX: shrink-0 ve whitespace-nowrap eklendi */}
-                           <div className="bg-[#0B3B2C] text-[#FBE18D] px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap"><Users size={10} /> {res.peopleCount || 0} Kişi</div>
+                      <div className={`rounded-xl p-3 mt-3 border ${isArrived ? 'bg-emerald-100/50 border-emerald-200' : 'bg-slate-50 border-slate-100'}`}>
+                         <div className="flex items-center justify-between mb-2 border-b border-emerald-900/10 pb-1.5">
+                           <p className={`text-[10px] font-bold uppercase ${isArrived ? 'text-emerald-700' : 'text-slate-400'}`}>Menü Detayı</p>
+                           <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap ${isArrived ? 'bg-emerald-600 text-white' : 'bg-[#0B3B2C] text-[#FBE18D]'}`}><Users size={10} /> {res.peopleCount || 0} Kişi</div>
                          </div>
                          <ul className="text-xs space-y-1.5 font-medium text-slate-600">
-                            {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className="font-bold text-slate-800 bg-white px-1.5 rounded border">{res.menuTavuk}</span></li>}
-                            {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className="font-bold text-slate-800 bg-white px-1.5 rounded border">{res.menuHunkar}</span></li>}
-                            {res.menuKarisik > 0 && <li className="flex justify-between"><span>K. Izgara</span> <span className="font-bold text-slate-800 bg-white px-1.5 rounded border">{res.menuKarisik}</span></li>}
-                            {res.menuCocuk > 0 && <li className="flex justify-between text-orange-700"><span>Çocuk Menüsü</span> <span className="font-bold bg-orange-100 px-1.5 rounded border border-orange-200">{res.menuCocuk}</span></li>}
+                            {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuTavuk}</span></li>}
+                            {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuHunkar}</span></li>}
+                            {res.menuKarisik > 0 && <li className="flex justify-between"><span>K. Izgara</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuKarisik}</span></li>}
+                            {res.menuCocuk > 0 && <li className={`flex justify-between ${isArrived ? 'text-emerald-800' : 'text-orange-700'}`}><span>Çocuk Menüsü</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-200 border-emerald-300 text-emerald-900' : 'bg-orange-100 border-orange-200'}`}>{res.menuCocuk}</span></li>}
                             {res.menuTavuk === 0 && res.menuHunkar === 0 && res.menuKarisik === 0 && (res.menuCocuk === 0 || res.menuCocuk === undefined) && <li className="text-slate-400 italic text-center py-1">Seçim yapılmadı</li>}
                          </ul>
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>
