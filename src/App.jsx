@@ -219,10 +219,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 print:bg-white print:pb-0">
       
-      {/* Yazdırma Modu İçin Gizli Başlık (Sadece PDF'de / Kağıtta Görünür) */}
-      <div className="hidden print:block text-center mb-6 border-b-2 border-slate-800 pb-4">
-        <h1 className="text-3xl font-bold font-serif">Salaaş Cafe İftar Rezervasyon Listesi</h1>
-        <p className="text-lg mt-1 font-semibold text-slate-600">Tarih: {selectedFilterDate}</p>
+      {/* Yazdırma Modu İçin Gizli Başlık (Adisyon / Fiş Yazıcısına Uygun Format) */}
+      <div className="hidden print:block text-center mb-4 border-b-2 border-black pb-2">
+        <h1 className="text-xl font-bold font-sans uppercase">Salaaş Cafe İftar</h1>
+        <p className="text-sm mt-1 font-bold text-black">Tarih: {selectedFilterDate}</p>
       </div>
 
       {/* Üst Bilgi Barı (Yazdırmada Gizlenir) */}
@@ -334,32 +334,32 @@ export default function App() {
           <div className="lg:col-span-8 space-y-6 print:w-full print:block print:space-y-4">
             
             {/* Mutfak Canlı Özet */}
-            <div className="bg-[#0B3B2C] rounded-2xl p-5 shadow-md flex flex-col items-center justify-between gap-4 print:bg-white print:border-2 print:border-slate-800 print:shadow-none print:p-4 print:mb-6">
-              <div className="flex items-center gap-3 text-[#FBE18D] w-full border-b border-emerald-800/50 pb-3 print:border-slate-300 print:text-slate-800">
-                <div className="bg-white/10 p-2.5 rounded-xl print:bg-slate-100 print:text-slate-800"><ChefHat size={24} /></div>
+            <div className="bg-[#0B3B2C] rounded-2xl p-5 shadow-md flex flex-col items-center justify-between gap-4 print:bg-white print:border-b-2 print:border-black print:rounded-none print:shadow-none print:p-2 print:mb-4">
+              <div className="flex items-center gap-3 text-[#FBE18D] w-full border-b border-emerald-800/50 pb-3 print:border-black print:text-black print:pb-2">
+                <div className="bg-white/10 p-2.5 rounded-xl print:hidden"><ChefHat size={24} /></div>
                 <div>
-                  <p className="text-xs font-bold uppercase text-emerald-200 print:text-slate-500">Mutfak Canlı Özet</p>
-                  <p className="text-xl font-bold text-white print:text-black">Toplam: <span className="text-[#FBE18D] print:text-black">{dailySummary.totalPeople}</span> Kişi</p>
+                  <p className="text-xs font-bold uppercase text-emerald-200 print:text-black print:text-[10px]">Mutfak Canlı Özet</p>
+                  <p className="text-xl font-bold text-white print:text-black print:text-sm">Toplam: <span className="text-[#FBE18D] print:text-black">{dailySummary.totalPeople}</span> Kişi</p>
                 </div>
               </div>
-              <div className="grid grid-cols-4 gap-2 w-full">
-                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-slate-300"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">TAVUK</span><span className="font-black text-xl text-[#0B3B2C] print:text-black">{dailySummary.totalTavuk}</span></div>
-                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-slate-300"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">HÜNKAR</span><span className="font-black text-xl text-[#0B3B2C] print:text-black">{dailySummary.totalHunkar}</span></div>
-                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-slate-300"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">IZGARA</span><span className="font-black text-xl text-[#0B3B2C] print:text-black">{dailySummary.totalKarisik}</span></div>
-                <div className="bg-orange-50 px-2 py-2 rounded-xl text-center border border-orange-100 print:border-slate-300 print:bg-white"><span className="block text-[10px] text-orange-600 font-bold mb-0.5 print:text-slate-500">ÇOCUK</span><span className="font-black text-xl text-orange-600 print:text-black">{dailySummary.totalCocuk}</span></div>
+              <div className="grid grid-cols-4 gap-2 w-full print:grid-cols-2 print:gap-1">
+                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-black print:rounded-md print:py-1"><span className="block text-[10px] text-slate-500 font-bold mb-0.5 print:text-black print:text-[8px]">TAVUK</span><span className="font-black text-xl text-[#0B3B2C] print:text-black print:text-sm">{dailySummary.totalTavuk}</span></div>
+                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-black print:rounded-md print:py-1"><span className="block text-[10px] text-slate-500 font-bold mb-0.5 print:text-black print:text-[8px]">HÜNKAR</span><span className="font-black text-xl text-[#0B3B2C] print:text-black print:text-sm">{dailySummary.totalHunkar}</span></div>
+                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-black print:rounded-md print:py-1"><span className="block text-[10px] text-slate-500 font-bold mb-0.5 print:text-black print:text-[8px]">IZGARA</span><span className="font-black text-xl text-[#0B3B2C] print:text-black print:text-sm">{dailySummary.totalKarisik}</span></div>
+                <div className="bg-orange-50 px-2 py-2 rounded-xl text-center border border-orange-100 print:border-black print:bg-white print:rounded-md print:py-1"><span className="block text-[10px] text-orange-600 font-bold mb-0.5 print:text-black print:text-[8px]">ÇOCUK</span><span className="font-black text-xl text-orange-600 print:text-black print:text-sm">{dailySummary.totalCocuk}</span></div>
               </div>
             </div>
 
             {/* Masa Listesi Alanı */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 min-h-[400px] print:p-0 print:border-none print:shadow-none">
-              <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 print:border-b-2 print:border-slate-800">
-                <h2 className="text-lg font-bold flex items-center gap-2"><Armchair className="text-[#0B3B2C] print:text-black" size={20} /> Masalar</h2>
+              <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 print:border-b-2 print:border-black print:pb-2 print:mb-3">
+                <h2 className="text-lg font-bold flex items-center gap-2 print:text-sm"><Armchair className="text-[#0B3B2C] print:hidden" size={20} /> <span className="hidden print:inline">Masa Listesi</span><span className="print:hidden">Masalar</span></h2>
                 
                 <div className="flex items-center gap-3">
                   <span className="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold print:hidden">{filteredReservations.length} Kayıt</span>
                   {/* YENİ: PDF İndir / Yazdır Butonu */}
                   <button onClick={() => window.print()} className="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors print:hidden shadow-md">
-                    <Printer size={16} /> <span className="hidden sm:inline">PDF İndir / Yazdır</span>
+                    <Printer size={16} /> <span className="hidden sm:inline">Fiş / A4 Yazdır</span>
                   </button>
                 </div>
               </div>
@@ -367,12 +367,12 @@ export default function App() {
               {filteredReservations.length === 0 ? (
                 <div className="bg-slate-50 rounded-2xl border-2 border-dashed p-10 text-center text-slate-400 print:hidden"><Search size={32} className="mx-auto mb-3 opacity-50" /><p className="font-medium">Bu tarihe ait kayıt bulunamadı.</p></div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2 print:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-1 print:gap-2">
                   {filteredReservations.map((res) => {
                     const isArrived = res.isArrived || false;
                     
                     return (
-                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative print:border-slate-400 print:shadow-none print:break-inside-avoid print:bg-white ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
+                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative print:border-b-2 print:border-t-0 print:border-l-0 print:border-r-0 print:border-black print:border-dashed print:rounded-none print:shadow-none print:break-inside-avoid print:bg-white print:p-2 print:mb-2 ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
                       
                       {/* Aksiyon Butonları (Yazdırmada Gizlenir) */}
                       <div className="absolute top-3 right-3 flex gap-1 print:hidden">
@@ -394,35 +394,36 @@ export default function App() {
                          </div>
                       )}
                       
-                      <h3 className={`text-md font-bold pr-32 truncate print:pr-0 print:text-black ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
+                      {/* Fiş Formatı İçin Optimize Edilmiş Kart İçeriği */}
+                      <h3 className={`text-md font-bold pr-32 truncate print:pr-0 print:text-black print:text-sm print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
                       
                       {res.phone && (
-                        <p className={`text-xs font-medium mt-0.5 flex items-center gap-1 print:text-slate-600 ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
-                          <Phone size={12} /> {res.phone}
+                        <p className={`text-xs font-medium mt-0.5 flex items-center gap-1 print:text-black print:text-[10px] print:mt-0 ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
+                          <Phone size={12} className="print:hidden" /> <span className="hidden print:inline font-bold">Tel:</span> {res.phone}
                         </p>
                       )}
 
-                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 print:bg-slate-100 print:text-black ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'} /> Masa: {res.table}</div>
+                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 print:bg-transparent print:p-0 print:mt-1 print:text-black print:text-[11px] ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={`print:hidden ${isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'}`} /> <span className="hidden print:inline font-bold">Masa:</span> {res.table}</div>
                       
-                      {/* YENİ: ÖZEL NOT GÖSTERİMİ */}
+                      {/* ÖZEL NOT GÖSTERİMİ */}
                       {res.notes && (
-                        <div className="mt-2.5 bg-amber-50 border border-amber-200 rounded-lg p-2 flex gap-1.5 items-start print:border-slate-300 print:bg-white">
-                           <MessageSquareText size={14} className="text-amber-600 mt-0.5 shrink-0 print:text-slate-600" />
-                           <p className="text-xs font-semibold text-amber-800 print:text-black">{res.notes}</p>
+                        <div className="mt-2.5 bg-amber-50 border border-amber-200 rounded-lg p-2 flex gap-1.5 items-start print:border-black print:border-dashed print:rounded-none print:bg-white print:p-1 print:mt-1.5">
+                           <MessageSquareText size={14} className="text-amber-600 mt-0.5 shrink-0 print:hidden" />
+                           <p className="text-xs font-semibold text-amber-800 print:text-black print:text-[10px]"><span className="hidden print:inline font-bold">Not: </span>{res.notes}</p>
                         </div>
                       )}
                       
-                      <div className={`rounded-xl p-3 mt-3 border print:border-slate-300 print:bg-white ${isArrived ? 'bg-emerald-100/50 border-emerald-200' : 'bg-slate-50 border-slate-100'}`}>
-                         <div className="flex items-center justify-between mb-2 border-b border-emerald-900/10 pb-1.5">
-                           <p className={`text-[10px] font-bold uppercase print:text-slate-500 ${isArrived ? 'text-emerald-700' : 'text-slate-400'}`}>Menü Detayı</p>
-                           <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap print:bg-white print:text-black print:border print:border-slate-300 ${isArrived ? 'bg-emerald-600 text-white' : 'bg-[#0B3B2C] text-[#FBE18D]'}`}><Users size={10} /> {res.peopleCount || 0} Kişi</div>
+                      <div className={`rounded-xl p-3 mt-3 border print:border-black print:border-t print:border-b-0 print:border-l-0 print:border-r-0 print:rounded-none print:bg-white print:p-0 print:pt-1 print:mt-1.5 ${isArrived ? 'bg-emerald-100/50 border-emerald-200' : 'bg-slate-50 border-slate-100'}`}>
+                         <div className="flex items-center justify-between mb-2 border-b border-emerald-900/10 pb-1.5 print:border-none print:mb-0.5 print:pb-0">
+                           <p className={`text-[10px] font-bold uppercase print:hidden ${isArrived ? 'text-emerald-700' : 'text-slate-400'}`}>Menü Detayı</p>
+                           <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap print:bg-transparent print:text-black print:border-none print:p-0 print:text-[10px] ${isArrived ? 'bg-emerald-600 text-white' : 'bg-[#0B3B2C] text-[#FBE18D]'}`}><Users size={10} className="print:hidden" /> <span className="hidden print:inline font-bold">Kişi Sayısı:</span> {res.peopleCount || 0} <span className="print:hidden">Kişi</span></div>
                          </div>
-                         <ul className="text-xs space-y-1.5 font-medium text-slate-600 print:text-black">
-                            {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuTavuk}</span></li>}
-                            {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuHunkar}</span></li>}
-                            {res.menuKarisik > 0 && <li className="flex justify-between"><span>K. Izgara</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuKarisik}</span></li>}
-                            {res.menuCocuk > 0 && <li className={`flex justify-between print:text-black ${isArrived ? 'text-emerald-800' : 'text-orange-700'}`}><span>Çocuk Menüsü</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-200 border-emerald-300 text-emerald-900' : 'bg-orange-100 border-orange-200'}`}>{res.menuCocuk}</span></li>}
-                            {res.menuTavuk === 0 && res.menuHunkar === 0 && res.menuKarisik === 0 && (res.menuCocuk === 0 || res.menuCocuk === undefined) && <li className="text-slate-400 italic text-center py-1">Seçim yapılmadı</li>}
+                         <ul className="text-xs space-y-1.5 font-medium text-slate-600 print:text-black print:text-[11px] print:space-y-0.5">
+                            {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className={`font-bold px-1.5 rounded border print:border-none print:px-0 print:text-black ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>x {res.menuTavuk}</span></li>}
+                            {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className={`font-bold px-1.5 rounded border print:border-none print:px-0 print:text-black ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>x {res.menuHunkar}</span></li>}
+                            {res.menuKarisik > 0 && <li className="flex justify-between"><span>K. Izgara</span> <span className={`font-bold px-1.5 rounded border print:border-none print:px-0 print:text-black ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>x {res.menuKarisik}</span></li>}
+                            {res.menuCocuk > 0 && <li className={`flex justify-between print:text-black ${isArrived ? 'text-emerald-800' : 'text-orange-700'}`}><span>Çocuk Menüsü</span> <span className={`font-bold px-1.5 rounded border print:border-none print:px-0 print:text-black ${isArrived ? 'bg-emerald-200 border-emerald-300 text-emerald-900' : 'bg-orange-100 border-orange-200'}`}>x {res.menuCocuk}</span></li>}
+                            {res.menuTavuk === 0 && res.menuHunkar === 0 && res.menuKarisik === 0 && (res.menuCocuk === 0 || res.menuCocuk === undefined) && <li className="text-slate-400 italic text-center py-1 print:text-left print:py-0 print:text-black">Menü seçilmedi</li>}
                          </ul>
                       </div>
                     </div>
