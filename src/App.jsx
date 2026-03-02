@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText
 } from 'lucide-react';
 
 // Firebase importları
@@ -40,17 +40,17 @@ export default function App() {
   const [countdown, setCountdown] = useState("Hesaplanıyor...");
   
   const initialFormState = {
-    name: '', phone: '', peopleCount: 1, menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0, table: '', date: getToday(),
+    name: '', phone: '', notes: '', peopleCount: 1, menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0, table: '', date: getToday(),
   };
   
   const [formData, setFormData] = useState(initialFormState);
 
-  // 1. Gebze İftar Vakti Çekme (Diyanet Uyumlu Aladhan API)
+  // 1. Gebze İftar Vakti Çekme
   useEffect(() => {
     fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
       .then(res => res.json())
       .then(data => {
-        setIftarTime(data.data.timings.Maghrib); // Akşam ezanı vakti
+        setIftarTime(data.data.timings.Maghrib);
       })
       .catch(err => console.error("İftar vakti çekilemedi", err));
   }, []);
@@ -141,6 +141,7 @@ export default function App() {
     const cleanData = {
       ...formData,
       phone: formData.phone?.trim() || '',
+      notes: formData.notes?.trim() || '', // Özel Not Alanı eklendi
       peopleCount: parseInt(formData.peopleCount) || 1,
       menuTavuk: parseInt(formData.menuTavuk) || 0,
       menuHunkar: parseInt(formData.menuHunkar) || 0,
@@ -170,6 +171,7 @@ export default function App() {
     setFormData({ 
       ...res, 
       phone: res.phone || '',
+      notes: res.notes || '', // Özel Not Alanı eklendi
       menuCocuk: res.menuCocuk || 0
     });
     setIsEditing(res.id);
@@ -183,7 +185,6 @@ export default function App() {
     setErrorMsg('');
   };
 
-  // Müşteri Geldi/Gelmedi Durumunu Değiştirme
   const handleToggleArrived = async (id, currentStatus) => {
     if (!user) return;
     try {
@@ -216,14 +217,20 @@ export default function App() {
   }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0 });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12">
-      {/* Üst Bilgi Barı */}
-      <header className="bg-[#0B3B2C] text-white shadow-lg sticky top-0 z-10">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-12 print:bg-white print:pb-0">
+      
+      {/* Yazdırma Modu İçin Gizli Başlık (Sadece PDF'de / Kağıtta Görünür) */}
+      <div className="hidden print:block text-center mb-6 border-b-2 border-slate-800 pb-4">
+        <h1 className="text-3xl font-bold font-serif">Salaaş Cafe İftar Rezervasyon Listesi</h1>
+        <p className="text-lg mt-1 font-semibold text-slate-600">Tarih: {selectedFilterDate}</p>
+      </div>
+
+      {/* Üst Bilgi Barı (Yazdırmada Gizlenir) */}
+      <header className="bg-[#0B3B2C] text-white shadow-lg sticky top-0 z-10 print:hidden">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-[#FBE18D] overflow-hidden shrink-0">
-               {/* GitHub'a yükleyeceğiniz logo dosyası buradan çekilecek */}
                <img src="/salaas logo.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
                <MoonStar className="text-[#0B3B2C] hidden" size={24} />
             </div>
@@ -251,15 +258,15 @@ export default function App() {
       </header>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center mt-32 text-emerald-800">
+        <div className="flex flex-col items-center justify-center mt-32 text-emerald-800 print:hidden">
           <Loader2 className="animate-spin mb-4" size={40} />
           <p className="font-semibold animate-pulse">Sisteme Bağlanıyor...</p>
         </div>
       ) : (
-        <main className="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <main className="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 print:block print:m-0 print:p-0">
           
-          {/* SOL KOLON - FORM */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* SOL KOLON - FORM (Yazdırmada Gizlenir) */}
+          <div className="lg:col-span-4 space-y-6 print:hidden">
             <div className={`bg-white rounded-2xl shadow-md border-t-4 overflow-hidden transition-colors ${isEditing ? 'border-[#FBE18D]' : 'border-[#0B3B2C]'}`}>
               <div className={`px-6 py-4 border-b flex items-center justify-between ${isEditing ? 'bg-yellow-50' : 'bg-emerald-50'}`}>
                 <div className="flex items-center gap-2">
@@ -299,6 +306,12 @@ export default function App() {
                   <label className="block text-sm font-semibold mb-1">Tarih</label>
                   <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#0B3B2C] bg-slate-50" />
                 </div>
+
+                {/* YENİ: ÖZEL NOT ALANI */}
+                <div>
+                  <label className="block text-sm font-semibold mb-1 text-amber-700">Özel Not (Opsiyonel)</label>
+                  <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500 bg-amber-50/50 placeholder:text-amber-300" placeholder="Örn: Mama sandalyesi eklenecek, Cam kenarı vb." />
+                </div>
                 
                 <div className="pt-4 border-t border-slate-100">
                   <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><UtensilsCrossed size={16} className="text-[#0B3B2C]" /> Menü Seçimi (Adet)</h3>
@@ -317,40 +330,52 @@ export default function App() {
             </div>
           </div>
 
-          {/* SAĞ KOLON - LİSTE VE MUTFAK */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="bg-[#0B3B2C] rounded-2xl p-5 shadow-md flex flex-col items-center justify-between gap-4">
-              <div className="flex items-center gap-3 text-[#FBE18D] w-full border-b border-emerald-800/50 pb-3">
-                <div className="bg-white/10 p-2.5 rounded-xl"><ChefHat size={24} /></div>
+          {/* SAĞ KOLON - LİSTE VE MUTFAK (Yazdırmada Tam Ekran Olur) */}
+          <div className="lg:col-span-8 space-y-6 print:w-full print:block print:space-y-4">
+            
+            {/* Mutfak Canlı Özet */}
+            <div className="bg-[#0B3B2C] rounded-2xl p-5 shadow-md flex flex-col items-center justify-between gap-4 print:bg-white print:border-2 print:border-slate-800 print:shadow-none print:p-4 print:mb-6">
+              <div className="flex items-center gap-3 text-[#FBE18D] w-full border-b border-emerald-800/50 pb-3 print:border-slate-300 print:text-slate-800">
+                <div className="bg-white/10 p-2.5 rounded-xl print:bg-slate-100 print:text-slate-800"><ChefHat size={24} /></div>
                 <div>
-                  <p className="text-xs font-bold uppercase text-emerald-200">Mutfak Canlı Özet</p>
-                  <p className="text-xl font-bold text-white">Toplam: <span className="text-[#FBE18D]">{dailySummary.totalPeople}</span> Kişi</p>
+                  <p className="text-xs font-bold uppercase text-emerald-200 print:text-slate-500">Mutfak Canlı Özet</p>
+                  <p className="text-xl font-bold text-white print:text-black">Toplam: <span className="text-[#FBE18D] print:text-black">{dailySummary.totalPeople}</span> Kişi</p>
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-2 w-full">
-                <div className="bg-white px-2 py-2 rounded-xl text-center"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">TAVUK</span><span className="font-black text-xl text-[#0B3B2C]">{dailySummary.totalTavuk}</span></div>
-                <div className="bg-white px-2 py-2 rounded-xl text-center"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">HÜNKAR</span><span className="font-black text-xl text-[#0B3B2C]">{dailySummary.totalHunkar}</span></div>
-                <div className="bg-white px-2 py-2 rounded-xl text-center"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">IZGARA</span><span className="font-black text-xl text-[#0B3B2C]">{dailySummary.totalKarisik}</span></div>
-                <div className="bg-orange-50 px-2 py-2 rounded-xl text-center border border-orange-100"><span className="block text-[10px] text-orange-600 font-bold mb-0.5">ÇOCUK</span><span className="font-black text-xl text-orange-600">{dailySummary.totalCocuk}</span></div>
+                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-slate-300"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">TAVUK</span><span className="font-black text-xl text-[#0B3B2C] print:text-black">{dailySummary.totalTavuk}</span></div>
+                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-slate-300"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">HÜNKAR</span><span className="font-black text-xl text-[#0B3B2C] print:text-black">{dailySummary.totalHunkar}</span></div>
+                <div className="bg-white px-2 py-2 rounded-xl text-center print:border print:border-slate-300"><span className="block text-[10px] text-slate-500 font-bold mb-0.5">IZGARA</span><span className="font-black text-xl text-[#0B3B2C] print:text-black">{dailySummary.totalKarisik}</span></div>
+                <div className="bg-orange-50 px-2 py-2 rounded-xl text-center border border-orange-100 print:border-slate-300 print:bg-white"><span className="block text-[10px] text-orange-600 font-bold mb-0.5 print:text-slate-500">ÇOCUK</span><span className="font-black text-xl text-orange-600 print:text-black">{dailySummary.totalCocuk}</span></div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 min-h-[400px]">
-              <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
-                <h2 className="text-lg font-bold flex items-center gap-2"><Armchair className="text-[#0B3B2C]" size={20} /> Masalar</h2>
-                <span className="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">{filteredReservations.length} Kayıt</span>
+            {/* Masa Listesi Alanı */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 min-h-[400px] print:p-0 print:border-none print:shadow-none">
+              <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 print:border-b-2 print:border-slate-800">
+                <h2 className="text-lg font-bold flex items-center gap-2"><Armchair className="text-[#0B3B2C] print:text-black" size={20} /> Masalar</h2>
+                
+                <div className="flex items-center gap-3">
+                  <span className="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold print:hidden">{filteredReservations.length} Kayıt</span>
+                  {/* YENİ: PDF İndir / Yazdır Butonu */}
+                  <button onClick={() => window.print()} className="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors print:hidden shadow-md">
+                    <Printer size={16} /> <span className="hidden sm:inline">PDF İndir / Yazdır</span>
+                  </button>
+                </div>
               </div>
               
               {filteredReservations.length === 0 ? (
-                <div className="bg-slate-50 rounded-2xl border-2 border-dashed p-10 text-center text-slate-400"><Search size={32} className="mx-auto mb-3 opacity-50" /><p className="font-medium">Bu tarihe ait kayıt bulunamadı.</p></div>
+                <div className="bg-slate-50 rounded-2xl border-2 border-dashed p-10 text-center text-slate-400 print:hidden"><Search size={32} className="mx-auto mb-3 opacity-50" /><p className="font-medium">Bu tarihe ait kayıt bulunamadı.</p></div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2 print:gap-4">
                   {filteredReservations.map((res) => {
                     const isArrived = res.isArrived || false;
                     
                     return (
-                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
-                      <div className="absolute top-3 right-3 flex gap-1">
+                    <div key={res.id} className={`p-4 rounded-2xl border-2 transition-all relative print:border-slate-400 print:shadow-none print:break-inside-avoid print:bg-white ${isEditing === res.id ? 'border-[#FBE18D] bg-yellow-50/20' : isArrived ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 bg-white hover:border-[#0B3B2C]/10'}`}>
+                      
+                      {/* Aksiyon Butonları (Yazdırmada Gizlenir) */}
+                      <div className="absolute top-3 right-3 flex gap-1 print:hidden">
                         <button onClick={() => handleToggleArrived(res.id, isArrived)} className={`p-1.5 rounded flex items-center gap-1 text-xs font-bold transition-colors ${isArrived ? 'bg-emerald-500 text-white hover:bg-emerald-600' : 'text-slate-500 bg-slate-100 hover:text-emerald-600 hover:bg-emerald-50'}`} title={isArrived ? "İptal Et" : "Müşteri Geldi"}>
                           <CheckCircle size={16} />
                           <span className="hidden sm:inline">{isArrived ? "Geldi" : "Bekliyor"}</span>
@@ -360,7 +385,7 @@ export default function App() {
                       </div>
                       
                       {deleteConfirmId === res.id && (
-                         <div className="absolute inset-0 bg-white/95 z-10 flex flex-col items-center justify-center p-3 border border-red-200 rounded-2xl">
+                         <div className="absolute inset-0 bg-white/95 z-10 flex flex-col items-center justify-center p-3 border border-red-200 rounded-2xl print:hidden">
                            <p className="font-semibold text-sm mb-3">İptal edilsin mi?</p>
                            <div className="flex gap-2">
                              <button onClick={() => executeDelete(res.id)} className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold">Sil</button>
@@ -369,24 +394,34 @@ export default function App() {
                          </div>
                       )}
                       
-                      <h3 className={`text-md font-bold pr-32 truncate ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
+                      <h3 className={`text-md font-bold pr-32 truncate print:pr-0 print:text-black ${isArrived ? 'text-emerald-900' : 'text-slate-800'}`}>{res.name}</h3>
+                      
                       {res.phone && (
-                        <p className={`text-xs font-medium mt-0.5 flex items-center gap-1 ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
+                        <p className={`text-xs font-medium mt-0.5 flex items-center gap-1 print:text-slate-600 ${isArrived ? 'text-emerald-700/80' : 'text-slate-500'}`}>
                           <Phone size={12} /> {res.phone}
                         </p>
                       )}
-                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'} /> Masa: {res.table}</div>
+
+                      <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold mt-1.5 print:bg-slate-100 print:text-black ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}><Armchair size={12} className={isArrived ? 'text-emerald-700' : 'text-[#0B3B2C]'} /> Masa: {res.table}</div>
                       
-                      <div className={`rounded-xl p-3 mt-3 border ${isArrived ? 'bg-emerald-100/50 border-emerald-200' : 'bg-slate-50 border-slate-100'}`}>
+                      {/* YENİ: ÖZEL NOT GÖSTERİMİ */}
+                      {res.notes && (
+                        <div className="mt-2.5 bg-amber-50 border border-amber-200 rounded-lg p-2 flex gap-1.5 items-start print:border-slate-300 print:bg-white">
+                           <MessageSquareText size={14} className="text-amber-600 mt-0.5 shrink-0 print:text-slate-600" />
+                           <p className="text-xs font-semibold text-amber-800 print:text-black">{res.notes}</p>
+                        </div>
+                      )}
+                      
+                      <div className={`rounded-xl p-3 mt-3 border print:border-slate-300 print:bg-white ${isArrived ? 'bg-emerald-100/50 border-emerald-200' : 'bg-slate-50 border-slate-100'}`}>
                          <div className="flex items-center justify-between mb-2 border-b border-emerald-900/10 pb-1.5">
-                           <p className={`text-[10px] font-bold uppercase ${isArrived ? 'text-emerald-700' : 'text-slate-400'}`}>Menü Detayı</p>
-                           <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap ${isArrived ? 'bg-emerald-600 text-white' : 'bg-[#0B3B2C] text-[#FBE18D]'}`}><Users size={10} /> {res.peopleCount || 0} Kişi</div>
+                           <p className={`text-[10px] font-bold uppercase print:text-slate-500 ${isArrived ? 'text-emerald-700' : 'text-slate-400'}`}>Menü Detayı</p>
+                           <div className={`px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap print:bg-white print:text-black print:border print:border-slate-300 ${isArrived ? 'bg-emerald-600 text-white' : 'bg-[#0B3B2C] text-[#FBE18D]'}`}><Users size={10} /> {res.peopleCount || 0} Kişi</div>
                          </div>
-                         <ul className="text-xs space-y-1.5 font-medium text-slate-600">
-                            {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuTavuk}</span></li>}
-                            {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuHunkar}</span></li>}
-                            {res.menuKarisik > 0 && <li className="flex justify-between"><span>K. Izgara</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuKarisik}</span></li>}
-                            {res.menuCocuk > 0 && <li className={`flex justify-between ${isArrived ? 'text-emerald-800' : 'text-orange-700'}`}><span>Çocuk Menüsü</span> <span className={`font-bold px-1.5 rounded border ${isArrived ? 'bg-emerald-200 border-emerald-300 text-emerald-900' : 'bg-orange-100 border-orange-200'}`}>{res.menuCocuk}</span></li>}
+                         <ul className="text-xs space-y-1.5 font-medium text-slate-600 print:text-black">
+                            {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuTavuk}</span></li>}
+                            {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuHunkar}</span></li>}
+                            {res.menuKarisik > 0 && <li className="flex justify-between"><span>K. Izgara</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-white text-slate-800'}`}>{res.menuKarisik}</span></li>}
+                            {res.menuCocuk > 0 && <li className={`flex justify-between print:text-black ${isArrived ? 'text-emerald-800' : 'text-orange-700'}`}><span>Çocuk Menüsü</span> <span className={`font-bold px-1.5 rounded border print:border-slate-300 ${isArrived ? 'bg-emerald-200 border-emerald-300 text-emerald-900' : 'bg-orange-100 border-orange-200'}`}>{res.menuCocuk}</span></li>}
                             {res.menuTavuk === 0 && res.menuHunkar === 0 && res.menuKarisik === 0 && (res.menuCocuk === 0 || res.menuCocuk === undefined) && <li className="text-slate-400 italic text-center py-1">Seçim yapılmadı</li>}
                          </ul>
                       </div>
