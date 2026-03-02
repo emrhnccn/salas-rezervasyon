@@ -144,7 +144,7 @@ export default function App() {
       menuTavuk: parseInt(formData.menuTavuk) || 0,
       menuHunkar: parseInt(formData.menuHunkar) || 0,
       menuKarisik: parseInt(formData.menuKarisik) || 0,
-      menuCocuk: parseInt(formData.menuCocuk) || 0, // Yeni Eklenen Çocuk Menüsü
+      menuCocuk: parseInt(formData.menuCocuk) || 0,
     };
 
     try {
@@ -168,7 +168,7 @@ export default function App() {
   const handleEditClick = (res) => {
     setFormData({ 
       ...res, 
-      menuCocuk: res.menuCocuk || 0 // Eski kayıtlarda çocuk menüsü yoksa 0 ata
+      menuCocuk: res.menuCocuk || 0
     });
     setIsEditing(res.id);
     setSelectedFilterDate(res.date);
@@ -209,11 +209,8 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-3">
-            {/* LOGO ALANI - Fotoğrafı atınca src kısmını değiştireceğiz */}
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border-2 border-[#FBE18D] overflow-hidden">
                <MoonStar className="text-[#FBE18D]" size={24} />
-               {/* Gerçek logo geldiğinde üstteki MoonStar silinip alttaki img aktif edilecek: */}
-               {/* <img src="SİZİN_LOGO_LİNKİNİZ" alt="Salaaş Cafe Logo" className="w-full h-full object-cover" /> */}
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold tracking-wide text-[#FBE18D]">Salaaş Cafe <span className="text-white">İftar</span></h1>
@@ -221,7 +218,6 @@ export default function App() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-            {/* Canlı İftar Sayacı (Gebze) */}
             <div className="flex items-center bg-yellow-500/20 rounded-xl px-4 py-2 border border-yellow-500/50 text-yellow-300 w-full md:w-auto justify-center">
               <Clock className="mr-2 animate-pulse" size={20} />
               <div className="flex flex-col items-center md:items-start">
@@ -268,7 +264,7 @@ export default function App() {
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <label className="block text-sm font-semibold mb-1">Kişi</label>
-                    <input type="number" name="peopleCount" min="1" value={formData.peopleCount} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#0B3B2C] bg-slate-50" />
+                    <input type="number" inputMode="numeric" pattern="[0-9]*" name="peopleCount" min="1" value={formData.peopleCount} onChange={handleChange} className="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-[#0B3B2C] bg-slate-50" />
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-semibold mb-1">Masa</label>
@@ -283,10 +279,10 @@ export default function App() {
                 <div className="pt-4 border-t border-slate-100">
                   <h3 className="text-sm font-bold mb-3 flex items-center gap-2"><UtensilsCrossed size={16} className="text-[#0B3B2C]" /> Menü Seçimi (Adet)</h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center bg-white p-2.5 border rounded-xl"><span className="text-sm font-semibold">🐔 Tavuk</span><input type="number" name="menuTavuk" min="0" value={formData.menuTavuk} onChange={handleChange} className="w-16 px-2 py-1 text-center border rounded-lg focus:ring-2 outline-none font-bold bg-slate-50" /></div>
-                    <div className="flex justify-between items-center bg-white p-2.5 border rounded-xl"><span className="text-sm font-semibold">🥩 Hünkar</span><input type="number" name="menuHunkar" min="0" value={formData.menuHunkar} onChange={handleChange} className="w-16 px-2 py-1 text-center border rounded-lg focus:ring-2 outline-none font-bold bg-slate-50" /></div>
-                    <div className="flex justify-between items-center bg-white p-2.5 border rounded-xl"><span className="text-sm font-semibold">🍢 K. Izgara</span><input type="number" name="menuKarisik" min="0" value={formData.menuKarisik} onChange={handleChange} className="w-16 px-2 py-1 text-center border rounded-lg focus:ring-2 outline-none font-bold bg-slate-50" /></div>
-                    <div className="flex justify-between items-center bg-orange-50 p-2.5 border border-orange-100 rounded-xl"><span className="text-sm font-semibold text-orange-800">🧸 Çocuk Menüsü</span><input type="number" name="menuCocuk" min="0" value={formData.menuCocuk} onChange={handleChange} className="w-16 px-2 py-1 text-center border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none font-bold bg-white" /></div>
+                    <div className="flex justify-between items-center bg-white p-2.5 border rounded-xl"><span className="text-sm font-semibold">🐔 Tavuk</span><input type="number" inputMode="numeric" pattern="[0-9]*" name="menuTavuk" min="0" value={formData.menuTavuk} onChange={handleChange} className="w-16 px-2 py-1 text-center border rounded-lg focus:ring-2 outline-none font-bold bg-slate-50" /></div>
+                    <div className="flex justify-between items-center bg-white p-2.5 border rounded-xl"><span className="text-sm font-semibold">🥩 Hünkar</span><input type="number" inputMode="numeric" pattern="[0-9]*" name="menuHunkar" min="0" value={formData.menuHunkar} onChange={handleChange} className="w-16 px-2 py-1 text-center border rounded-lg focus:ring-2 outline-none font-bold bg-slate-50" /></div>
+                    <div className="flex justify-between items-center bg-white p-2.5 border rounded-xl"><span className="text-sm font-semibold">🍢 K. Izgara</span><input type="number" inputMode="numeric" pattern="[0-9]*" name="menuKarisik" min="0" value={formData.menuKarisik} onChange={handleChange} className="w-16 px-2 py-1 text-center border rounded-lg focus:ring-2 outline-none font-bold bg-slate-50" /></div>
+                    <div className="flex justify-between items-center bg-orange-50 p-2.5 border border-orange-100 rounded-xl"><span className="text-sm font-semibold text-orange-800">🧸 Çocuk Menüsü</span><input type="number" inputMode="numeric" pattern="[0-9]*" name="menuCocuk" min="0" value={formData.menuCocuk} onChange={handleChange} className="w-16 px-2 py-1 text-center border border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-400 outline-none font-bold bg-white" /></div>
                   </div>
                 </div>
                 
@@ -348,7 +344,8 @@ export default function App() {
                       <div className="bg-slate-50 rounded-xl p-3 mt-3 border border-slate-100">
                          <div className="flex items-center justify-between mb-2 border-b pb-1.5">
                            <p className="text-[10px] font-bold text-slate-400 uppercase">Menü Detayı</p>
-                           <div className="bg-[#0B3B2C] text-[#FBE18D] px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center"><Users size={10} /> {res.peopleCount} Kişi</div>
+                           {/* ANDROID CHROME FIX: shrink-0 ve whitespace-nowrap eklendi */}
+                           <div className="bg-[#0B3B2C] text-[#FBE18D] px-2 py-0.5 rounded text-[10px] font-bold flex gap-1 items-center shrink-0 whitespace-nowrap"><Users size={10} /> {res.peopleCount || 0} Kişi</div>
                          </div>
                          <ul className="text-xs space-y-1.5 font-medium text-slate-600">
                             {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk</span> <span className="font-bold text-slate-800 bg-white px-1.5 rounded border">{res.menuTavuk}</span></li>}
