@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, ArrowDown
 } from 'lucide-react';
 
 // Firebase importları
@@ -28,33 +28,33 @@ const db = getFirestore(app);
 // type: 'v' (Dikey 2'li), 'h' (Yatay 2'li), 'lg-v' (Büyük Dikey 4'lü)
 const TABLE_MAP = [
   // Sol Üst (3x3 Dikey Masalar)
-  { id: 'B-3', top: '8%', left: '5%', width: '7%', height: '11%', type: 'v' },
-  { id: 'B-2', top: '8%', left: '16%', width: '7%', height: '11%', type: 'v' },
-  { id: 'B-1', top: '8%', left: '27%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-3', top: '8%', left: '5%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-2', top: '8%', left: '17%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-1', top: '8%', left: '29%', width: '8%', height: '11%', type: 'v' },
   
-  { id: 'B-4', top: '23%', left: '5%', width: '7%', height: '11%', type: 'v' },
-  { id: 'B-5', top: '23%', left: '16%', width: '7%', height: '11%', type: 'v' },
-  { id: 'B-6', top: '23%', left: '27%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-4', top: '23%', left: '5%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-5', top: '23%', left: '17%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-6', top: '23%', left: '29%', width: '8%', height: '11%', type: 'v' },
   
-  { id: 'B-9', top: '38%', left: '5%', width: '7%', height: '11%', type: 'v' },
-  { id: 'B-8', top: '38%', left: '16%', width: '7%', height: '11%', type: 'v' },
-  { id: 'B-7', top: '38%', left: '27%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-9', top: '38%', left: '5%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-8', top: '38%', left: '17%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-7', top: '38%', left: '29%', width: '8%', height: '11%', type: 'v' },
   
-  // Sol Alt (Yataylar ve Ortadaki Büyük B-12)
-  { id: 'B-10', top: '54%', left: '8%', width: '10%', height: '7%', type: 'h' },
-  { id: 'B-11', top: '54%', left: '22%', width: '10%', height: '7%', type: 'h' },
-  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '15%', type: 'lg-v' },
+  // Sol Alt (Yataylar ve Ortadaki Büyük B-12, Altındaki B-24)
+  { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' },
+  { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
+  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' }, // B-24 çizilen kare alana taşındı
   
   // Sağ Üst (Kasa/Banka Arkası Dikeyler)
   { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
   { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
   
-  // Sağ Alt (Sol Sütun - Yataylar ve Büyük B-24)
-  { id: 'B-20', top: '48%', left: '60%', width: '9%', height: '7%', type: 'h' },
-  { id: 'B-21', top: '58%', left: '60%', width: '9%', height: '7%', type: 'h' },
-  { id: 'B-22', top: '68%', left: '60%', width: '9%', height: '7%', type: 'h' },
-  { id: 'B-24', top: '78%', left: '58%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-23', top: '94%', left: '60%', width: '9%', height: '5%', type: 'h' },
+  // Sağ Alt (Sol Sütun - Yataylar: B-20, 21, 22, 23)
+  { id: 'B-20', top: '48%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-21', top: '61%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-22', top: '74%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-23', top: '87%', left: '56%', width: '14%', height: '6%', type: 'h' },
 
   // Sağ Alt (Sağ Sütun - Dikeyler)
   { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
@@ -358,6 +358,7 @@ export default function App() {
           
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md hover:scale-105 transition-transform">
+               {/* GÜNCELLEME: Logo ismi salaas logo.png yapıldı */}
                <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
                <div className="hidden bg-orange-500 w-12 h-12 rounded-full items-center justify-center"><MoonStar className="text-white" size={24} /></div>
             </div>
@@ -451,7 +452,7 @@ export default function App() {
                         <div className="absolute top-[39%] left-[68%] w-[15%] h-1.5 bg-slate-700 shadow-md rounded-r-md"></div>
                         <div className="absolute top-[41%] left-[73%] w-1.5 h-[8%] bg-slate-700 shadow-md rounded-t-md"></div>
 
-                        {/* DEKORATİF BİTKİLER (Daha gerçekçi restoran hissi için) */}
+                        {/* DEKORATİF BİTKİLER */}
                         <div className="absolute top-2 left-2 w-6 h-6 bg-emerald-800 rounded-full shadow-lg border-2 border-emerald-900 flex items-center justify-center z-0">
                            <div className="w-3 h-3 bg-emerald-500 rounded-full opacity-80"></div>
                         </div>
