@@ -353,9 +353,9 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-4">
+            {/* LOGO BÖLÜMÜ GÜNCELLENDİ (Turuncu yuvarlak ve yedek simge kaldırıldı, sadece salaas logo.png var) */}
             <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md hover:scale-105 transition-transform">
-               <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
-               <div className="hidden bg-orange-500 w-12 h-12 rounded-full items-center justify-center"><MoonStar className="text-white" size={24} /></div>
+               <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-sm font-serif">Salaaş Cafe <span className="text-white font-sans text-xl">İftar</span></h1>
