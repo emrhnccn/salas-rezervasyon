@@ -24,39 +24,27 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Restoran Mimari Kat Planı (Çiziminize göre birebir oranlanmış, Sandalye Tipleri Eklenmiş)
-// type: 'v' (Dikey 2'li), 'h' (Yatay 2'li), 'lg-v' (Büyük Dikey 4'lü)
+// Restoran Mimari Kat Planı
 const TABLE_MAP = [
-  // Sol Üst (3x3 Dikey Masalar)
   { id: 'B-3', top: '8%', left: '5%', width: '8%', height: '11%', type: 'v' },
   { id: 'B-2', top: '8%', left: '17%', width: '8%', height: '11%', type: 'v' },
   { id: 'B-1', top: '8%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  
   { id: 'B-4', top: '23%', left: '5%', width: '8%', height: '11%', type: 'v' },
   { id: 'B-5', top: '23%', left: '17%', width: '8%', height: '11%', type: 'v' },
   { id: 'B-6', top: '23%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  
   { id: 'B-9', top: '38%', left: '5%', width: '8%', height: '11%', type: 'v' },
   { id: 'B-8', top: '38%', left: '17%', width: '8%', height: '11%', type: 'v' },
   { id: 'B-7', top: '38%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  
-  // Sol Alt (Yataylar ve Ortadaki Büyük B-12, Altındaki B-24)
   { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' },
   { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
   { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
   { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
-  
-  // Sağ Üst (Kasa/Banka Arkası Dikeyler)
   { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
   { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
-  
-  // Sağ Alt (Sol Sütun - Yataylar: B-20, 21, 22, 23)
   { id: 'B-20', top: '48%', left: '56%', width: '14%', height: '6%', type: 'h' },
   { id: 'B-21', top: '61%', left: '56%', width: '14%', height: '6%', type: 'h' },
   { id: 'B-22', top: '74%', left: '56%', width: '14%', height: '6%', type: 'h' },
   { id: 'B-23', top: '87%', left: '56%', width: '14%', height: '6%', type: 'h' },
-
-  // Sağ Alt (Sağ Sütun - Dikeyler)
   { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
   { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
   { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
@@ -83,6 +71,7 @@ export default function App() {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [printSingleId, setPrintSingleId] = useState(null);
   const [showTableMap, setShowTableMap] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // YENİ: Arama State'i
   
   const [iftarTime, setIftarTime] = useState(null);
   const [countdown, setCountdown] = useState("Hesaplanıyor...");
@@ -300,7 +289,16 @@ export default function App() {
     setShowTableMap(false);
   };
 
-  const sortedReservations = [...filteredReservations].sort((a, b) => {
+  // YENİ: Arama Filtresi Uygulama
+  const searchedReservations = filteredReservations.filter(res => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return res.name.toLowerCase().includes(term) || 
+           res.table.toLowerCase().includes(term) || 
+           (res.phone && res.phone.includes(term));
+  });
+
+  const sortedReservations = [...searchedReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) {
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
     }
@@ -328,6 +326,14 @@ export default function App() {
   // Doluluk Oranı Hesaplaması (Maks. 150 Kişi)
   const MAX_CAPACITY = 150;
   const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / MAX_CAPACITY) * 100));
+
+  // Baş Harfleri Alma Fonksiyonu (Avatar için)
+  const getInitials = (name) => {
+    if (!name) return "SC";
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
   return (
     <div className="min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative bg-slate-50">
@@ -433,7 +439,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* YENİ PREMIUM MASA PLANI (KAT KROKİSİ) */}
+                {/* PREMIUM MASA PLANI (KAT KROKİSİ) */}
                 <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 shadow-inner">
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Masa Seçimi</label>
@@ -445,24 +451,19 @@ export default function App() {
                   {showTableMap ? (
                     <div className="mb-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
                       
-                      {/* ÇİZİMİNİZE ÖZEL İNTERAKTİF KAT PLANI */}
                       <div className="relative w-full aspect-[4/5] sm:aspect-square min-h-[400px] bg-[#e6e2d8] border-[10px] border-slate-700/80 rounded-xl overflow-hidden shadow-inner font-sans">
                         
-                        {/* Ahşap Parke Görünümlü Arka Plan Deseni */}
                         <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 20px, #000 20px, #000 21px)' }}></div>
                         
-                        {/* GİRİŞ KAPISI VE PASPAS */}
                         <div className="absolute top-0 left-[42%] w-[16%] h-[4%] bg-amber-900 border-x-2 border-b-2 border-slate-800 rounded-b-md z-10 flex items-center justify-center shadow-lg">
                            <span className="text-[7px] sm:text-[9px] font-black text-amber-100 tracking-widest">GİRİŞ</span>
                         </div>
                         <div className="absolute top-[4%] left-[43%] w-[14%] h-[5%] bg-slate-800/60 rounded-b-sm z-0"></div>
 
-                        {/* DUVAR ÇİZGİLERİ (Sizin çiziminizdeki hatlar) */}
                         <div className="absolute top-0 left-[68%] w-1.5 h-[22%] bg-slate-700 shadow-md rounded-b-md"></div>
                         <div className="absolute top-[39%] left-[68%] w-[15%] h-1.5 bg-slate-700 shadow-md rounded-r-md"></div>
                         <div className="absolute top-[41%] left-[73%] w-1.5 h-[8%] bg-slate-700 shadow-md rounded-t-md"></div>
 
-                        {/* DEKORATİF BİTKİLER */}
                         <div className="absolute top-2 left-2 w-6 h-6 bg-emerald-800 rounded-full shadow-lg border-2 border-emerald-900 flex items-center justify-center z-0">
                            <div className="w-3 h-3 bg-emerald-500 rounded-full opacity-80"></div>
                         </div>
@@ -473,19 +474,18 @@ export default function App() {
                            <div className="w-4 h-4 bg-emerald-500 rounded-full opacity-80"></div>
                         </div>
                         
-                        {/* MASALAR VE SANDALYELER */}
                         {TABLE_MAP.map(table => {
                            const status = getTableStatus(table.id);
+                           const reservationForTable = status !== 'empty' ? filteredReservations.find(r => r.table.trim().toUpperCase() === table.id.toUpperCase()) : null;
                            
-                           // Duruma Göre Renklendirmeler
-                           let surfaceClass = "bg-[#d4a373] border-[#bc8a5f] text-amber-950"; // Boş (Ahşap)
+                           let surfaceClass = "bg-[#d4a373] border-[#bc8a5f] text-amber-950"; 
                            let chairClass = "bg-[#eaddcf] border-[#d4a373]";
                            
                            if (status === 'reserved') {
-                              surfaceClass = "bg-emerald-500 border-emerald-600 text-white"; // Rezerve
+                              surfaceClass = "bg-emerald-500 border-emerald-600 text-white"; 
                               chairClass = "bg-emerald-400 border-emerald-500";
                            } else if (status === 'full') {
-                              surfaceClass = "bg-red-500 border-red-600 text-white"; // Dolu
+                              surfaceClass = "bg-red-500 border-red-600 text-white"; 
                               chairClass = "bg-red-400 border-red-500";
                            }
                            
@@ -499,11 +499,18 @@ export default function App() {
                                   ${status === 'empty' ? 'hover:scale-110 cursor-pointer' : 'opacity-95 cursor-not-allowed'}`}
                                 style={{ top: table.top, left: table.left, width: table.width, height: table.height }}
                               >
-                                 {/* Masa Yüzeyi */}
                                  <div className={`relative w-full h-full flex items-center justify-center rounded shadow-lg border-b-4 border-r-2 ${surfaceClass}`}>
                                     <span className="font-black text-[8px] sm:text-[10px] drop-shadow-sm">{table.id}</span>
                                     
-                                    {/* Sandalyeler (Masa Yönüne Göre Konumlanır) */}
+                                    {/* YENİ: Akıllı Harita Tooltip (Müşteri Bilgisi Gösterimi) */}
+                                    {status !== 'empty' && reservationForTable && (
+                                       <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl flex flex-col items-center border border-slate-600">
+                                         <span className="font-bold text-orange-400">{reservationForTable.name}</span>
+                                         <span>{reservationForTable.peopleCount} Kişi</span>
+                                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 rotate-45 border-b border-r border-slate-600"></div>
+                                       </div>
+                                    )}
+
                                     {table.type === 'v' && (
                                        <>
                                           <div className={`absolute -left-[5px] top-[20%] w-[5px] h-[60%] rounded-l-full shadow-sm border-b-2 ${chairClass}`}></div>
@@ -530,7 +537,6 @@ export default function App() {
                         })}
                       </div>
 
-                      {/* Kat Planı Lejantı */}
                       <div className="flex justify-center gap-5 mt-3 text-[10px] font-bold text-slate-500 border-t pt-3">
                         <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-[#d4a373] border border-[#bc8a5f] shadow-sm"></div> Boş</span>
                         <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-500 border border-emerald-600 shadow-sm"></div> Rezerve</span>
@@ -560,7 +566,6 @@ export default function App() {
                   <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500 bg-amber-50/50 placeholder:text-amber-300 font-medium transition-all" placeholder="Örn: Mama sandalyesi eklenecek..." />
                 </div>
                 
-                {/* PREMIUM MENÜ KARTLARI */}
                 <div className="pt-2">
                   <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2"><UtensilsCrossed size={16} className="text-orange-500" /> İftar Menüsü (Adet)</h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -610,7 +615,6 @@ export default function App() {
           {/* SAĞ KOLON - LİSTE VE MUTFAK */}
           <div className="lg:col-span-8 space-y-6 print:w-full print:block print:space-y-4">
             
-            {/* Mutfak Canlı Özet & Kapasite Barı */}
             <div className={`bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 shadow-xl flex flex-col gap-5 relative overflow-hidden ${printSingleId ? 'print:hidden' : 'print:bg-white print:from-white print:to-white print:border-b-2 print:border-black print:rounded-none print:shadow-none print:p-2 print:mb-4'}`}>
               <div className="absolute right-0 top-0 opacity-5 pointer-events-none print:hidden">
                  <ChefHat size={180} />
@@ -631,7 +635,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* YENİ: İLERLEME/KAPASİTE BARI */}
                 <div className="w-full pt-1 print:hidden">
                    <div className="flex justify-between items-end mb-1.5 px-1">
                      <span className="text-[10px] font-bold text-emerald-200 tracking-wider uppercase">Kapasite: {MAX_CAPACITY} Kişi</span>
@@ -659,13 +662,24 @@ export default function App() {
             {/* Masa Listesi Alanı */}
             <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-6 min-h-[400px] print:p-0 print:border-none print:shadow-none print:bg-white">
               
-              <div className={`flex items-center justify-between mb-6 pb-4 border-b border-slate-100 ${printSingleId ? 'print:hidden' : 'print:border-b-2 print:border-black print:pb-2 print:mb-3'}`}>
+              <div className={`flex flex-col md:flex-row items-start md:items-center justify-between mb-6 pb-4 border-b border-slate-100 gap-4 ${printSingleId ? 'print:hidden' : 'print:border-b-2 print:border-black print:pb-2 print:mb-3'}`}>
                 <h2 className="text-xl font-black flex items-center gap-2 tracking-wide text-[#0B3B2C] print:text-sm"><Armchair className="text-orange-500 print:hidden" size={24} /> <span className="hidden print:inline">Masa Listesi</span><span className="print:hidden">Aktif Masalar</span></h2>
                 
-                <div className="flex items-center gap-3">
-                  <span className="bg-orange-100 text-orange-800 px-4 py-1.5 rounded-full text-xs font-black print:hidden">{filteredReservations.length} Kayıt</span>
-                  {/* Tümünü Yazdır Butonu */}
-                  <button onClick={() => window.print()} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors shadow-lg hover:shadow-xl print:hidden active:scale-95">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                  {/* YENİ: ARAMA ÇUBUĞU */}
+                  <div className="relative w-full sm:w-64 print:hidden">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input 
+                      type="text" 
+                      placeholder="İsim, Masa veya Tel Ara..." 
+                      className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm shadow-sm outline-none bg-slate-50 transition-all"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+
+                  <span className="bg-orange-100 text-orange-800 px-4 py-1.5 rounded-full text-xs font-black print:hidden whitespace-nowrap">{sortedReservations.length} Kayıt</span>
+                  <button onClick={() => window.print()} className="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors shadow-lg hover:shadow-xl print:hidden active:scale-95 whitespace-nowrap">
                     <Printer size={16} /> <span className="hidden sm:inline uppercase tracking-widest">Tümünü Yazdır</span>
                   </button>
                 </div>
@@ -674,8 +688,8 @@ export default function App() {
               {sortedReservations.length === 0 ? (
                 <div className="bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 p-16 text-center text-slate-400 print:hidden flex flex-col items-center">
                   <div className="bg-white p-4 rounded-full shadow-sm mb-4"><Search size={32} className="opacity-50 text-orange-400" /></div>
-                  <p className="font-bold text-lg text-slate-600">Bu tarihe ait kayıt bulunamadı.</p>
-                  <p className="text-sm mt-1">Yeni rezervasyonlar soldaki formdan eklenebilir.</p>
+                  <p className="font-bold text-lg text-slate-600">{searchTerm ? 'Aradığınız kritere uygun kayıt bulunamadı.' : 'Bu tarihe ait kayıt bulunamadı.'}</p>
+                  {!searchTerm && <p className="text-sm mt-1">Yeni rezervasyonlar soldaki formdan eklenebilir.</p>}
                 </div>
               ) : (
                 <div className={`grid grid-cols-1 md:grid-cols-2 gap-5 ${printSingleId ? 'print:grid-cols-1 print:gap-0' : 'print:grid-cols-2 print:gap-2'}`}>
@@ -692,7 +706,6 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* Aksiyon Butonları */}
                       <div className="absolute top-4 right-4 flex gap-1 print:hidden">
                         <button onClick={() => handleToggleArrived(res.id, isArrived)} className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-black tracking-wide transition-all shadow-sm ${isArrived ? 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md' : 'text-slate-600 bg-white border border-slate-200 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50'}`} title={isArrived ? "İptal Et" : "Müşteri Geldi İşaretle"}>
                           <CheckCircle size={16} />
@@ -715,7 +728,13 @@ export default function App() {
                          </div>
                       )}
                       
-                      <h3 className={`text-lg font-black pr-40 truncate print:pr-0 print:text-black print:text-[11px] print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900 line-through decoration-emerald-500/50 decoration-2' : 'text-[#0B3B2C]'}`}>{res.name}</h3>
+                      {/* YENİ: Avatar ve İsim Yan Yana */}
+                      <div className="flex items-center gap-3 mb-1.5">
+                         <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black text-xs shadow-inner print:hidden ${isArrived ? 'bg-emerald-100 text-emerald-700' : 'bg-gradient-to-br from-orange-400 to-orange-500 text-white'}`}>
+                           {getInitials(res.name)}
+                         </div>
+                         <h3 className={`text-lg font-black pr-20 truncate print:pr-0 print:text-black print:text-[11px] print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900 line-through decoration-emerald-500/50 decoration-2' : 'text-[#0B3B2C]'}`}>{res.name}</h3>
+                      </div>
                       
                       {res.phone && (
                         <div className="flex items-center gap-2 mt-1 print:mt-0">
