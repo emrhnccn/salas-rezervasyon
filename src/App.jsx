@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, ArrowDown
 } from 'lucide-react';
 
 // Firebase importları
@@ -24,16 +24,53 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Restoran Masa Düzeni (Örnek Liste)
-const TABLE_LAYOUT = [
-  'A1', 'A2', 'A3', 'A4', 'A5',
-  'B1', 'B2', 'B3', 'B4', 'B5',
-  'C1', 'C2', 'C3', 'C4', 'C5',
-  'B12', 'B19', 'Bahçe 1', 'Bahçe 2', 'VIP'
+// Restoran Kat Planı (Müşteri çizimine göre birebir oranlanmış koordinatlar)
+const TABLE_MAP = [
+  // Sol Üst (Dikey Masalar)
+  { id: 'B-3', top: '5%', left: '5%', width: '10%', height: '11%' },
+  { id: 'B-2', top: '5%', left: '18%', width: '10%', height: '11%' },
+  { id: 'B-1', top: '5%', left: '31%', width: '10%', height: '11%' },
+  { id: 'B-4', top: '19%', left: '5%', width: '10%', height: '11%' },
+  { id: 'B-5', top: '19%', left: '18%', width: '10%', height: '11%' },
+  { id: 'B-6', top: '19%', left: '31%', width: '10%', height: '11%' },
+  { id: 'B-9', top: '33%', left: '5%', width: '10%', height: '11%' },
+  { id: 'B-8', top: '33%', left: '18%', width: '10%', height: '11%' },
+  { id: 'B-7', top: '33%', left: '31%', width: '10%', height: '11%' },
+  
+  // Sol Alt (Yataylar ve Ortadaki Büyük Dikey B-12)
+  { id: 'B-10', top: '47%', left: '8%', width: '12%', height: '6%' },
+  { id: 'B-11', top: '47%', left: '23%', width: '12%', height: '6%' },
+  { id: 'B-12', top: '41%', left: '42%', width: '12%', height: '14%' },
+  
+  // Sağ Üst (Kasa/Banka Arkası Dikeyler)
+  { id: 'B-13', top: '5%', left: '75%', width: '12%', height: '11%' },
+  { id: 'B-14', top: '19%', left: '75%', width: '12%', height: '11%' },
+  
+  // Sağ Alt (Sol Sütun - Yataylar ve Büyük B-24)
+  { id: 'B-20', top: '50%', left: '60%', width: '10%', height: '6%' },
+  { id: 'B-21', top: '59%', left: '60%', width: '10%', height: '6%' },
+  { id: 'B-22', top: '68%', left: '60%', width: '10%', height: '6%' },
+  { id: 'B-24', top: '77%', left: '58%', width: '12%', height: '11%' },
+  { id: 'B-23', top: '91%', left: '60%', width: '10%', height: '6%' },
+
+  // Sağ Alt (Sağ Sütun - Dikeyler)
+  { id: 'B-16', top: '45%', left: '80%', width: '12%', height: '11%' },
+  { id: 'B-17', top: '59%', left: '80%', width: '12%', height: '11%' },
+  { id: 'B-18', top: '73%', left: '80%', width: '12%', height: '11%' },
+  { id: 'B-19', top: '87%', left: '80%', width: '12%', height: '11%' },
 ];
 
 export default function App() {
-  const getToday = () => new Date().toISOString().split('T')[0];
+  // GÜNCELLEME: Türkiye saatine (Europe/Istanbul) göre dinamik gece 12 atlama çözümü
+  const getToday = () => {
+    const options = { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit' };
+    const formatter = new Intl.DateTimeFormat('tr-TR', options);
+    const parts = formatter.formatToParts(new Date());
+    const day = parts.find(p => p.type === 'day').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const year = parts.find(p => p.type === 'year').value;
+    return `${year}-${month}-${day}`;
+  };
 
   const [user, setUser] = useState(null);
   const [reservations, setReservations] = useState([]);
@@ -43,13 +80,12 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [printSingleId, setPrintSingleId] = useState(null);
-  const [showTableMap, setShowTableMap] = useState(false); // Masa haritası görünürlüğü
+  const [showTableMap, setShowTableMap] = useState(false);
   
-  // İftar Sayacı State'leri
   const [iftarTime, setIftarTime] = useState(null);
   const [countdown, setCountdown] = useState("Hesaplanıyor...");
-  const [isPrepTime, setIsPrepTime] = useState(false); // Son 10 dakika uyarısı
-  const [isIftarTime, setIsIftarTime] = useState(false); // İftar vakti uyarısı
+  const [isPrepTime, setIsPrepTime] = useState(false);
+  const [isIftarTime, setIsIftarTime] = useState(false);
   
   const initialFormState = {
     name: '', phone: '', notes: '', peopleCount: 1, menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0, table: '', date: getToday(),
@@ -57,7 +93,6 @@ export default function App() {
   
   const [formData, setFormData] = useState(initialFormState);
 
-  // 1. Gebze İftar Vakti Çekme
   useEffect(() => {
     fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
       .then(res => res.json())
@@ -67,7 +102,6 @@ export default function App() {
       .catch(err => console.error("İftar vakti çekilemedi", err));
   }, []);
 
-  // 2. Geri Sayım ve Animasyon İşlemi
   useEffect(() => {
     if (!iftarTime) return;
 
@@ -79,9 +113,6 @@ export default function App() {
 
       let diff = iftarDate - now;
 
-      // Test amaçlı manuel süre ayarlamak isterseniz diff değerini buraya manuel girebilirsiniz
-      // diff = 9 * 60 * 1000; // 9 dakika kaldı gibi göstermek için
-
       if (diff < 0) {
         setCountdown("İFTAR VAKTİ!");
         setIsIftarTime(true);
@@ -90,7 +121,6 @@ export default function App() {
         return;
       }
 
-      // Son 10 dakika kontrolü (10 * 60 * 1000 ms)
       if (diff <= 600000 && diff > 0) {
         setIsPrepTime(true);
       } else {
@@ -107,14 +137,12 @@ export default function App() {
     return () => clearInterval(interval);
   }, [iftarTime]);
 
-  // Yazdırma işlemi tamamlandığında tekil yazdırma modunu sıfırla
   useEffect(() => {
     const handleAfterPrint = () => setPrintSingleId(null);
     window.addEventListener('afterprint', handleAfterPrint);
     return () => window.removeEventListener('afterprint', handleAfterPrint);
   }, []);
 
-  // 3. Kimlik Doğrulama
   useEffect(() => {
     signInAnonymously(auth).catch((error) => {
       console.error("Giriş hatası:", error);
@@ -127,7 +155,6 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // 4. Canlı Veri Çekme
   useEffect(() => {
     if (!user) return;
 
@@ -148,7 +175,6 @@ export default function App() {
     return () => unsubscribe();
   }, [user]);
 
-  // Form Değişikliklerini Yakalama
   const handleChange = (e) => {
     const { name, value } = e.target;
     setErrorMsg('');
@@ -158,7 +184,6 @@ export default function App() {
     }));
   };
 
-  // 5. Veri Ekleme / Güncelleme İşlemi
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -260,7 +285,6 @@ export default function App() {
 
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
 
-  // Masa Haritası Durum Bulucu
   const getTableStatus = (tableName) => {
     const res = filteredReservations.find(r => r.table.trim().toUpperCase() === tableName.toUpperCase());
     if (!res) return 'empty';
@@ -269,7 +293,7 @@ export default function App() {
   };
 
   const handleTableSelect = (tableName) => {
-    if (getTableStatus(tableName) !== 'empty') return; // Dolu/Rezerve masaya tıklanamaz
+    if (getTableStatus(tableName) !== 'empty') return;
     setFormData(prev => ({ ...prev, table: tableName }));
     setShowTableMap(false);
   };
@@ -293,7 +317,7 @@ export default function App() {
   return (
     <div className="min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative bg-slate-50">
       
-      {/* İSLAMİ DESEN VE HİLAL (WATERMARK) - Yalnızca ekranda görünür, yazdırmada gizlenir */}
+      {/* İSLAMİ DESEN VE HİLAL (WATERMARK) */}
       <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03] print:hidden" 
            style={{ backgroundImage: 'radial-gradient(#f97316 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
       </div>
@@ -301,7 +325,7 @@ export default function App() {
         <MoonStar size={400} strokeWidth={1} />
       </div>
 
-      {/* SON 10 DAKİKA - MUTFAK HAZIRLIK BİLDİRİMİ */}
+      {/* SON 10 DAKİKA BİLDİRİMİ */}
       {isPrepTime && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-red-600 text-white p-3 flex items-center justify-center gap-3 shadow-2xl animate-pulse print:hidden">
           <BellRing className="animate-bounce" />
@@ -329,7 +353,6 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-4">
-            {/* LOGO: Beyaz arka plan kaldırıldı, doğrudan oturtuldu */}
             <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md hover:scale-105 transition-transform">
                <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'block'; }} />
                <div className="hidden bg-orange-500 w-12 h-12 rounded-full items-center justify-center"><MoonStar className="text-white" size={24} /></div>
@@ -340,7 +363,6 @@ export default function App() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-            {/* Canlı İftar Sayacı */}
             <div className={`flex items-center rounded-xl px-5 py-2 border w-full md:w-auto justify-center shadow-inner transition-colors duration-500 ${isPrepTime ? 'bg-red-500/20 border-red-500 text-red-100' : isIftarTime ? 'bg-emerald-500/20 border-emerald-500 text-emerald-200' : 'bg-white/5 border-orange-500/30 text-orange-200'}`}>
               <Clock className={`mr-3 ${isPrepTime ? 'animate-bounce text-red-400' : 'opacity-80'}`} size={24} />
               <div className="flex flex-col items-center md:items-start">
@@ -396,39 +418,61 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* YENİ: MASA PLANI SEÇİCİ */}
+                {/* MASA PLANI SEÇİCİ */}
                 <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 shadow-inner">
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Masa Seçimi</label>
                     <button type="button" onClick={() => setShowTableMap(!showTableMap)} className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-orange-200 transition-colors">
-                      <Map size={14} /> {showTableMap ? 'Haritayı Gizle' : 'Haritadan Seç'}
+                      <Map size={14} /> {showTableMap ? 'Haritayı Gizle' : 'Krokiden Seç'}
                     </button>
                   </div>
                   
                   {showTableMap ? (
-                    <div className="grid grid-cols-4 gap-2 mb-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                      {TABLE_LAYOUT.map(table => {
-                        const status = getTableStatus(table);
-                        return (
-                          <button 
-                            key={table}
-                            type="button"
-                            disabled={status !== 'empty'}
-                            onClick={() => handleTableSelect(table)}
-                            className={`py-2 rounded-lg text-xs font-black border transition-all flex flex-col items-center justify-center gap-1
-                              ${status === 'empty' ? 'bg-slate-50 text-slate-600 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-700 cursor-pointer' : 
-                                status === 'reserved' ? 'bg-emerald-100 border-emerald-200 text-emerald-800 opacity-50 cursor-not-allowed' : 
-                                'bg-red-100 border-red-200 text-red-800 opacity-50 cursor-not-allowed'}`}
-                          >
-                            <Armchair size={14} />
-                            {table}
-                          </button>
-                        )
-                      })}
-                      <div className="col-span-4 flex justify-center gap-4 mt-2 text-[10px] font-bold text-slate-500 border-t pt-2">
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-slate-200"></div> Boş</span>
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Rezerve</span>
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400"></div> Dolu</span>
+                    <div className="mb-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                      {/* ÇİZİMİNİZE ÖZEL KAT PLANI ALANI */}
+                      <div className="relative w-full aspect-[4/5] sm:aspect-square min-h-[350px] bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden shadow-inner">
+                        
+                        {/* KAPI */}
+                        <div className="absolute top-[2%] left-[42%] w-[16%] h-[5%] border-2 border-slate-400 bg-white flex items-center justify-center font-black text-[9px] sm:text-xs text-slate-500 rounded-sm shadow-sm z-10">
+                          KAPI
+                          <ArrowDown size={14} className="ml-0.5 text-orange-500 animate-bounce" />
+                        </div>
+
+                        {/* İNCE ÇİZGİ DETAYLARI (Sizin çiziminizdeki hatlar) */}
+                        <div className="absolute top-[2%] left-[65%] w-px h-[20%] bg-slate-300"></div>
+                        <div className="absolute top-[35%] left-[72%] w-[28%] h-px bg-slate-300"></div>
+                        <div className="absolute top-[42%] left-[76%] w-px h-[15%] bg-slate-300"></div>
+                        <div className="absolute top-[2%] left-[10%] w-px h-[3%] bg-slate-300"></div>
+                        
+                        {TABLE_MAP.map(table => {
+                           const status = getTableStatus(table.id);
+                           return (
+                              <button
+                                key={table.id}
+                                type="button"
+                                disabled={status !== 'empty'}
+                                onClick={() => handleTableSelect(table.id)}
+                                className={`absolute flex flex-col items-center justify-center font-black text-[10px] sm:text-xs transition-all border-2 rounded-md shadow-sm hover:scale-105 active:scale-95 z-20
+                                  ${status === 'empty' ? 'bg-white border-slate-300 text-slate-600 hover:border-orange-400 hover:text-orange-600 hover:shadow-md cursor-pointer' : 
+                                    status === 'reserved' ? 'bg-emerald-100 border-emerald-300 text-emerald-800 opacity-80 cursor-not-allowed' : 
+                                    'bg-red-100 border-red-300 text-red-800 opacity-80 cursor-not-allowed'}`}
+                                style={{
+                                  top: table.top,
+                                  left: table.left,
+                                  width: table.width,
+                                  height: table.height
+                                }}
+                              >
+                                {table.id}
+                              </button>
+                           )
+                        })}
+                      </div>
+
+                      <div className="flex justify-center gap-5 mt-3 text-[10px] font-bold text-slate-500 border-t pt-3">
+                        <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-300 shadow-sm"></div> Boş</span>
+                        <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm"></div> Rezerve</span>
+                        <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-sm"></div> Dolu</span>
                       </div>
                     </div>
                   ) : null}
@@ -454,7 +498,7 @@ export default function App() {
                   <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500 bg-amber-50/50 placeholder:text-amber-300 font-medium transition-all" placeholder="Örn: Mama sandalyesi eklenecek..." />
                 </div>
                 
-                {/* YENİ: PREMIUM MENÜ KARTLARI */}
+                {/* PREMIUM MENÜ KARTLARI */}
                 <div className="pt-2">
                   <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2"><UtensilsCrossed size={16} className="text-orange-500" /> İftar Menüsü (Adet)</h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -506,7 +550,6 @@ export default function App() {
             
             {/* Mutfak Canlı Özet */}
             <div className={`bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 shadow-xl flex flex-col items-center justify-between gap-5 relative overflow-hidden ${printSingleId ? 'print:hidden' : 'print:bg-white print:from-white print:to-white print:border-b-2 print:border-black print:rounded-none print:shadow-none print:p-2 print:mb-4'}`}>
-              {/* Dekoratif Mutfak İkonu Arkaplanı */}
               <div className="absolute right-0 top-0 opacity-5 pointer-events-none print:hidden">
                  <ChefHat size={180} />
               </div>
