@@ -311,12 +311,22 @@ export default function App() {
 
   const dailySummary = filteredReservations.reduce((acc, res) => {
     acc.totalPeople += (parseInt(res.peopleCount) || 0);
-    acc.totalTavuk += (parseInt(res.menuTavuk) || 0);
-    acc.totalHunkar += (parseInt(res.menuHunkar) || 0);
-    acc.totalKarisik += (parseInt(res.menuKarisik) || 0);
-    acc.totalCocuk += (parseInt(res.menuCocuk) || 0);
+    
+    const tavuk = parseInt(res.menuTavuk) || 0;
+    const hunkar = parseInt(res.menuHunkar) || 0;
+    const karisik = parseInt(res.menuKarisik) || 0;
+    const cocuk = parseInt(res.menuCocuk) || 0;
+    
+    acc.totalTavuk += tavuk;
+    acc.totalHunkar += hunkar;
+    acc.totalKarisik += karisik;
+    acc.totalCocuk += cocuk;
+    
+    // Toplam seçilen menü sayısı (Mutfak için eklendi)
+    acc.totalMenu += (tavuk + hunkar + karisik + cocuk);
+    
     return acc;
-  }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0 });
+  }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
 
   return (
     <div className="min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative bg-slate-50">
@@ -358,7 +368,6 @@ export default function App() {
           
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md hover:scale-105 transition-transform">
-               {/* GÜNCELLEME: Logo ismi salaas logo.png yapıldı */}
                <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
                <div className="hidden bg-orange-500 w-12 h-12 rounded-full items-center justify-center"><MoonStar className="text-white" size={24} /></div>
             </div>
@@ -606,11 +615,17 @@ export default function App() {
                  <ChefHat size={180} />
               </div>
 
-              <div className="flex items-center gap-4 text-[#FBE18D] w-full border-b border-emerald-700/50 pb-4 z-10 print:border-black print:text-black print:pb-2">
-                <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10 print:hidden"><ChefHat size={28} /></div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-orange-400 print:text-black print:text-[10px]">Mutfak Canlı Özet Paneli</p>
-                  <p className="text-2xl font-black text-white drop-shadow-md print:text-black print:text-sm">Toplam: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span> Kişi</p>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full border-b border-emerald-700/50 pb-4 z-10 print:border-black print:pb-2">
+                <div className="flex items-center gap-4 text-[#FBE18D]">
+                  <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10 print:hidden"><ChefHat size={28} /></div>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-orange-400 print:text-black print:text-[10px]">Mutfak Canlı Özet Paneli</p>
+                    <div className="flex gap-3 items-baseline mt-0.5">
+                      <p className="text-2xl font-black text-white drop-shadow-md print:text-black print:text-sm">Kişi: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span></p>
+                      <span className="text-emerald-500 font-bold print:hidden">|</span>
+                      <p className="text-xl font-bold text-slate-200 drop-shadow-sm print:text-black print:text-sm">Seçilen Menü: <span className="text-yellow-400 print:text-black">{dailySummary.totalMenu}</span></p>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-4 gap-3 w-full z-10 print:grid-cols-2 print:gap-1">
