@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, ArrowDown
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing
 } from 'lucide-react';
 
 // Firebase importları
@@ -24,52 +24,56 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Restoran Kat Planı (Müşteri çizimine göre birebir oranlanmış koordinatlar)
+// Restoran Mimari Kat Planı (Çiziminize göre birebir oranlanmış, Sandalye Tipleri Eklenmiş)
+// type: 'v' (Dikey 2'li), 'h' (Yatay 2'li), 'lg-v' (Büyük Dikey 4'lü)
 const TABLE_MAP = [
-  // Sol Üst (Dikey Masalar)
-  { id: 'B-3', top: '5%', left: '5%', width: '10%', height: '11%' },
-  { id: 'B-2', top: '5%', left: '18%', width: '10%', height: '11%' },
-  { id: 'B-1', top: '5%', left: '31%', width: '10%', height: '11%' },
-  { id: 'B-4', top: '19%', left: '5%', width: '10%', height: '11%' },
-  { id: 'B-5', top: '19%', left: '18%', width: '10%', height: '11%' },
-  { id: 'B-6', top: '19%', left: '31%', width: '10%', height: '11%' },
-  { id: 'B-9', top: '33%', left: '5%', width: '10%', height: '11%' },
-  { id: 'B-8', top: '33%', left: '18%', width: '10%', height: '11%' },
-  { id: 'B-7', top: '33%', left: '31%', width: '10%', height: '11%' },
+  // Sol Üst (3x3 Dikey Masalar)
+  { id: 'B-3', top: '8%', left: '5%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-2', top: '8%', left: '16%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-1', top: '8%', left: '27%', width: '7%', height: '11%', type: 'v' },
   
-  // Sol Alt (Yataylar ve Ortadaki Büyük Dikey B-12)
-  { id: 'B-10', top: '47%', left: '8%', width: '12%', height: '6%' },
-  { id: 'B-11', top: '47%', left: '23%', width: '12%', height: '6%' },
-  { id: 'B-12', top: '41%', left: '42%', width: '12%', height: '14%' },
+  { id: 'B-4', top: '23%', left: '5%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-5', top: '23%', left: '16%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-6', top: '23%', left: '27%', width: '7%', height: '11%', type: 'v' },
+  
+  { id: 'B-9', top: '38%', left: '5%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-8', top: '38%', left: '16%', width: '7%', height: '11%', type: 'v' },
+  { id: 'B-7', top: '38%', left: '27%', width: '7%', height: '11%', type: 'v' },
+  
+  // Sol Alt (Yataylar ve Ortadaki Büyük B-12)
+  { id: 'B-10', top: '54%', left: '8%', width: '10%', height: '7%', type: 'h' },
+  { id: 'B-11', top: '54%', left: '22%', width: '10%', height: '7%', type: 'h' },
+  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '15%', type: 'lg-v' },
   
   // Sağ Üst (Kasa/Banka Arkası Dikeyler)
-  { id: 'B-13', top: '5%', left: '75%', width: '12%', height: '11%' },
-  { id: 'B-14', top: '19%', left: '75%', width: '12%', height: '11%' },
+  { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
   
   // Sağ Alt (Sol Sütun - Yataylar ve Büyük B-24)
-  { id: 'B-20', top: '50%', left: '60%', width: '10%', height: '6%' },
-  { id: 'B-21', top: '59%', left: '60%', width: '10%', height: '6%' },
-  { id: 'B-22', top: '68%', left: '60%', width: '10%', height: '6%' },
-  { id: 'B-24', top: '77%', left: '58%', width: '12%', height: '11%' },
-  { id: 'B-23', top: '91%', left: '60%', width: '10%', height: '6%' },
+  { id: 'B-20', top: '48%', left: '60%', width: '9%', height: '7%', type: 'h' },
+  { id: 'B-21', top: '58%', left: '60%', width: '9%', height: '7%', type: 'h' },
+  { id: 'B-22', top: '68%', left: '60%', width: '9%', height: '7%', type: 'h' },
+  { id: 'B-24', top: '78%', left: '58%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-23', top: '94%', left: '60%', width: '9%', height: '5%', type: 'h' },
 
   // Sağ Alt (Sağ Sütun - Dikeyler)
-  { id: 'B-16', top: '45%', left: '80%', width: '12%', height: '11%' },
-  { id: 'B-17', top: '59%', left: '80%', width: '12%', height: '11%' },
-  { id: 'B-18', top: '73%', left: '80%', width: '12%', height: '11%' },
-  { id: 'B-19', top: '87%', left: '80%', width: '12%', height: '11%' },
+  { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
 ];
 
 export default function App() {
-  // GÜNCELLEME: Türkiye saatine (Europe/Istanbul) göre dinamik gece 12 atlama çözümü
+  // GÜNCELLEME: Türkiye Saati (Europe/Istanbul) ile Dinamik Gece 12 Atlama Çözümü
   const getToday = () => {
-    const options = { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit' };
-    const formatter = new Intl.DateTimeFormat('tr-TR', options);
-    const parts = formatter.formatToParts(new Date());
-    const day = parts.find(p => p.type === 'day').value;
-    const month = parts.find(p => p.type === 'month').value;
-    const year = parts.find(p => p.type === 'year').value;
-    return `${year}-${month}-${day}`;
+    // en-CA formatı YYYY-MM-DD olarak çıktı verir, input type="date" için kusursuzdur.
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Istanbul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    return formatter.format(new Date());
   };
 
   const [user, setUser] = useState(null);
@@ -353,9 +357,9 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center gap-4">
-            {/* LOGO BÖLÜMÜ GÜNCELLENDİ (Turuncu yuvarlak ve yedek simge kaldırıldı, sadece salaas logo.png var) */}
             <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md hover:scale-105 transition-transform">
-               <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
+               <img src="/salaş logo.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
+               <div className="hidden bg-orange-500 w-12 h-12 rounded-full items-center justify-center"><MoonStar className="text-white" size={24} /></div>
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-sm font-serif">Salaaş Cafe <span className="text-white font-sans text-xl">İftar</span></h1>
@@ -418,7 +422,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* MASA PLANI SEÇİCİ */}
+                {/* YENİ PREMIUM MASA PLANI (KAT KROKİSİ) */}
                 <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 shadow-inner">
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Masa Seçimi</label>
@@ -429,50 +433,97 @@ export default function App() {
                   
                   {showTableMap ? (
                     <div className="mb-4 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                      {/* ÇİZİMİNİZE ÖZEL KAT PLANI ALANI */}
-                      <div className="relative w-full aspect-[4/5] sm:aspect-square min-h-[350px] bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden shadow-inner">
+                      
+                      {/* ÇİZİMİNİZE ÖZEL İNTERAKTİF KAT PLANI */}
+                      <div className="relative w-full aspect-[4/5] sm:aspect-square min-h-[400px] bg-[#e6e2d8] border-[10px] border-slate-700/80 rounded-xl overflow-hidden shadow-inner font-sans">
                         
-                        {/* KAPI */}
-                        <div className="absolute top-[2%] left-[42%] w-[16%] h-[5%] border-2 border-slate-400 bg-white flex items-center justify-center font-black text-[9px] sm:text-xs text-slate-500 rounded-sm shadow-sm z-10">
-                          KAPI
-                          <ArrowDown size={14} className="ml-0.5 text-orange-500 animate-bounce" />
+                        {/* Ahşap Parke Görünümlü Arka Plan Deseni */}
+                        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 20px, #000 20px, #000 21px)' }}></div>
+                        
+                        {/* GİRİŞ KAPISI VE PASPAS */}
+                        <div className="absolute top-0 left-[42%] w-[16%] h-[4%] bg-amber-900 border-x-2 border-b-2 border-slate-800 rounded-b-md z-10 flex items-center justify-center shadow-lg">
+                           <span className="text-[7px] sm:text-[9px] font-black text-amber-100 tracking-widest">GİRİŞ</span>
                         </div>
+                        <div className="absolute top-[4%] left-[43%] w-[14%] h-[5%] bg-slate-800/60 rounded-b-sm z-0"></div>
 
-                        {/* İNCE ÇİZGİ DETAYLARI (Sizin çiziminizdeki hatlar) */}
-                        <div className="absolute top-[2%] left-[65%] w-px h-[20%] bg-slate-300"></div>
-                        <div className="absolute top-[35%] left-[72%] w-[28%] h-px bg-slate-300"></div>
-                        <div className="absolute top-[42%] left-[76%] w-px h-[15%] bg-slate-300"></div>
-                        <div className="absolute top-[2%] left-[10%] w-px h-[3%] bg-slate-300"></div>
+                        {/* DUVAR ÇİZGİLERİ (Sizin çiziminizdeki hatlar) */}
+                        <div className="absolute top-0 left-[68%] w-1.5 h-[22%] bg-slate-700 shadow-md rounded-b-md"></div>
+                        <div className="absolute top-[39%] left-[68%] w-[15%] h-1.5 bg-slate-700 shadow-md rounded-r-md"></div>
+                        <div className="absolute top-[41%] left-[73%] w-1.5 h-[8%] bg-slate-700 shadow-md rounded-t-md"></div>
+
+                        {/* DEKORATİF BİTKİLER (Daha gerçekçi restoran hissi için) */}
+                        <div className="absolute top-2 left-2 w-6 h-6 bg-emerald-800 rounded-full shadow-lg border-2 border-emerald-900 flex items-center justify-center z-0">
+                           <div className="w-3 h-3 bg-emerald-500 rounded-full opacity-80"></div>
+                        </div>
+                        <div className="absolute bottom-2 left-2 w-7 h-7 bg-emerald-800 rounded-full shadow-lg border-2 border-emerald-900 flex items-center justify-center z-0">
+                           <div className="w-3 h-3 bg-emerald-500 rounded-full opacity-80"></div>
+                        </div>
+                        <div className="absolute bottom-2 right-2 w-8 h-8 bg-emerald-800 rounded-full shadow-lg border-2 border-emerald-900 flex items-center justify-center z-0">
+                           <div className="w-4 h-4 bg-emerald-500 rounded-full opacity-80"></div>
+                        </div>
                         
+                        {/* MASALAR VE SANDALYELER */}
                         {TABLE_MAP.map(table => {
                            const status = getTableStatus(table.id);
+                           
+                           // Duruma Göre Renklendirmeler
+                           let surfaceClass = "bg-[#d4a373] border-[#bc8a5f] text-amber-950"; // Boş (Ahşap)
+                           let chairClass = "bg-[#eaddcf] border-[#d4a373]";
+                           
+                           if (status === 'reserved') {
+                              surfaceClass = "bg-emerald-500 border-emerald-600 text-white"; // Rezerve
+                              chairClass = "bg-emerald-400 border-emerald-500";
+                           } else if (status === 'full') {
+                              surfaceClass = "bg-red-500 border-red-600 text-white"; // Dolu
+                              chairClass = "bg-red-400 border-red-500";
+                           }
+                           
                            return (
                               <button
                                 key={table.id}
                                 type="button"
                                 disabled={status !== 'empty'}
                                 onClick={() => handleTableSelect(table.id)}
-                                className={`absolute flex flex-col items-center justify-center font-black text-[10px] sm:text-xs transition-all border-2 rounded-md shadow-sm hover:scale-105 active:scale-95 z-20
-                                  ${status === 'empty' ? 'bg-white border-slate-300 text-slate-600 hover:border-orange-400 hover:text-orange-600 hover:shadow-md cursor-pointer' : 
-                                    status === 'reserved' ? 'bg-emerald-100 border-emerald-300 text-emerald-800 opacity-80 cursor-not-allowed' : 
-                                    'bg-red-100 border-red-300 text-red-800 opacity-80 cursor-not-allowed'}`}
-                                style={{
-                                  top: table.top,
-                                  left: table.left,
-                                  width: table.width,
-                                  height: table.height
-                                }}
+                                className={`absolute group flex items-center justify-center transition-all duration-300 z-20 
+                                  ${status === 'empty' ? 'hover:scale-110 cursor-pointer' : 'opacity-95 cursor-not-allowed'}`}
+                                style={{ top: table.top, left: table.left, width: table.width, height: table.height }}
                               >
-                                {table.id}
+                                 {/* Masa Yüzeyi */}
+                                 <div className={`relative w-full h-full flex items-center justify-center rounded shadow-lg border-b-4 border-r-2 ${surfaceClass}`}>
+                                    <span className="font-black text-[8px] sm:text-[10px] drop-shadow-sm">{table.id}</span>
+                                    
+                                    {/* Sandalyeler (Masa Yönüne Göre Konumlanır) */}
+                                    {table.type === 'v' && (
+                                       <>
+                                          <div className={`absolute -left-[5px] top-[20%] w-[5px] h-[60%] rounded-l-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                          <div className={`absolute -right-[5px] top-[20%] w-[5px] h-[60%] rounded-r-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                       </>
+                                    )}
+                                    {table.type === 'h' && (
+                                       <>
+                                          <div className={`absolute left-[20%] -top-[5px] w-[60%] h-[5px] rounded-t-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                          <div className={`absolute left-[20%] -bottom-[5px] w-[60%] h-[5px] rounded-b-full shadow-sm border-t-2 ${chairClass}`}></div>
+                                       </>
+                                    )}
+                                    {table.type === 'lg-v' && (
+                                       <>
+                                          <div className={`absolute -left-[5px] top-[15%] w-[5px] h-[30%] rounded-l-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                          <div className={`absolute -left-[5px] bottom-[15%] w-[5px] h-[30%] rounded-l-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                          <div className={`absolute -right-[5px] top-[15%] w-[5px] h-[30%] rounded-r-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                          <div className={`absolute -right-[5px] bottom-[15%] w-[5px] h-[30%] rounded-r-full shadow-sm border-b-2 ${chairClass}`}></div>
+                                       </>
+                                    )}
+                                 </div>
                               </button>
                            )
                         })}
                       </div>
 
+                      {/* Kat Planı Lejantı */}
                       <div className="flex justify-center gap-5 mt-3 text-[10px] font-bold text-slate-500 border-t pt-3">
-                        <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-white border border-slate-300 shadow-sm"></div> Boş</span>
-                        <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm"></div> Rezerve</span>
-                        <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-sm"></div> Dolu</span>
+                        <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-[#d4a373] border border-[#bc8a5f] shadow-sm"></div> Boş</span>
+                        <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-500 border border-emerald-600 shadow-sm"></div> Rezerve</span>
+                        <span className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-500 border border-red-600 shadow-sm"></div> Masada</span>
                       </div>
                     </div>
                   ) : null}
