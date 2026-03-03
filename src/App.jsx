@@ -44,7 +44,7 @@ const TABLE_MAP = [
   { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' },
   { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
   { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' }, // B-24 çizilen kare alana taşındı
+  { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
   
   // Sağ Üst (Kasa/Banka Arkası Dikeyler)
   { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
@@ -64,9 +64,7 @@ const TABLE_MAP = [
 ];
 
 export default function App() {
-  // GÜNCELLEME: Türkiye Saati (Europe/Istanbul) ile Dinamik Gece 12 Atlama Çözümü
   const getToday = () => {
-    // en-CA formatı YYYY-MM-DD olarak çıktı verir, input type="date" için kusursuzdur.
     const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Europe/Istanbul',
       year: 'numeric',
@@ -322,11 +320,14 @@ export default function App() {
     acc.totalKarisik += karisik;
     acc.totalCocuk += cocuk;
     
-    // Toplam seçilen menü sayısı (Mutfak için eklendi)
     acc.totalMenu += (tavuk + hunkar + karisik + cocuk);
     
     return acc;
   }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
+
+  // Doluluk Oranı Hesaplaması (Maks. 150 Kişi)
+  const MAX_CAPACITY = 150;
+  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / MAX_CAPACITY) * 100));
 
   return (
     <div className="min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative bg-slate-50">
@@ -609,25 +610,44 @@ export default function App() {
           {/* SAĞ KOLON - LİSTE VE MUTFAK */}
           <div className="lg:col-span-8 space-y-6 print:w-full print:block print:space-y-4">
             
-            {/* Mutfak Canlı Özet */}
-            <div className={`bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 shadow-xl flex flex-col items-center justify-between gap-5 relative overflow-hidden ${printSingleId ? 'print:hidden' : 'print:bg-white print:from-white print:to-white print:border-b-2 print:border-black print:rounded-none print:shadow-none print:p-2 print:mb-4'}`}>
+            {/* Mutfak Canlı Özet & Kapasite Barı */}
+            <div className={`bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 shadow-xl flex flex-col gap-5 relative overflow-hidden ${printSingleId ? 'print:hidden' : 'print:bg-white print:from-white print:to-white print:border-b-2 print:border-black print:rounded-none print:shadow-none print:p-2 print:mb-4'}`}>
               <div className="absolute right-0 top-0 opacity-5 pointer-events-none print:hidden">
                  <ChefHat size={180} />
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full border-b border-emerald-700/50 pb-4 z-10 print:border-black print:pb-2">
-                <div className="flex items-center gap-4 text-[#FBE18D]">
-                  <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10 print:hidden"><ChefHat size={28} /></div>
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-orange-400 print:text-black print:text-[10px]">Mutfak Canlı Özet Paneli</p>
-                    <div className="flex gap-3 items-baseline mt-0.5">
-                      <p className="text-2xl font-black text-white drop-shadow-md print:text-black print:text-sm">Kişi: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span></p>
-                      <span className="text-emerald-500 font-bold print:hidden">|</span>
-                      <p className="text-xl font-bold text-slate-200 drop-shadow-sm print:text-black print:text-sm">Seçilen Menü: <span className="text-yellow-400 print:text-black">{dailySummary.totalMenu}</span></p>
+              <div className="flex flex-col gap-4 w-full border-b border-emerald-700/50 pb-5 z-10 print:border-black print:pb-2">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
+                  <div className="flex items-center gap-4 text-[#FBE18D]">
+                    <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10 print:hidden"><ChefHat size={28} /></div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-widest text-orange-400 print:text-black print:text-[10px]">Mutfak Canlı Özet Paneli</p>
+                      <div className="flex gap-3 items-baseline mt-0.5">
+                        <p className="text-2xl font-black text-white drop-shadow-md print:text-black print:text-sm">Kişi: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span></p>
+                        <span className="text-emerald-500 font-bold print:hidden">|</span>
+                        <p className="text-xl font-bold text-slate-200 drop-shadow-sm print:text-black print:text-sm">Seçilen Menü: <span className="text-yellow-400 print:text-black">{dailySummary.totalMenu}</span></p>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* YENİ: İLERLEME/KAPASİTE BARI */}
+                <div className="w-full pt-1 print:hidden">
+                   <div className="flex justify-between items-end mb-1.5 px-1">
+                     <span className="text-[10px] font-bold text-emerald-200 tracking-wider uppercase">Kapasite: {MAX_CAPACITY} Kişi</span>
+                     <span className={`text-[10px] font-black tracking-wider ${occupancyRate >= 90 ? 'text-red-400' : occupancyRate >= 60 ? 'text-orange-300' : 'text-emerald-300'}`}>
+                       DOLULUK: %{occupancyRate}
+                     </span>
+                   </div>
+                   <div className="w-full bg-emerald-950/60 rounded-full h-2 shadow-inner overflow-hidden">
+                     <div 
+                       className={`h-2 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,255,255,0.2)] ${occupancyRate >= 90 ? 'bg-gradient-to-r from-red-500 to-red-400' : occupancyRate >= 60 ? 'bg-gradient-to-r from-orange-500 to-yellow-400' : 'bg-gradient-to-r from-emerald-500 to-emerald-400'}`} 
+                       style={{ width: `${occupancyRate}%` }}
+                     ></div>
+                   </div>
+                </div>
               </div>
+
               <div className="grid grid-cols-4 gap-3 w-full z-10 print:grid-cols-2 print:gap-1">
                 <div className="bg-white/95 backdrop-blur-sm px-3 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-1"><span className="block text-[10px] text-slate-500 font-bold mb-0.5 print:text-black print:text-[8px]">TAVUK</span><span className="font-black text-2xl text-[#0B3B2C] print:text-black print:text-sm">{dailySummary.totalTavuk}</span></div>
                 <div className="bg-white/95 backdrop-blur-sm px-3 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-1"><span className="block text-[10px] text-slate-500 font-bold mb-0.5 print:text-black print:text-[8px]">HÜNKAR</span><span className="font-black text-2xl text-[#0B3B2C] print:text-black print:text-sm">{dailySummary.totalHunkar}</span></div>
