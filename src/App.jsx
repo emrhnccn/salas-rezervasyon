@@ -358,7 +358,7 @@ export default function App() {
           
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md hover:scale-105 transition-transform">
-               <img src="/salaş logo.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
+               <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
                <div className="hidden bg-orange-500 w-12 h-12 rounded-full items-center justify-center"><MoonStar className="text-white" size={24} /></div>
             </div>
             <div>
