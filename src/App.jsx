@@ -84,6 +84,11 @@ export default function App() {
   
   const [formData, setFormData] = useState(initialFormState);
 
+  // YENİ: Tarayıcı Sekme Başlığını Güncelleme
+  useEffect(() => {
+    document.title = "Salaaş Cafe İftar";
+  }, []);
+
   useEffect(() => {
     fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
       .then(res => res.json())
