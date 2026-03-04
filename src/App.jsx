@@ -566,6 +566,12 @@ export default function App() {
                   </div>
                 </div>
 
+                {/* YENİ EKLENEN TARİH SEÇME ALANI */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><CalendarDays size={14} className="text-orange-500"/> Rezervasyon Tarihi</label>
+                  <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-slate-50/50 font-semibold text-[#0B3B2C] transition-all" required />
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><MessageSquareText size={14}/> Özel Not (Opsiyonel)</label>
                   <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500 bg-amber-50/50 placeholder:text-amber-300 font-medium transition-all" placeholder="Örn: Mama sandalyesi eklenecek..." />
@@ -710,18 +716,6 @@ export default function App() {
                           Salaaş Cafe Adisyon<br/><span className="text-[9px] font-normal tracking-widest">{selectedFilterDate}</span>
                         </div>
                       )}
-
-                      <div className="absolute top-4 right-4 flex gap-1 print:hidden">
-                        <button onClick={() => handleToggleArrived(res.id, isArrived)} className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-black tracking-wide transition-all shadow-sm ${isArrived ? 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md' : 'text-slate-600 bg-white border border-slate-200 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50'}`} title={isArrived ? "İptal Et" : "Müşteri Geldi İşaretle"}>
-                          <CheckCircle size={16} />
-                          <span className="hidden sm:inline">{isArrived ? "MASADA" : "GELMEDİ"}</span>
-                        </button>
-                        <button onClick={() => handlePrintSingle(res.id)} className="p-1.5 text-slate-400 hover:text-[#0B3B2C] hover:bg-slate-100 rounded-lg transition-colors" title="Adisyon Yazdır">
-                          <Printer size={18} />
-                        </button>
-                        <button onClick={() => handleEditClick(res)} className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors" title="Düzenle"><Edit2 size={18} /></button>
-                        <button onClick={() => setDeleteConfirmId(res.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Sil"><Trash2 size={18} /></button>
-                      </div>
                       
                       {deleteConfirmId === res.id && (
                          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-4 border border-red-200 rounded-2xl print:hidden">
@@ -733,12 +727,12 @@ export default function App() {
                          </div>
                       )}
                       
-                      {/* YENİ: Avatar ve İsim Yan Yana */}
-                      <div className="flex items-center gap-3 mb-1.5">
+                      {/* YENİ DÜZEN: Avatar ve İsim (pr-40 kaldırıldı, tam genişlik sağlandı) */}
+                      <div className="flex items-center gap-3 mb-1.5 pr-2">
                          <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black text-xs shadow-inner print:hidden ${isArrived ? 'bg-emerald-100 text-emerald-700' : 'bg-gradient-to-br from-orange-400 to-orange-500 text-white'}`}>
                            {getInitials(res.name)}
                          </div>
-                         <h3 className={`text-lg font-black pr-20 truncate print:pr-0 print:text-black print:text-[11px] print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900 line-through decoration-emerald-500/50 decoration-2' : 'text-[#0B3B2C]'}`}>{res.name}</h3>
+                         <h3 className={`text-lg font-black truncate print:pr-0 print:text-black print:text-[11px] print:whitespace-normal print:leading-tight ${isArrived ? 'text-emerald-900 line-through decoration-emerald-500/50 decoration-2' : 'text-[#0B3B2C]'}`}>{res.name}</h3>
                       </div>
                       
                       {res.phone && (
@@ -760,8 +754,24 @@ export default function App() {
                            <p className="text-xs font-bold text-amber-800 print:text-black print:text-[9px] leading-relaxed"><span className="hidden print:inline font-bold">Not: </span>{res.notes}</p>
                         </div>
                       )}
+
+                      {/* YENİ DÜZEN: Butonlar Üstten Alınıp Ayrı Bir Kontrol Paneli Olarak Alta Eklendi */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 mt-4 pt-4 border-t border-slate-200/80 print:hidden">
+                        <button onClick={() => handleToggleArrived(res.id, isArrived)} className={`px-4 py-2 rounded-xl flex items-center justify-center gap-2 text-xs font-black tracking-wide transition-all shadow-sm flex-1 sm:flex-none ${isArrived ? 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md' : 'text-slate-600 bg-white border-2 border-slate-200 hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50'}`} title={isArrived ? "İptal Et" : "Müşteri Geldi İşaretle"}>
+                          <CheckCircle size={18} />
+                          <span>{isArrived ? "MASADA" : "GELMEDİ (TIKLA)"}</span>
+                        </button>
+                        
+                        <div className="flex gap-1.5">
+                          <button onClick={() => handlePrintSingle(res.id)} className="p-2 text-slate-500 bg-slate-50 hover:text-[#0B3B2C] hover:bg-slate-200 rounded-xl transition-colors border border-slate-200 shadow-sm" title="Adisyon Yazdır">
+                            <Printer size={18} />
+                          </button>
+                          <button onClick={() => handleEditClick(res)} className="p-2 text-slate-500 bg-slate-50 hover:text-orange-600 hover:bg-orange-100 rounded-xl transition-colors border border-slate-200 shadow-sm" title="Düzenle"><Edit2 size={18} /></button>
+                          <button onClick={() => setDeleteConfirmId(res.id)} className="p-2 text-slate-500 bg-slate-50 hover:text-red-600 hover:bg-red-100 rounded-xl transition-colors border border-slate-200 shadow-sm" title="Sil"><Trash2 size={18} /></button>
+                        </div>
+                      </div>
                       
-                      <div className={`rounded-xl p-3.5 mt-3.5 border shadow-inner print:border-black print:border-t print:border-b-0 print:border-l-0 print:border-r-0 print:rounded-none print:bg-white print:p-0 print:pt-1 print:mt-1.5 print:shadow-none ${isArrived ? 'bg-emerald-100/30 border-emerald-200/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                      <div className={`rounded-xl p-3.5 mt-4 border shadow-inner print:border-black print:border-t print:border-b-0 print:border-l-0 print:border-r-0 print:rounded-none print:bg-white print:p-0 print:pt-1 print:mt-1.5 print:shadow-none ${isArrived ? 'bg-emerald-100/30 border-emerald-200/50' : 'bg-slate-50/50 border-slate-100'}`}>
                          <div className="flex items-center justify-between mb-2.5 border-b border-slate-200/80 pb-2 print:border-none print:mb-0.5 print:pb-0">
                            <p className={`text-[10px] font-black uppercase tracking-widest print:hidden ${isArrived ? 'text-emerald-700/70' : 'text-slate-400'}`}>Sipariş</p>
                            <div className={`px-2.5 py-1 rounded-md text-[10px] font-black flex gap-1.5 items-center shrink-0 whitespace-nowrap shadow-sm print:bg-transparent print:text-black print:border-none print:p-0 print:shadow-none print:text-[9px] ${isArrived ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white'}`}><Users size={12} className="print:hidden text-orange-300" /> <span className="hidden print:inline font-bold">Kişi:</span> {res.peopleCount || 0} KİŞİ</div>
