@@ -95,11 +95,15 @@ export default function App() {
     document.title = activePage === 'iftar' ? "Salaaş Cafe İftar" : "Salaaş Cafe Maç";
   }, [activePage]);
 
-  // Gebze İftar Vakti Çekme
+  // Gebze İftar Vakti Çekme - (GÜVENLİK ÖNLEMİ EKLENDİ)
   useEffect(() => {
     fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
       .then(res => res.json())
-      .then(data => setIftarTime(data.data.timings.Maghrib))
+      .then(data => {
+        if (data && data.data && data.data.timings && data.data.timings.Maghrib) {
+          setIftarTime(data.data.timings.Maghrib);
+        }
+      })
       .catch(err => console.error("İftar vakti çekilemedi", err));
   }, []);
 
@@ -285,12 +289,15 @@ export default function App() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // İFTAR FİLTRELEME & MATEMATİK
+  // İFTAR FİLTRELEME & MATEMATİK (GÜVENLİK ÖNLEMİ EKLENDİ)
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
   const searchedReservations = filteredReservations.filter(res => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
-    return res.name.toLowerCase().includes(term) || res.table.toLowerCase().includes(term) || (res.phone && res.phone.includes(term));
+    // "?." işaretleri sayesinde eski ve bozuk veriler sistemi çökertmez.
+    return res.name?.toLowerCase().includes(term) || 
+           res.table?.toLowerCase().includes(term) || 
+           res.phone?.includes(term);
   });
   const sortedReservations = [...searchedReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
@@ -306,12 +313,15 @@ export default function App() {
     return acc;
   }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
 
-  // MAÇ FİLTRELEME & MATEMATİK
+  // MAÇ FİLTRELEME & MATEMATİK (GÜVENLİK ÖNLEMİ EKLENDİ)
   const filteredMatchReservations = matchReservations.filter(res => res.date === selectedMatchDate);
   const searchedMatchReservations = filteredMatchReservations.filter(res => {
     if (!matchSearchTerm) return true;
     const term = matchSearchTerm.toLowerCase();
-    return res.name.toLowerCase().includes(term) || (res.table && res.table.toLowerCase().includes(term)) || (res.phone && res.phone.includes(term));
+    // "?." işaretleri sayesinde çökmeler engellendi
+    return res.name?.toLowerCase().includes(term) || 
+           res.table?.toLowerCase().includes(term) || 
+           res.phone?.includes(term);
   });
   const sortedMatchReservations = [...searchedMatchReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
@@ -320,11 +330,14 @@ export default function App() {
   const totalMatchPeople = filteredMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
 
   const getTableStatus = (tableName) => {
-    const res = filteredReservations.find(r => r.table.trim().toUpperCase() === tableName.toUpperCase());
+    // GÜVENLİK ÖNLEMİ EKLENDİ: r.table değeri yoksa sistemi çökertmemesi için ?. eklendi
+    const res = filteredReservations.find(r => r.table?.trim().toUpperCase() === tableName.toUpperCase());
     if (!res) return 'empty';
     if (res.isArrived) return 'full';
     return 'reserved';
   };
+
+  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 150) * 100));
 
   return (
     <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 ${activePage === 'iftar' ? 'bg-slate-50' : 'bg-[#f0f4f8]'}`}>
@@ -476,7 +489,8 @@ export default function App() {
                             
                             {TABLE_MAP.map(table => {
                                const status = getTableStatus(table.id);
-                               const resForTable = status !== 'empty' ? filteredReservations.find(r => r.table.trim().toUpperCase() === table.id.toUpperCase()) : null;
+                               // GÜVENLİK ÖNLEMİ EKLENDİ
+                               const resForTable = status !== 'empty' ? filteredReservations.find(r => r.table?.trim().toUpperCase() === table.id.toUpperCase()) : null;
                                let surf = "bg-[#d4a373] border-[#bc8a5f] text-amber-950"; let chr = "bg-[#eaddcf] border-[#d4a373]";
                                if (status === 'reserved') { surf = "bg-emerald-500 border-emerald-600 text-white"; chr = "bg-emerald-400 border-emerald-500"; }
                                else if (status === 'full') { surf = "bg-red-500 border-red-600 text-white"; chr = "bg-red-400 border-red-500"; }
