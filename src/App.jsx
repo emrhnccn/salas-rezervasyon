@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, ArrowDown, MonitorPlay
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay
 } from 'lucide-react';
 
 // Firebase importları
@@ -95,7 +95,7 @@ export default function App() {
     document.title = activePage === 'iftar' ? "Salaaş Cafe İftar" : "Salaaş Cafe Maç";
   }, [activePage]);
 
-  // Gebze İftar Vakti Çekme - (GÜVENLİK ÖNLEMİ EKLENDİ)
+  // Gebze İftar Vakti Çekme
   useEffect(() => {
     fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
       .then(res => res.json())
@@ -141,7 +141,7 @@ export default function App() {
     return () => window.removeEventListener('afterprint', handleAfterPrint);
   }, []);
 
-  // Auth ve Veri Çekme (Hem İftar Hem Maç)
+  // Auth ve Veri Çekme
   useEffect(() => {
     signInAnonymously(auth).catch((error) => console.error("Giriş hatası:", error));
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => setUser(currentUser));
@@ -213,6 +213,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const cancelEdit = () => {
+    setIsEditing(null);
+    setFormData({ ...initialFormState, date: selectedFilterDate });
+    setErrorMsg('');
+  };
+
   // --- MAÇ FONKSİYONLARI ---
   const handleMatchChange = (e) => {
     const { name, value } = e.target;
@@ -253,6 +259,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const cancelMatchEdit = () => {
+    setIsMatchEditing(null);
+    setMatchFormData({ ...initialMatchFormState, date: selectedMatchDate });
+    setMatchErrorMsg('');
+  };
+
   // --- ORTAK FONKSİYONLAR ---
   const handleToggleArrived = async (id, currentStatus, collectionName) => {
     if (!user) return;
@@ -261,13 +273,17 @@ export default function App() {
 
   const executeDelete = async (id, collectionName) => {
     if (!user) return;
-    await deleteDoc(doc(db, collectionName, id));
-    if (collectionName === 'reservations') {
-      setDeleteConfirmId(null);
-      if (isEditing === id) setIsEditing(null);
-    } else {
-      setMatchDeleteConfirmId(null);
-      if (isMatchEditing === id) setIsMatchEditing(null);
+    try {
+      await deleteDoc(doc(db, collectionName, id));
+      if (collectionName === 'reservations') {
+        setDeleteConfirmId(null);
+        if (isEditing === id) cancelEdit();
+      } else {
+        setMatchDeleteConfirmId(null);
+        if (isMatchEditing === id) cancelMatchEdit();
+      }
+    } catch (err) {
+      console.error("Silme hatası:", err);
     }
   };
 
@@ -289,15 +305,12 @@ export default function App() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // İFTAR FİLTRELEME & MATEMATİK (GÜVENLİK ÖNLEMİ EKLENDİ)
+  // İFTAR FİLTRELEME & MATEMATİK
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
   const searchedReservations = filteredReservations.filter(res => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
-    // "?." işaretleri sayesinde eski ve bozuk veriler sistemi çökertmez.
-    return res.name?.toLowerCase().includes(term) || 
-           res.table?.toLowerCase().includes(term) || 
-           res.phone?.includes(term);
+    return res.name?.toLowerCase().includes(term) || res.table?.toLowerCase().includes(term) || (res.phone && res.phone.includes(term));
   });
   const sortedReservations = [...searchedReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
@@ -313,15 +326,12 @@ export default function App() {
     return acc;
   }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
 
-  // MAÇ FİLTRELEME & MATEMATİK (GÜVENLİK ÖNLEMİ EKLENDİ)
+  // MAÇ FİLTRELEME & MATEMATİK
   const filteredMatchReservations = matchReservations.filter(res => res.date === selectedMatchDate);
   const searchedMatchReservations = filteredMatchReservations.filter(res => {
     if (!matchSearchTerm) return true;
     const term = matchSearchTerm.toLowerCase();
-    // "?." işaretleri sayesinde çökmeler engellendi
-    return res.name?.toLowerCase().includes(term) || 
-           res.table?.toLowerCase().includes(term) || 
-           res.phone?.includes(term);
+    return res.name?.toLowerCase().includes(term) || (res.table && res.table.toLowerCase().includes(term)) || (res.phone && res.phone.includes(term));
   });
   const sortedMatchReservations = [...searchedMatchReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
@@ -330,7 +340,6 @@ export default function App() {
   const totalMatchPeople = filteredMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
 
   const getTableStatus = (tableName) => {
-    // GÜVENLİK ÖNLEMİ EKLENDİ: r.table değeri yoksa sistemi çökertmemesi için ?. eklendi
     const res = filteredReservations.find(r => r.table?.trim().toUpperCase() === tableName.toUpperCase());
     if (!res) return 'empty';
     if (res.isArrived) return 'full';
@@ -338,6 +347,13 @@ export default function App() {
   };
 
   const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 150) * 100));
+  
+  const handlePrintSingle = (id) => {
+    setPrintSingleId(id);
+    setTimeout(() => {
+      window.print();
+    }, 150); 
+  };
 
   return (
     <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 ${activePage === 'iftar' ? 'bg-slate-50' : 'bg-[#f0f4f8]'}`}>
@@ -370,6 +386,12 @@ export default function App() {
         </div>
       )}
 
+      {/* Genel Yazdırma Modu İçin Gizli Başlık */}
+      <div className={`hidden ${!printSingleId ? 'print:block' : ''} text-center mb-4 border-b-2 border-black pb-2 relative z-10`}>
+        <h1 className="text-xl font-bold font-sans uppercase">{activePage === 'iftar' ? 'Salaaş Cafe İftar' : 'Salaaş Cafe Maç'}</h1>
+        <p className="text-sm mt-1 font-bold text-black">Tarih: {activePage === 'iftar' ? selectedFilterDate : selectedMatchDate}</p>
+      </div>
+
       {/* Üst Bilgi Barı */}
       <header className={`${activePage === 'iftar' ? 'bg-[#0B3B2C]' : 'bg-[#0a192f]'} text-white shadow-lg sticky z-20 print:hidden transition-colors duration-500 ${(isPrepTime || isIftarTime) && activePage === 'iftar' ? 'top-[52px]' : 'top-0'}`}>
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -385,7 +407,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* SEKMELER / GEÇİŞ BUTONLARI (Mobil Sağda, Desktop Ortada) */}
+            {/* SEKMELER / GEÇİŞ BUTONLARI */}
             <div className="flex items-center bg-black/40 p-1.5 rounded-xl border border-white/10 shadow-inner">
               <button 
                 onClick={() => setActivePage('iftar')} 
@@ -489,7 +511,6 @@ export default function App() {
                             
                             {TABLE_MAP.map(table => {
                                const status = getTableStatus(table.id);
-                               // GÜVENLİK ÖNLEMİ EKLENDİ
                                const resForTable = status !== 'empty' ? filteredReservations.find(r => r.table?.trim().toUpperCase() === table.id.toUpperCase()) : null;
                                let surf = "bg-[#d4a373] border-[#bc8a5f] text-amber-950"; let chr = "bg-[#eaddcf] border-[#d4a373]";
                                if (status === 'reserved') { surf = "bg-emerald-500 border-emerald-600 text-white"; chr = "bg-emerald-400 border-emerald-500"; }
@@ -678,7 +699,7 @@ export default function App() {
                       <div className={`p-2 rounded-xl ${isMatchEditing ? 'bg-blue-100 text-blue-600' : 'bg-[#0a192f]/10 text-[#0a192f]'}`}><MonitorPlay size={20} /></div>
                       <h2 className={`text-lg font-black tracking-wide ${isMatchEditing ? 'text-blue-800' : 'text-[#0a192f]'}`}>{isMatchEditing ? 'Rezervasyonu Düzenle' : 'Maç Rezervasyonu'}</h2>
                     </div>
-                    {isMatchEditing && <button onClick={() => {setIsMatchEditing(null); setMatchFormData(initialMatchFormState)}} className="text-slate-400 p-1.5 hover:bg-white rounded-full shadow-sm border border-slate-200"><X size={18} /></button>}
+                    {isMatchEditing && <button onClick={() => cancelMatchEdit()} className="text-slate-400 p-1.5 hover:bg-white rounded-full shadow-sm border border-slate-200"><X size={18} /></button>}
                   </div>
                   
                   <form onSubmit={handleMatchSubmit} className="p-6 space-y-5">
@@ -818,5 +839,3 @@ export default function App() {
     </div>
   );
 }
-
-
