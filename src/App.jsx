@@ -400,11 +400,11 @@ export default function App() {
         {/* Müşteri Üst Bar */}
         <header className="bg-[#0B3B2C] text-white shadow-xl relative z-10">
           <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center justify-center gap-4">
-            <div className="w-28 h-28 shrink-0 flex items-center justify-center overflow-visible drop-shadow-xl bg-white rounded-full p-1.5 shadow-lg">
-               <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain rounded-full" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
-               <div className="hidden bg-orange-500 w-24 h-24 rounded-full items-center justify-center"><MoonStar className="text-white" size={36} /></div>
+            {/* GÜNCEL LOGO - YUVARLAK KISIMLAR KALDIRILDI */}
+            <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 flex items-center justify-center overflow-visible drop-shadow-2xl">
+               <img src="/salaasyenilogo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center">Salaaş Cafe Restaurant</h1>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center mt-2">Salaaş Cafe Restaurant</h1>
             <div className="flex flex-wrap justify-center gap-3 text-emerald-200 font-bold tracking-widest text-xs uppercase mt-1">
                <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Coffee size={14}/> Kahvaltı</span>
                <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><UtensilsCrossed size={14}/> Izgara</span>
@@ -437,7 +437,7 @@ export default function App() {
                 </div>
               </a>
 
-              {/* YENİ: GÖRSEL GALERİ (Salaaş Menüsü) */}
+              {/* YENİ: GÖRSEL GALERİ (Kendi Menü Fotoğraflarınız) */}
               <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 mt-2">
                 <h4 className="text-xl font-black mb-5 text-[#0B3B2C] flex items-center gap-2">
                   <Flame className="text-orange-500" size={24} /> Öne Çıkan Lezzetlerimiz
@@ -446,7 +446,7 @@ export default function App() {
                   {/* Başrolde: Salaaş Köy Kahvaltısı */}
                   <div className="rounded-2xl overflow-hidden shadow-sm aspect-[16/9] relative group col-span-2 border-2 border-orange-100">
                     <img 
-                      src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80" 
+                      src="/salaaskoykahvaltisi.jpg" 
                       alt="Salaaş Köy Kahvaltısı" 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                     />
@@ -456,37 +456,37 @@ export default function App() {
                     </div>
                   </div>
                   
-                  {/* Izgaralar ve Yemekler */}
+                  {/* Kendi Yemek Görselleriniz */}
                   <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
                     <img 
-                      src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=500&q=80" 
-                      alt="Beef Fajita" 
+                      src="/mantarlıfırınburger.jpg" 
+                      alt="Mantarlı Fırın Burger" 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Beef Fajita</span>
+                       <span className="text-white font-bold text-sm">Mantarlı Fırın Burger</span>
                     </div>
                   </div>
 
                   <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
                     <img 
-                      src="https://images.unsplash.com/photo-1606850780554-b55ea4ebfabc?w=500&q=80" 
-                      alt="Hünkar Beğendi" 
+                      src="/hunkarkofte.jpg" 
+                      alt="Hünkar Köfte" 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Hünkar Beğendi</span>
+                       <span className="text-white font-bold text-sm">Hünkar Köfte</span>
                     </div>
                   </div>
 
                   <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
                     <img 
-                      src="https://images.unsplash.com/photo-1628294895950-9805252327bc?w=500&q=80" 
-                      alt="Çökertme Kebabı" 
+                      src="/cafedeparis.jpg" 
+                      alt="Chicken Cafe de Paris" 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Çökertme Kebabı</span>
+                       <span className="text-white font-bold text-sm">Chicken Cafe de Paris</span>
                     </div>
                   </div>
 
@@ -508,7 +508,7 @@ export default function App() {
               {/* Rezervasyon Durumu (Canlı) */}
               <div className="mt-4 flex items-center justify-between gap-4">
                 <div className="h-px bg-slate-200 flex-1"></div>
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Canlı Yoğunluk Durumu</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest text-center">Canlı Yoğunluk Durumu</span>
                 <div className="h-px bg-slate-200 flex-1"></div>
               </div>
 
@@ -691,9 +691,9 @@ export default function App() {
           
           <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md">
-                 <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
-                 <div className="hidden bg-orange-500 w-10 h-10 rounded-full items-center justify-center"><MoonStar className="text-white" size={20} /></div>
+              {/* ADMİN EKRANI GÜNCEL LOGO */}
+              <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md">
+                 <img src="/salaasyenilogo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <h1 className={`text-xl md:text-2xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activePage === 'iftar' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : 'bg-gradient-to-r from-blue-400 to-cyan-300'}`}>Salaaş Yönetim</h1>
@@ -1129,5 +1129,3 @@ export default function App() {
     </div>
   );
 }
-
-
