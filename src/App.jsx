@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee
 } from 'lucide-react';
 
 // Firebase importları
@@ -399,13 +399,17 @@ export default function App() {
 
         {/* Müşteri Üst Bar */}
         <header className="bg-[#0B3B2C] text-white shadow-xl relative z-10">
-          <div className="max-w-4xl mx-auto px-6 py-6 flex flex-col items-center justify-center gap-3">
-            <div className="w-24 h-24 shrink-0 flex items-center justify-center overflow-visible drop-shadow-xl bg-white rounded-full p-1 shadow-lg">
+          <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center justify-center gap-4">
+            <div className="w-28 h-28 shrink-0 flex items-center justify-center overflow-visible drop-shadow-xl bg-white rounded-full p-1.5 shadow-lg">
                <img src="/salaas logo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain rounded-full" onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }} />
-               <div className="hidden bg-orange-500 w-20 h-20 rounded-full items-center justify-center"><MoonStar className="text-white" size={32} /></div>
+               <div className="hidden bg-orange-500 w-24 h-24 rounded-full items-center justify-center"><MoonStar className="text-white" size={36} /></div>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center">Salaaş Cafe Restaurant</h1>
-            <p className="text-emerald-200 font-medium tracking-widest text-sm uppercase">Lezzet ve Muhabbetin Adresi</p>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center">Salaaş Cafe Restaurant</h1>
+            <div className="flex flex-wrap justify-center gap-3 text-emerald-200 font-bold tracking-widest text-xs uppercase mt-1">
+               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Coffee size={14}/> Kahvaltı</span>
+               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><UtensilsCrossed size={14}/> Izgara</span>
+               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Wind size={14}/> Nargile</span>
+            </div>
           </div>
         </header>
 
@@ -416,6 +420,98 @@ export default function App() {
             <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={40} /></div>
           ) : (
             <>
+              {/* DİJİTAL MENÜ BUTONU */}
+              <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="bg-gradient-to-r from-[#0B3B2C] to-emerald-800 text-white rounded-3xl p-6 shadow-xl flex items-center justify-between hover:scale-[1.02] hover:shadow-2xl transition-all relative overflow-hidden group">
+                <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform"><UtensilsCrossed size={120} /></div>
+                <div className="flex items-center gap-5 relative z-10">
+                  <div className="bg-orange-500 text-white p-4 rounded-2xl shadow-inner group-hover:scale-110 transition-transform">
+                    <UtensilsCrossed size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-wide text-orange-400">Dijital Menümüz</h3>
+                    <p className="text-sm text-emerald-100 font-medium mt-1">Tüm lezzetlerimizi ve fiyatlarımızı inceleyin.</p>
+                  </div>
+                </div>
+                <div className="bg-emerald-700/50 p-3 rounded-full relative z-10 border border-emerald-600">
+                  <ArrowRight size={24} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </a>
+
+              {/* YENİ: GÖRSEL GALERİ (Salaaş Menüsü) */}
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 mt-2">
+                <h4 className="text-xl font-black mb-5 text-[#0B3B2C] flex items-center gap-2">
+                  <Flame className="text-orange-500" size={24} /> Öne Çıkan Lezzetlerimiz
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Başrolde: Salaaş Köy Kahvaltısı */}
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-[16/9] relative group col-span-2 border-2 border-orange-100">
+                    <img 
+                      src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80" 
+                      alt="Salaaş Köy Kahvaltısı" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
+                       <span className="text-orange-400 font-black text-xs tracking-widest uppercase mb-1 flex items-center gap-1"><Flame size={12}/> En Çok Tercih Edilen</span>
+                       <span className="text-white font-black text-xl sm:text-2xl drop-shadow-md">Salaaş Köy Kahvaltısı</span>
+                    </div>
+                  </div>
+                  
+                  {/* Izgaralar ve Yemekler */}
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
+                    <img 
+                      src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=500&q=80" 
+                      alt="Beef Fajita" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+                       <span className="text-white font-bold text-sm">Beef Fajita</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
+                    <img 
+                      src="https://images.unsplash.com/photo-1606850780554-b55ea4ebfabc?w=500&q=80" 
+                      alt="Hünkar Beğendi" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+                       <span className="text-white font-bold text-sm">Hünkar Beğendi</span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
+                    <img 
+                      src="https://images.unsplash.com/photo-1628294895950-9805252327bc?w=500&q=80" 
+                      alt="Çökertme Kebabı" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
+                       <span className="text-white font-bold text-sm">Çökertme Kebabı</span>
+                    </div>
+                  </div>
+
+                  {/* Nargile Özel Kutu */}
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group border border-slate-200">
+                    <img 
+                      src="https://images.unsplash.com/photo-1516880016407-e8eeeb0179a0?w=500&q=80" 
+                      alt="Nargile Çeşitleri" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a192f]/90 to-transparent flex flex-col justify-end p-4">
+                       <Wind className="text-cyan-400 mb-1" size={20} />
+                       <span className="text-white font-bold text-sm">Nargile Keyfi</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rezervasyon Durumu (Canlı) */}
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <div className="h-px bg-slate-200 flex-1"></div>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Canlı Yoğunluk Durumu</span>
+                <div className="h-px bg-slate-200 flex-1"></div>
+              </div>
+
               {/* Tarih Seçimi (Müşteri İçin) */}
               <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex items-center justify-between gap-4">
                  <span className="font-black text-slate-600 uppercase tracking-widest text-sm flex items-center gap-2">
@@ -466,7 +562,7 @@ export default function App() {
               </div>
 
               {/* Maç Özeti Kartı */}
-              <div className="bg-gradient-to-br from-[#0a192f] to-blue-900 rounded-3xl p-6 shadow-xl flex flex-col justify-between gap-2 relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[#0a192f] to-blue-900 rounded-3xl p-6 shadow-xl flex flex-col justify-between gap-2 relative overflow-hidden mt-2">
                 <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><MonitorPlay size={180} /></div>
                 <div className="flex items-center gap-4 text-cyan-200 z-10">
                   <div className="bg-white/10 p-3 rounded-2xl"><MonitorPlay size={32} /></div>
@@ -477,67 +573,8 @@ export default function App() {
                 </div>
               </div>
 
-              {/* YENİ: DİJİTAL MENÜ BUTONU */}
-              <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-3xl p-6 shadow-xl flex items-center justify-between hover:scale-[1.02] hover:shadow-2xl transition-all relative overflow-hidden group mt-2">
-                <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform"><UtensilsCrossed size={120} /></div>
-                <div className="flex items-center gap-5 relative z-10">
-                  <div className="bg-white text-orange-500 p-4 rounded-2xl shadow-inner group-hover:scale-110 transition-transform">
-                    <UtensilsCrossed size={32} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl sm:text-2xl font-black tracking-wide">Dijital Menümüz</h3>
-                    <p className="text-sm text-orange-100 font-medium mt-1">Tüm lezzetlerimizi ve fiyatlarımızı inceleyin.</p>
-                  </div>
-                </div>
-                <div className="bg-orange-600/50 p-3 rounded-full relative z-10">
-                  <ArrowRight size={24} className="text-white" />
-                </div>
-              </a>
-
-              {/* YENİ: GÖRSEL GALERİ */}
-              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 mt-2">
-                <h4 className="text-lg font-black mb-4 text-[#0B3B2C] flex items-center gap-2">
-                  <Flame className="text-orange-500" size={20} /> Öne Çıkan Lezzetlerimiz
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
-                    <img 
-                      src="" 
-                      alt="Karışık Izgara" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80'; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-3">
-                       <span className="text-white font-bold text-xs">Izgara Çeşitleri</span>
-                    </div>
-                  </div>
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
-                    <img 
-                      src="" 
-                      alt="Kahve ve Tatlı" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-3">
-                       <span className="text-white font-bold text-xs">Kahve & Tatlı Keyfi</span>
-                    </div>
-                  </div>
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-[4/3] relative group col-span-2">
-                    <img 
-                      src="" 
-                      alt="İftar Sofrası" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80'; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Geleneksel İftar Sofraları</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* İletişim / Bilgi Kartı */}
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-lg mt-2">
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-lg mt-4">
                 <h4 className="text-lg font-bold mb-4 flex items-center gap-2 text-orange-400"><MapPin size={20}/> İletişim & Rezervasyon</h4>
                 <div className="space-y-4 text-slate-300">
                   <p className="flex items-start gap-3">
@@ -1092,3 +1129,5 @@ export default function App() {
     </div>
   );
 }
+
+
