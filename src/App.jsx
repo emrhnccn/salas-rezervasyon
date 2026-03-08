@@ -397,13 +397,19 @@ export default function App() {
         <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#0B3B2C 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="absolute -top-32 -right-32 z-0 pointer-events-none opacity-5 text-[#0B3B2C] rotate-12"><MoonStar size={500} strokeWidth={1} /></div>
 
-        {/* Müşteri Üst Bar - Tam Genişlik Logo Banner */}
-        <header className="w-full bg-white shadow-md relative z-10 border-b border-slate-200 flex justify-center items-center">
-           <img 
-              src="/salaaslogouzun.png" 
-              alt="Salaaş Cafe Restaurant" 
-              className="w-full h-auto max-h-[300px] sm:max-h-[400px] object-contain hover:scale-[1.01] transition-transform duration-700" 
-           />
+        {/* Müşteri Üst Bar */}
+        <header className="bg-[#0B3B2C] text-white shadow-xl relative z-10">
+          <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center justify-center gap-4">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 flex items-center justify-center overflow-visible drop-shadow-2xl">
+               <img src="/salaasyenilogo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
+            </div>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center mt-2">Salaaş Cafe Restaurant</h1>
+            <div className="flex flex-wrap justify-center gap-3 text-emerald-200 font-bold tracking-widest text-xs uppercase mt-1">
+               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Coffee size={14}/> Kahvaltı</span>
+               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><UtensilsCrossed size={14}/> Izgara</span>
+               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Wind size={14}/> Nargile</span>
+            </div>
+          </div>
         </header>
 
         {/* Ana İçerik */}
@@ -685,8 +691,8 @@ export default function App() {
           <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <div className="flex items-center gap-3">
               {/* ADMİN EKRANI GÜNCEL LOGO */}
-              <div className="w-24 sm:w-32 h-10 sm:h-12 shrink-0 flex items-center justify-center overflow-hidden bg-white/10 rounded-xl px-2">
-                 <img src="/salaaslogouzun.jpg" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
+              <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md">
+                 <img src="/salaasyenilogo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
                 <h1 className={`text-lg md:text-xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activePage === 'iftar' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : 'bg-gradient-to-r from-blue-400 to-cyan-300'}`}>Yönetim Paneli</h1>
