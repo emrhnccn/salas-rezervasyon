@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee
 } from 'lucide-react';
 
 // Firebase importları
@@ -397,13 +397,17 @@ export default function App() {
         <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#0B3B2C 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="absolute -top-32 -right-32 z-0 pointer-events-none opacity-5 text-[#0B3B2C] rotate-12"><MoonStar size={500} strokeWidth={1} /></div>
 
-        {/* Müşteri Üst Bar - Sadece Uzun Logo (Yeşil kısımlar tamamen kaldırıldı) */}
-        <header className="w-full bg-white shadow-md relative z-10 py-5 px-6 flex justify-center items-center border-b border-slate-200">
-           <img src="/salaaslogouzun.png" alt="Salaaş Cafe Restaurant" className="max-w-full h-auto max-h-24 sm:max-h-32 object-contain hover:scale-[1.02] transition-transform duration-500" />
+        {/* Müşteri Üst Bar - Tam Genişlik Logo Banner */}
+        <header className="w-full bg-[#f4f4f4] shadow-md relative z-10 border-b border-slate-200 overflow-hidden flex justify-center items-center">
+           <img 
+              src="/salaaslogouzun.jpg" 
+              alt="Salaaş Cafe Restaurant" 
+              className="w-full h-32 sm:h-48 md:h-64 lg:h-[300px] object-cover object-center hover:scale-[1.02] transition-transform duration-700" 
+           />
         </header>
 
         {/* Ana İçerik */}
-        <main className="max-w-2xl mx-auto px-4 py-8 w-full relative z-10 flex-1 flex flex-col gap-6">
+        <main className="max-w-2xl mx-auto px-4 py-8 w-full relative z-10 flex-1 flex flex-col gap-6 mt-2">
           
           {loading ? (
             <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={40} /></div>
