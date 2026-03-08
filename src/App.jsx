@@ -422,7 +422,8 @@ export default function App() {
            </div>
            
            <div className="relative z-10 text-center px-4 flex flex-col items-center w-full max-w-4xl mx-auto mt-10">
-              <img src="/salaaslogobg.png" alt="Salaaş Cafe" className="h-24 sm:h-32 object-contain mb-6 drop-shadow-2xl brightness-0 invert opacity-90" />
+              {/* LOGO FİLTRESİ (brightness-0 invert) KALDIRILDI - DOĞAL RENKLERİYLE GÖZÜKECEK */}
+              <img src="/salaaslogobg.png" alt="Salaaş Cafe" className="h-28 sm:h-40 object-contain mb-6 drop-shadow-2xl opacity-100" />
               <h1 className="text-4xl sm:text-6xl font-black tracking-wide text-white font-serif mb-4 drop-shadow-lg">
                 Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
               </h1>
@@ -620,7 +621,8 @@ export default function App() {
             
             {/* Logo & About */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-16 object-contain mb-4 brightness-0 invert opacity-70" />
+              {/* LOGO FİLTRESİ KALDIRILDI */}
+              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-16 object-contain mb-4 opacity-90" />
               <p className="text-sm leading-relaxed mb-4 max-w-xs">Şehrin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
             </div>
 
@@ -746,7 +748,7 @@ export default function App() {
           
           <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <div className="flex items-center gap-3">
-              {/* ADMİN EKRANI GÜNCEL LOGO */}
+              {/* ADMİN EKRANI GÜNCEL LOGO - BG-TRANSPARENT EKLENDİ */}
               <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md bg-transparent">
                  <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain bg-transparent" />
               </div>
