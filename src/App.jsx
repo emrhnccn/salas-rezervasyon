@@ -400,8 +400,9 @@ export default function App() {
         {/* Müşteri Üst Bar */}
         <header className="bg-[#0B3B2C] text-white shadow-xl relative z-10">
           <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center justify-center gap-4">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 flex items-center justify-center overflow-visible drop-shadow-2xl">
-               <img src="/salaasyenilogo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
+            {/* LOGO ALANI - BG-TRANSPARENT EKLENDİ */}
+            <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 flex items-center justify-center overflow-visible drop-shadow-2xl bg-transparent">
+               <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain bg-transparent" />
             </div>
             <h1 className="text-3xl sm:text-5xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center mt-2">Salaaş Cafe Restaurant</h1>
             <div className="flex flex-wrap justify-center gap-3 text-emerald-200 font-bold tracking-widest text-xs uppercase mt-1">
@@ -690,9 +691,9 @@ export default function App() {
           
           <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <div className="flex items-center gap-3">
-              {/* ADMİN EKRANI GÜNCEL LOGO */}
-              <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md">
-                 <img src="/salaasyenilogo.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain" />
+              {/* ADMİN EKRANI GÜNCEL LOGO - BG-TRANSPARENT EKLENDİ */}
+              <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md bg-transparent">
+                 <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain bg-transparent" />
               </div>
               <div className="flex flex-col">
                 <h1 className={`text-lg md:text-xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activePage === 'iftar' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : 'bg-gradient-to-r from-blue-400 to-cyan-300'}`}>Yönetim Paneli</h1>
