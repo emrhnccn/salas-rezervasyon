@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star
 } from 'lucide-react';
 
 // Firebase importları
@@ -68,7 +68,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   
   // SAYFA GEÇİŞ STATE'İ (Sadece admin için)
-  const [activePage, setActivePage] = useState('iftar'); // 'iftar' veya 'mac'
+  const [activePage, setActivePage] = useState('iftar'); 
 
   // MÜŞTERİ EKRANI TARİH SEÇİMİ
   const [visitorDate, setVisitorDate] = useState(getToday());
@@ -185,7 +185,6 @@ export default function App() {
     }
   };
 
-  // --- İFTAR FONKSİYONLARI ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setErrorMsg('');
@@ -236,7 +235,6 @@ export default function App() {
     setErrorMsg('');
   };
 
-  // --- MAÇ FONKSİYONLARI ---
   const handleMatchChange = (e) => {
     const { name, value } = e.target;
     setMatchErrorMsg('');
@@ -282,7 +280,6 @@ export default function App() {
     setMatchErrorMsg('');
   };
 
-  // --- ORTAK FONKSİYONLAR ---
   const handleToggleArrived = async (id, currentStatus, collectionName) => {
     if (!user) return;
     await updateDoc(doc(db, collectionName, id), { isArrived: !currentStatus });
@@ -386,225 +383,283 @@ export default function App() {
     setTimeout(() => { window.print(); }, 150); 
   };
 
+  const handleScroll = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
 
   // =======================================================================
-  // 1. MÜŞTERİ / ZİYARETÇİ EKRANI (LANDING PAGE)
+  // 1. MÜŞTERİ / ZİYARETÇİ EKRANI (PREMIUM LANDING PAGE)
   // =======================================================================
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative overflow-hidden flex flex-col">
-        {/* İslami Desen Arka Plan */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#0B3B2C 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-        <div className="absolute -top-32 -right-32 z-0 pointer-events-none opacity-5 text-[#0B3B2C] rotate-12"><MoonStar size={500} strokeWidth={1} /></div>
-
-        {/* Müşteri Üst Bar */}
-        <header className="bg-[#0B3B2C] text-white shadow-xl relative z-10">
-          <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center justify-center gap-4">
-            {/* LOGO ALANI - BG-TRANSPARENT EKLENDİ */}
-            <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 flex items-center justify-center overflow-visible drop-shadow-2xl bg-transparent">
-               <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain bg-transparent" />
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth">
+        
+        {/* PREMIUM NAVBAR */}
+        <nav className="sticky top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 border-b border-slate-100">
+          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="h-10 sm:h-12 flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
+              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-full object-contain" />
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black tracking-wide text-transparent bg-clip-text font-serif bg-gradient-to-r from-orange-400 to-yellow-300 drop-shadow-md text-center mt-2">Salaaş Cafe Restaurant</h1>
-            <div className="flex flex-wrap justify-center gap-3 text-emerald-200 font-bold tracking-widest text-xs uppercase mt-1">
-               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Coffee size={14}/> Kahvaltı</span>
-               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><UtensilsCrossed size={14}/> Izgara</span>
-               <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full"><Wind size={14}/> Nargile</span>
+            <div className="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
+              <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
+              <button onClick={() => handleScroll('lezzetler')} className="hover:text-orange-500 transition-colors">Lezzetler</button>
+              <button onClick={() => handleScroll('rezervasyon')} className="hover:text-orange-500 transition-colors">Canlı Yoğunluk</button>
+              <button onClick={() => handleScroll('iletisim')} className="hover:text-orange-500 transition-colors">İletişim</button>
             </div>
+            <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="bg-[#0B3B2C] text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-emerald-900 transition-colors shadow-md">
+              Menüyü Gör
+            </a>
           </div>
+        </nav>
+
+        {/* HERO SECTION */}
+        <header className="relative w-full h-[60vh] sm:h-[70vh] bg-slate-900 flex items-center justify-center overflow-hidden">
+           <div className="absolute inset-0 z-0">
+             {/* Background Image - Salaaş Vibe */}
+             <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=80" alt="Cafe Interior" className="w-full h-full object-cover opacity-40" />
+             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+           </div>
+           
+           <div className="relative z-10 text-center px-4 flex flex-col items-center w-full max-w-4xl mx-auto mt-10">
+              <img src="/salaaslogobg.png" alt="Salaaş Cafe" className="h-24 sm:h-32 object-contain mb-6 drop-shadow-2xl brightness-0 invert opacity-90" />
+              <h1 className="text-4xl sm:text-6xl font-black tracking-wide text-white font-serif mb-4 drop-shadow-lg">
+                Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
+              </h1>
+              <p className="text-lg sm:text-xl text-slate-300 max-w-2xl font-light mb-8">
+                Şehrin gürültüsünden uzak, samimi atmosferimizde unutulmaz tatlar ve anılar biriktirin.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4 text-sm font-bold tracking-widest uppercase text-white">
+                 <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-full"><Coffee size={16} className="text-orange-400"/> Kahvaltı</span>
+                 <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-full"><UtensilsCrossed size={16} className="text-orange-400"/> Izgara</span>
+                 <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-2.5 rounded-full"><Wind size={16} className="text-orange-400"/> Nargile</span>
+              </div>
+           </div>
         </header>
 
-        {/* Ana İçerik */}
-        <main className="max-w-2xl mx-auto px-4 py-8 w-full relative z-10 flex-1 flex flex-col gap-6 mt-2">
+        <main className="w-full relative z-10 flex-1 flex flex-col bg-slate-50">
           
-          {loading ? (
-            <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={40} /></div>
-          ) : (
-            <>
-              {/* DİJİTAL MENÜ BUTONU */}
-              <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="bg-gradient-to-r from-[#0B3B2C] to-emerald-800 text-white rounded-3xl p-6 shadow-xl flex items-center justify-between hover:scale-[1.02] hover:shadow-2xl transition-all relative overflow-hidden group">
-                <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform"><UtensilsCrossed size={120} /></div>
-                <div className="flex items-center gap-5 relative z-10">
-                  <div className="bg-orange-500 text-white p-4 rounded-2xl shadow-inner group-hover:scale-110 transition-transform">
-                    <UtensilsCrossed size={32} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl sm:text-2xl font-black tracking-wide text-orange-400">Dijital Menümüz</h3>
-                    <p className="text-sm text-emerald-100 font-medium mt-1">Tüm lezzetlerimizi ve fiyatlarımızı inceleyin.</p>
-                  </div>
+          {/* HAKKIMIZDA / BİZ KİMİZ */}
+          <section id="hakkimizda" className="max-w-4xl mx-auto px-6 py-20 text-center">
+            <h2 className="text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-3">Hikayemiz</h2>
+            <h3 className="text-3xl sm:text-4xl font-serif font-black text-[#0B3B2C] mb-8">Sıcak, Samimi ve Lezzetli</h3>
+            <p className="text-lg text-slate-600 leading-relaxed font-light">
+              Salaaş Cafe Restaurant olarak, misafirlerimize kendilerini evlerinde hissedecekleri sıcak bir ortam sunuyoruz. 
+              Özenle seçilmiş malzemelerle hazırladığımız zengin menümüz, imza ızgaralarımız, serpme kahvaltımız ve 
+              keyifli nargile köşemizle günün her saatinde kaliteli bir deneyim yaşatmayı hedefliyoruz.
+            </p>
+            <div className="w-16 h-1 bg-orange-400 mx-auto mt-10 rounded-full"></div>
+          </section>
+
+          {/* DENEDİNİZ Mİ? (LEZZETLER) */}
+          <section id="lezzetler" className="bg-white py-20 border-y border-slate-200">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="flex flex-col sm:flex-row justify-between items-end mb-10 gap-4">
+                <div>
+                  <h2 className="text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Vitrinimiz</h2>
+                  <h3 className="text-3xl font-serif font-black text-[#0B3B2C]">Bunu Denediniz mi?</h3>
                 </div>
-                <div className="bg-emerald-700/50 p-3 rounded-full relative z-10 border border-emerald-600">
-                  <ArrowRight size={24} className="text-orange-400 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </a>
-
-              {/* YENİ: GÖRSEL GALERİ (Kendi Menü Fotoğraflarınız) */}
-              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 mt-2">
-                <h4 className="text-xl font-black mb-5 text-[#0B3B2C] flex items-center gap-2">
-                  <Flame className="text-orange-500" size={24} /> Öne Çıkan Lezzetlerimiz
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Başrolde: Salaaş Köy Kahvaltısı */}
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-[16/9] relative group col-span-2 border-2 border-orange-100">
-                    <img 
-                      src="/salaaskoykahvaltisi.jpg" 
-                      alt="Salaaş Köy Kahvaltısı" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
-                       <span className="text-orange-400 font-black text-xs tracking-widest uppercase mb-1 flex items-center gap-1"><Flame size={12}/> En Çok Tercih Edilen</span>
-                       <span className="text-white font-black text-xl sm:text-2xl drop-shadow-md">Salaaş Köy Kahvaltısı</span>
-                    </div>
-                  </div>
-                  
-                  {/* Kendi Yemek Görselleriniz */}
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
-                    <img 
-                      src="/mantarlıfırınburger.jpg" 
-                      alt="Mantarlı Fırın Burger" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Mantarlı Fırın Burger</span>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
-                    <img 
-                      src="/hunkarkofte.jpg" 
-                      alt="Hünkar Köfte" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Hünkar Köfte</span>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
-                    <img 
-                      src="/cafedeparis.jpg" 
-                      alt="Chicken Cafe de Paris" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                       <span className="text-white font-bold text-sm">Chicken Cafe de Paris</span>
-                    </div>
-                  </div>
-
-                  {/* Nargile Özel Kutu */}
-                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group border border-slate-200">
-                    <img 
-                      src="/salaasnargilefoto.jpg" 
-                      alt="Nargile Çeşitleri" 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a192f]/90 to-transparent flex flex-col justify-end p-4">
-                       <Wind className="text-cyan-400 mb-1" size={20} />
-                       <span className="text-white font-bold text-sm">Nargile Keyfi</span>
-                    </div>
-                  </div>
-                </div>
+                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-orange-500 transition-colors uppercase tracking-widest">
+                  Tüm Menüyü Gör <ChevronRight size={16}/>
+                </a>
               </div>
 
-              {/* Rezervasyon Durumu (Canlı) */}
-              <div className="mt-4 flex items-center justify-between gap-4">
-                <div className="h-px bg-slate-200 flex-1"></div>
-                <span className="text-xs font-black text-slate-400 uppercase tracking-widest text-center">Canlı Yoğunluk Durumu</span>
-                <div className="h-px bg-slate-200 flex-1"></div>
-              </div>
-
-              {/* Tarih Seçimi (Müşteri İçin) */}
-              <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex items-center justify-between gap-4">
-                 <span className="font-black text-slate-600 uppercase tracking-widest text-sm flex items-center gap-2">
-                   <CalendarDays className="text-orange-500" size={20} /> Tarih Seçiniz
-                 </span>
-                 <input 
-                   type="date" 
-                   value={visitorDate} 
-                   onChange={(e) => setVisitorDate(e.target.value)} 
-                   className="bg-slate-50 border border-slate-200 text-slate-800 px-4 py-2 rounded-xl font-bold outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all cursor-pointer" 
-                 />
-              </div>
-
-              {/* İftar Detaylı Özeti (Müşteri Görecek) */}
-              <div className="bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 shadow-xl flex flex-col gap-5 relative overflow-hidden">
-                <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><ChefHat size={180} /></div>
-                <div className="flex flex-col gap-4 w-full border-b border-emerald-700/50 pb-5 z-10">
-                  <div className="flex items-center gap-4 text-[#FBE18D]">
-                    <div className="bg-white/10 p-3 rounded-2xl"><ChefHat size={28} /></div>
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-orange-400">İftar Özeti ({visitorDate})</p>
-                      <div className="flex gap-3 items-baseline mt-0.5">
-                        <p className="text-2xl font-black text-white">Kayıtlı: <span className="text-orange-400">{visitorIftarSummary.totalPeople}</span> Kişi</p>
-                      </div>
-                    </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* 1. Kahvaltı (Özel Boyut) */}
+                <div className="lg:col-span-2 sm:col-span-2 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
+                  <img src="/salaaskoykahvaltisi.jpg" alt="Salaaş Köy Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-6">
+                     <span className="bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1"><Star size={12}/> İmza Lezzet</span>
+                     <h4 className="text-white font-serif font-black text-2xl sm:text-3xl drop-shadow-md">Salaaş Köy Kahvaltısı</h4>
+                     <p className="text-slate-300 text-sm mt-2 max-w-md">Güne harika başlamak için yöresel peynirler, sıcaklar ve taze demlenmiş çay eşliğinde devasa bir sofra.</p>
                   </div>
                 </div>
                 
-                {/* 4'lü Menü Kutu Tasarımı (Ziyaretçi de görsün) */}
-                <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full z-10">
-                  <div className="bg-white/95 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200">
-                    <span className="block text-[9px] sm:text-[10px] text-slate-500 font-bold mb-0.5">TAVUK</span>
-                    <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalTavuk}</span>
-                  </div>
-                  <div className="bg-white/95 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200">
-                    <span className="block text-[9px] sm:text-[10px] text-slate-500 font-bold mb-0.5">HÜNKAR</span>
-                    <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalHunkar}</span>
-                  </div>
-                  <div className="bg-white/95 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200">
-                    <span className="block text-[9px] sm:text-[10px] text-slate-500 font-bold mb-0.5">IZGARA</span>
-                    <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalKarisik}</span>
-                  </div>
-                  <div className="bg-orange-50 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-orange-200">
-                    <span className="block text-[9px] sm:text-[10px] text-orange-600 font-bold mb-0.5">ÇOCUK</span>
-                    <span className="font-black text-xl sm:text-2xl text-orange-600">{visitorIftarSummary.totalCocuk}</span>
+                {/* 2. Burger */}
+                <div className="rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
+                  <img src="/mantarlıfırınburger.jpg" alt="Mantarlı Fırın Burger" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
+                     <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Mantarlı Fırın Burger</h4>
+                     <p className="text-slate-300 text-xs mt-1">Özel soslu nefis deneyim.</p>
                   </div>
                 </div>
-              </div>
 
-              {/* Maç Özeti Kartı */}
-              <div className="bg-gradient-to-br from-[#0a192f] to-blue-900 rounded-3xl p-6 shadow-xl flex flex-col justify-between gap-2 relative overflow-hidden mt-2">
-                <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><MonitorPlay size={180} /></div>
-                <div className="flex items-center gap-4 text-cyan-200 z-10">
-                  <div className="bg-white/10 p-3 rounded-2xl"><MonitorPlay size={32} /></div>
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-cyan-400">Maç Günü Katılım ({visitorDate})</p>
-                    <p className="text-3xl font-black text-white mt-1">Toplam: <span className="text-cyan-400">{visitorTotalMatchPeople}</span> Seyirci</p>
+                {/* 3. Hünkar */}
+                <div className="rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
+                  <img src="/hunkarkofte.jpg" alt="Hünkar Köfte" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
+                     <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Hünkar Köfte</h4>
+                     <p className="text-slate-300 text-xs mt-1">Geleneksel lezzet şöleni.</p>
+                  </div>
+                </div>
+
+                {/* 4. Cafe de Paris */}
+                <div className="rounded-3xl overflow-hidden shadow-lg relative group h-64 cursor-pointer">
+                  <img src="/cafedeparis.jpg" alt="Chicken Cafe de Paris" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
+                     <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Cafe de Paris Soslu Tavuk</h4>
+                  </div>
+                </div>
+
+                {/* 5. Nargile */}
+                <div className="lg:col-span-3 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 cursor-pointer">
+                  <img src="/salaasnargilefoto.jpg" alt="Nargile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-[#0a192f]/60 group-hover:bg-[#0a192f]/40 transition-colors flex flex-col justify-center items-center text-center p-6">
+                     <Wind size={40} className="text-cyan-400 mb-3" />
+                     <h4 className="text-white font-serif font-black text-3xl drop-shadow-md">Premium Nargile Keyfi</h4>
+                     <p className="text-slate-300 text-sm mt-2">Günün yorgunluğunu birbirinden farklı aromalarla atın.</p>
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
 
-              {/* İletişim / Bilgi Kartı */}
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-lg mt-4">
-                <h4 className="text-lg font-bold mb-4 flex items-center gap-2 text-orange-400"><MapPin size={20}/> İletişim & Rezervasyon</h4>
-                <div className="space-y-4 text-slate-300">
-                  <p className="flex items-start gap-3">
-                    <Phone className="shrink-0 text-slate-400 mt-0.5" size={18}/>
-                    <span>Rezervasyon için bizi arayabilirsiniz:<br/><a href="tel:+902626421413" className="text-white font-bold hover:text-orange-400 text-lg transition-colors">0262 642 14 13</a></span>
-                  </p>
-                  <p className="flex items-start gap-3 border-t border-slate-700 pt-4">
-                    <Instagram className="shrink-0 text-slate-400 mt-0.5" size={18}/>
-                    <span>Bizi Instagram'da takip edin:<br/><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="text-white font-bold hover:text-orange-400 transition-colors">@salascaferestaurant</a></span>
-                  </p>
+          {/* ORGANİZASYON & ETKİNLİK */}
+          <section className="py-20 bg-[#0B3B2C] text-white relative overflow-hidden">
+             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+             <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+               <h2 className="text-sm font-black tracking-[0.3em] text-orange-400 uppercase mb-3">Davet & Organizasyon</h2>
+               <h3 className="text-3xl sm:text-5xl font-serif font-black mb-6">Özel Günleriniz İçin Yanınızdayız</h3>
+               <p className="text-lg text-emerald-100 font-light mb-10 max-w-2xl mx-auto">
+                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 150 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
+               </p>
+               <a href="tel:+902626421413" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest transition-transform hover:scale-105 shadow-xl">
+                 <Phone size={18}/> Rezervasyon Hattı
+               </a>
+             </div>
+          </section>
+
+          {/* CANLI YOĞUNLUK & DURUM (Kullanıcı İsteği) */}
+          <section id="rezervasyon" className="py-20 max-w-5xl mx-auto px-6 w-full">
+            <div className="text-center mb-10">
+              <h2 className="text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Şeffaf Hizmet</h2>
+              <h3 className="text-3xl font-serif font-black text-[#0B3B2C]">Canlı Yoğunluk Durumu</h3>
+              <p className="text-slate-500 mt-3 font-medium">Gelmeden önce seçtiğiniz tarihteki doluluk durumumuzu ve menü hazırlıklarımızı inceleyebilirsiniz.</p>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={40} /></div>
+            ) : (
+              <div className="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-slate-100">
+                {/* Tarih Seçimi */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                   <span className="font-black text-slate-600 uppercase tracking-widest text-sm flex items-center gap-2">
+                     <CalendarDays className="text-orange-500" size={20} /> Tarih Seçiniz:
+                   </span>
+                   <input 
+                     type="date" 
+                     value={visitorDate} 
+                     onChange={(e) => setVisitorDate(e.target.value)} 
+                     className="bg-slate-50 border-2 border-slate-200 text-slate-800 px-6 py-3 rounded-xl font-bold outline-none focus:border-orange-500 transition-all cursor-pointer text-lg shadow-inner" 
+                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* İftar Kutusu */}
+                  <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200 relative overflow-hidden">
+                    <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><MoonStar size={150} /></div>
+                    <div className="flex items-center gap-4 mb-6 relative z-10">
+                      <div className="bg-orange-100 text-orange-600 p-3 rounded-2xl"><ChefHat size={28} /></div>
+                      <div>
+                        <h4 className="text-xl font-black text-[#0B3B2C]">İftar Özeti</h4>
+                        <p className="text-sm font-bold text-slate-500">{visitorDate}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-6 relative z-10">
+                      <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Toplam Rezerve</p>
+                      <p className="text-4xl font-black text-orange-500">{visitorIftarSummary.totalPeople} <span className="text-xl text-slate-600">Kişi</span></p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 relative z-10">
+                      <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
+                        <span className="text-xs font-bold text-slate-500">Tavuk</span>
+                        <span className="font-black text-lg text-[#0B3B2C]">{visitorIftarSummary.totalTavuk}</span>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
+                        <span className="text-xs font-bold text-slate-500">Hünkar</span>
+                        <span className="font-black text-lg text-[#0B3B2C]">{visitorIftarSummary.totalHunkar}</span>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
+                        <span className="text-xs font-bold text-slate-500">Izgara</span>
+                        <span className="font-black text-lg text-[#0B3B2C]">{visitorIftarSummary.totalKarisik}</span>
+                      </div>
+                      <div className="bg-orange-50 p-3 rounded-xl border border-orange-100 shadow-sm flex justify-between items-center">
+                        <span className="text-xs font-bold text-orange-600">Çocuk</span>
+                        <span className="font-black text-lg text-orange-600">{visitorIftarSummary.totalCocuk}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Maç Kutusu */}
+                  <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200 relative overflow-hidden flex flex-col justify-between">
+                    <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><MonitorPlay size={150} /></div>
+                    <div className="flex items-center gap-4 mb-6 relative z-10">
+                      <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl"><MonitorPlay size={28} /></div>
+                      <div>
+                        <h4 className="text-xl font-black text-[#0a192f]">Maç Yayını Katılım</h4>
+                        <p className="text-sm font-bold text-slate-500">{visitorDate}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="relative z-10 mt-auto">
+                      <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Toplam Seyirci</p>
+                      <p className="text-5xl font-black text-blue-600">{visitorTotalMatchPeople} <span className="text-xl text-slate-600">Kişi</span></p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </>
-          )}
+            )}
+          </section>
+
         </main>
 
-        {/* Footer & Personel Girişi Tetikleyici */}
-        <footer className="py-6 text-center relative z-10 mt-auto">
-          <p className="text-slate-400 text-xs font-medium mb-3">© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
-          <button 
-            onClick={() => setShowLoginModal(true)} 
-            className="text-[10px] font-bold text-slate-300 hover:text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1 mx-auto transition-colors"
-          >
-            <Lock size={10} /> Personel Girişi
-          </button>
+        {/* PREMIUM FOOTER */}
+        <footer id="iletisim" className="bg-slate-900 text-slate-400 py-12 relative z-10 border-t border-slate-800">
+          <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
+            
+            {/* Logo & About */}
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-16 object-contain mb-4 brightness-0 invert opacity-70" />
+              <p className="text-sm leading-relaxed mb-4 max-w-xs">Şehrin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
+            </div>
+
+            {/* İletişim */}
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <h4 className="text-white font-bold uppercase tracking-widest mb-4">İletişim</h4>
+              <ul className="space-y-3 text-sm">
+                <li><a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center gap-2"><Phone size={16}/> 0262 642 14 13</a></li>
+                <li><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-orange-400 transition-colors flex items-center gap-2"><Instagram size={16}/> @salascaferestaurant</a></li>
+                <li className="flex items-start gap-2 text-left"><MapPin size={16} className="shrink-0 mt-1"/> Gebze, Kocaeli (Adres Detayı Eklenebilir)</li>
+              </ul>
+            </div>
+
+            {/* Linkler & Login */}
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <h4 className="text-white font-bold uppercase tracking-widest mb-4">Hızlı Bağlantılar</h4>
+              <ul className="space-y-3 text-sm mb-6">
+                <li><a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Dijital Menü</a></li>
+                <li><button onClick={() => handleScroll('rezervasyon')} className="hover:text-white transition-colors">Rezervasyon Durumu</button></li>
+              </ul>
+              
+              {/* PERSONEL GİRİŞİ */}
+              <button 
+                onClick={() => setShowLoginModal(true)} 
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-colors border border-slate-700"
+              >
+                <Lock size={14} /> Personel Girişi
+              </button>
+            </div>
+          </div>
+          
+          <div className="max-w-5xl mx-auto px-6 mt-10 pt-6 border-t border-slate-800 text-center text-xs">
+            <p>© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
+          </div>
         </footer>
 
         {/* LOGIN MODAL (Sadece butona basıldığında açılır) */}
         {showLoginModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
               <div className="bg-[#0B3B2C] p-5 flex items-center justify-between text-white">
                 <h3 className="font-black tracking-wide flex items-center gap-2"><Lock size={18} className="text-orange-400"/> Sistem Girişi</h3>
@@ -691,7 +746,7 @@ export default function App() {
           
           <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <div className="flex items-center gap-3">
-              {/* ADMİN EKRANI GÜNCEL LOGO - BG-TRANSPARENT EKLENDİ */}
+              {/* ADMİN EKRANI GÜNCEL LOGO */}
               <div className="w-16 h-16 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md bg-transparent">
                  <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="w-full h-full object-contain bg-transparent" />
               </div>
