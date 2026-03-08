@@ -400,7 +400,7 @@ export default function App() {
         {/* Müşteri Üst Bar - Tam Genişlik Logo Banner */}
         <header className="w-full bg-[#f4f4f4] shadow-md relative z-10 border-b border-slate-200 overflow-hidden flex justify-center items-center">
            <img 
-              src="/salaaslogouzun.jpg" 
+              src="/salaaslogouzun.png" 
               alt="Salaaş Cafe Restaurant" 
               className="w-full h-32 sm:h-48 md:h-64 lg:h-[300px] object-cover object-center hover:scale-[1.02] transition-transform duration-700" 
            />
