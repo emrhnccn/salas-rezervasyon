@@ -398,11 +398,11 @@ export default function App() {
         <div className="absolute -top-32 -right-32 z-0 pointer-events-none opacity-5 text-[#0B3B2C] rotate-12"><MoonStar size={500} strokeWidth={1} /></div>
 
         {/* Müşteri Üst Bar - Tam Genişlik Logo Banner */}
-        <header className="w-full bg-[#f4f4f4] shadow-md relative z-10 border-b border-slate-200 overflow-hidden flex justify-center items-center">
+        <header className="w-full bg-white shadow-md relative z-10 border-b border-slate-200 flex justify-center items-center">
            <img 
-              src="/salaaslogouzun.png" 
+              src="/salaaslogouzun.jpg" 
               alt="Salaaş Cafe Restaurant" 
-              className="w-full h-32 sm:h-48 md:h-64 lg:h-[300px] object-cover object-center hover:scale-[1.02] transition-transform duration-700" 
+              className="w-full h-auto max-h-[300px] sm:max-h-[400px] object-contain hover:scale-[1.01] transition-transform duration-700" 
            />
         </header>
 
