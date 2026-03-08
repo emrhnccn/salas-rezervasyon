@@ -57,7 +57,7 @@ export default function App() {
     return formatter.format(new Date());
   };
 
-  // YENİ: OTURUM AÇMA (LOGIN) STATE'LERİ
+  // OTURUM AÇMA (LOGIN) STATE'LERİ
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginUser, setLoginUser] = useState('');
@@ -69,6 +69,9 @@ export default function App() {
   
   // SAYFA GEÇİŞ STATE'İ (Sadece admin için)
   const [activePage, setActivePage] = useState('iftar'); // 'iftar' veya 'mac'
+
+  // MÜŞTERİ EKRANI TARİH SEÇİMİ
+  const [visitorDate, setVisitorDate] = useState(getToday());
 
   // İFTAR STATE'LERİ
   const [reservations, setReservations] = useState([]);
@@ -148,7 +151,7 @@ export default function App() {
     return () => window.removeEventListener('afterprint', handleAfterPrint);
   }, []);
 
-  // Auth ve Veri Çekme (Veriler misafir için de gerekli, sayıyı hesaplamak için)
+  // Auth ve Veri Çekme
   useEffect(() => {
     signInAnonymously(auth).catch((error) => console.error("Giriş hatası:", error));
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => setUser(currentUser));
@@ -320,11 +323,22 @@ export default function App() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // İFTAR HESAPLAMALARI (Müşteri ekranında da "Bugün" için kullanılacak)
-  const todayIftarReservations = reservations.filter(res => res.date === getToday());
-  const todayTotalIftarPeople = todayIftarReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
+  // MÜŞTERİ GİRİŞİ (VISITOR) HESAPLAMALARI
+  const visitorIftarReservations = reservations.filter(res => res.date === visitorDate);
+  const visitorIftarSummary = visitorIftarReservations.reduce((acc, res) => {
+    acc.totalPeople += (parseInt(res.peopleCount) || 0);
+    acc.totalTavuk += (parseInt(res.menuTavuk) || 0);
+    acc.totalHunkar += (parseInt(res.menuHunkar) || 0);
+    acc.totalKarisik += (parseInt(res.menuKarisik) || 0);
+    acc.totalCocuk += (parseInt(res.menuCocuk) || 0);
+    acc.totalMenu += ((parseInt(res.menuTavuk) || 0) + (parseInt(res.menuHunkar) || 0) + (parseInt(res.menuKarisik) || 0) + (parseInt(res.menuCocuk) || 0));
+    return acc;
+  }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
 
-  // Admin İftar Filtreleme
+  const visitorMatchReservations = matchReservations.filter(res => res.date === visitorDate);
+  const visitorTotalMatchPeople = visitorMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
+
+  // ADMİN İFTAR FİLTRELEME & MATEMATİK
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
   const searchedReservations = filteredReservations.filter(res => {
     if (!searchTerm) return true;
@@ -345,11 +359,7 @@ export default function App() {
     return acc;
   }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
 
-  // MAÇ HESAPLAMALARI (Müşteri ekranında "Bugün" için)
-  const todayMatchReservations = matchReservations.filter(res => res.date === getToday());
-  const todayTotalMatchPeople = todayMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
-
-  // Admin Maç Filtreleme
+  // ADMİN MAÇ FİLTRELEME & MATEMATİK
   const filteredMatchReservations = matchReservations.filter(res => res.date === selectedMatchDate);
   const searchedMatchReservations = filteredMatchReservations.filter(res => {
     if (!matchSearchTerm) return true;
@@ -400,57 +410,86 @@ export default function App() {
         </header>
 
         {/* Ana İçerik */}
-        <main className="max-w-xl mx-auto px-4 py-10 w-full relative z-10 flex-1 flex flex-col gap-6">
+        <main className="max-w-2xl mx-auto px-4 py-8 w-full relative z-10 flex-1 flex flex-col gap-6">
           
           {loading ? (
             <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={40} /></div>
           ) : (
             <>
-              {/* İftar Özeti Kartı */}
-              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 flex items-center gap-5 hover:shadow-xl transition-shadow relative overflow-hidden group">
-                <div className="absolute right-0 top-0 h-full w-2 bg-gradient-to-b from-orange-400 to-yellow-400"></div>
-                <div className="bg-orange-50 p-4 rounded-full text-orange-500 group-hover:scale-110 transition-transform"><MoonStar size={32} /></div>
-                <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Bugün İftar</p>
-                  <h3 className="text-xl sm:text-2xl font-black text-[#0B3B2C]">
-                    {todayTotalIftarPeople > 0 ? (
-                      <>Şu an <span className="text-orange-500">{todayTotalIftarPeople} kişi</span> bizimle!</>
-                    ) : (
-                      "İftar rezervasyonlarımız açık!"
-                    )}
-                  </h3>
-                  <p className="text-sm text-slate-500 mt-1 font-medium">Hemen yerinizi ayırtın, lezzete ortak olun.</p>
+              {/* Tarih Seçimi (Müşteri İçin) */}
+              <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-200 flex items-center justify-between gap-4">
+                 <span className="font-black text-slate-600 uppercase tracking-widest text-sm flex items-center gap-2">
+                   <CalendarDays className="text-orange-500" size={20} /> Tarih Seçiniz
+                 </span>
+                 <input 
+                   type="date" 
+                   value={visitorDate} 
+                   onChange={(e) => setVisitorDate(e.target.value)} 
+                   className="bg-slate-50 border border-slate-200 text-slate-800 px-4 py-2 rounded-xl font-bold outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all cursor-pointer" 
+                 />
+              </div>
+
+              {/* İftar Detaylı Özeti (Müşteri Görecek) */}
+              <div className="bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 shadow-xl flex flex-col gap-5 relative overflow-hidden">
+                <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><ChefHat size={180} /></div>
+                <div className="flex flex-col gap-4 w-full border-b border-emerald-700/50 pb-5 z-10">
+                  <div className="flex items-center gap-4 text-[#FBE18D]">
+                    <div className="bg-white/10 p-3 rounded-2xl"><ChefHat size={28} /></div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-widest text-orange-400">İftar Mutfak Özeti ({visitorDate})</p>
+                      <div className="flex gap-3 items-baseline mt-0.5">
+                        <p className="text-2xl font-black text-white">Kişi: <span className="text-orange-400">{visitorIftarSummary.totalPeople}</span></p>
+                        <span className="text-emerald-500 font-bold">|</span>
+                        <p className="text-xl font-bold text-slate-200">Sipariş: <span className="text-yellow-400">{visitorIftarSummary.totalMenu}</span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 4'lü Menü Kutu Tasarımı (Ziyaretçi de görsün) */}
+                <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full z-10">
+                  <div className="bg-white/95 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200">
+                    <span className="block text-[9px] sm:text-[10px] text-slate-500 font-bold mb-0.5">TAVUK</span>
+                    <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalTavuk}</span>
+                  </div>
+                  <div className="bg-white/95 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200">
+                    <span className="block text-[9px] sm:text-[10px] text-slate-500 font-bold mb-0.5">HÜNKAR</span>
+                    <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalHunkar}</span>
+                  </div>
+                  <div className="bg-white/95 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-slate-200">
+                    <span className="block text-[9px] sm:text-[10px] text-slate-500 font-bold mb-0.5">IZGARA</span>
+                    <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalKarisik}</span>
+                  </div>
+                  <div className="bg-orange-50 px-2 py-3 rounded-2xl text-center shadow-lg border-b-4 border-orange-200">
+                    <span className="block text-[9px] sm:text-[10px] text-orange-600 font-bold mb-0.5">ÇOCUK</span>
+                    <span className="font-black text-xl sm:text-2xl text-orange-600">{visitorIftarSummary.totalCocuk}</span>
+                  </div>
                 </div>
               </div>
 
               {/* Maç Özeti Kartı */}
-              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 flex items-center gap-5 hover:shadow-xl transition-shadow relative overflow-hidden group">
-                <div className="absolute right-0 top-0 h-full w-2 bg-gradient-to-b from-blue-500 to-cyan-400"></div>
-                <div className="bg-blue-50 p-4 rounded-full text-blue-600 group-hover:scale-110 transition-transform"><MonitorPlay size={32} /></div>
-                <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Bugün Maç Yayını</p>
-                  <h3 className="text-xl sm:text-2xl font-black text-[#0a192f]">
-                    {todayTotalMatchPeople > 0 ? (
-                      <>Maç için <span className="text-blue-600">{todayTotalMatchPeople} seyirci</span> hazır!</>
-                    ) : (
-                      "Dev ekranda maç keyfi!"
-                    )}
-                  </h3>
-                  <p className="text-sm text-slate-500 mt-1 font-medium">Yerini kap, heyecanı kaçırma.</p>
+              <div className="bg-gradient-to-br from-[#0a192f] to-blue-900 rounded-3xl p-6 shadow-xl flex flex-col justify-between gap-2 relative overflow-hidden">
+                <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><MonitorPlay size={180} /></div>
+                <div className="flex items-center gap-4 text-cyan-200 z-10">
+                  <div className="bg-white/10 p-3 rounded-2xl"><MonitorPlay size={32} /></div>
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-cyan-400">Maç Günü Katılım ({visitorDate})</p>
+                    <p className="text-3xl font-black text-white mt-1">Toplam: <span className="text-cyan-400">{visitorTotalMatchPeople}</span> Seyirci</p>
+                  </div>
                 </div>
               </div>
 
               {/* İletişim / Bilgi Kartı */}
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-lg mt-4">
+              <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-lg mt-2">
                 <h4 className="text-lg font-bold mb-4 flex items-center gap-2 text-orange-400"><MapPin size={20}/> İletişim & Rezervasyon</h4>
                 <div className="space-y-4 text-slate-300">
                   <p className="flex items-start gap-3">
                     <Phone className="shrink-0 text-slate-400 mt-0.5" size={18}/>
-                    <span>Rezervasyon için bizi arayabilirsiniz:<br/><a href="tel:+905555555555" className="text-white font-bold hover:text-orange-400 text-lg">0555 555 55 55</a></span>
+                    <span>Rezervasyon için bizi arayabilirsiniz:<br/><a href="tel:+902626421413" className="text-white font-bold hover:text-orange-400 text-lg transition-colors">0262 642 14 13</a></span>
                   </p>
                   <p className="flex items-start gap-3 border-t border-slate-700 pt-4">
                     <Instagram className="shrink-0 text-slate-400 mt-0.5" size={18}/>
-                    <span>Bizi Instagram'da takip edin:<br/><a href="https://instagram.com/salaascafe" target="_blank" className="text-white font-bold hover:text-orange-400">@salaascafe</a></span>
+                    <span>Bizi Instagram'da takip edin:<br/><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="text-white font-bold hover:text-orange-400 transition-colors">@salascaferestaurant</a></span>
                   </p>
                 </div>
               </div>
@@ -716,7 +755,7 @@ export default function App() {
 
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1"><MessageSquareText size={14}/> Özel Not (Opsiyonel)</label>
-                      <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-500 bg-amber-50/50 placeholder:text-amber-300 font-medium" placeholder="Örn: Mama sandalyesi..." />
+                      <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-amber-500 bg-amber-50/50 placeholder:text-amber-300 font-medium" placeholder="Örn: Mama sandalyesi..." />
                     </div>
                     
                     <div className="pt-2">
