@@ -393,7 +393,7 @@ export default function App() {
   // =======================================================================
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-orange-50/40 to-emerald-50/60 font-sans text-slate-800 relative flex flex-col scroll-smooth">
         
         {/* PREMIUM NAVBAR */}
         <nav className="sticky top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 border-b border-slate-100">
@@ -417,7 +417,7 @@ export default function App() {
         <header className="relative w-full h-[60vh] sm:h-[70vh] bg-slate-900 flex items-center justify-center overflow-hidden">
            <div className="absolute inset-0 z-0">
              {/* Background Image - Salaaş Vibe */}
-             <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&q=80" alt="Cafe Interior" className="w-full h-full object-cover opacity-40" />
+             <img src="/salaasarkaplan.jpeg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50" />
              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
            </div>
            
@@ -438,7 +438,7 @@ export default function App() {
            </div>
         </header>
 
-        <main className="w-full relative z-10 flex-1 flex flex-col bg-slate-50">
+        <main className="w-full relative z-10 flex-1 flex flex-col">
           
           {/* HAKKIMIZDA / BİZ KİMİZ */}
           <section id="hakkimizda" className="max-w-4xl mx-auto px-6 py-20 text-center">
@@ -453,7 +453,7 @@ export default function App() {
           </section>
 
           {/* DENEDİNİZ Mİ? (LEZZETLER) */}
-          <section id="lezzetler" className="bg-white py-20 border-y border-slate-200">
+          <section id="lezzetler" className="py-20 border-y border-slate-200/50 bg-white/40 backdrop-blur-md">
             <div className="max-w-6xl mx-auto px-6">
               <div className="flex flex-col sm:flex-row justify-between items-end mb-10 gap-4">
                 <div>
