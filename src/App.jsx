@@ -399,7 +399,7 @@ export default function App() {
 
         {/* Müşteri Üst Bar - Sadece Uzun Logo (Yeşil kısımlar tamamen kaldırıldı) */}
         <header className="w-full bg-white shadow-md relative z-10 py-5 px-6 flex justify-center items-center border-b border-slate-200">
-           <img src="/salaaslogouzun.jpg" alt="Salaaş Cafe Restaurant" className="max-w-full h-auto max-h-24 sm:max-h-32 object-contain hover:scale-[1.02] transition-transform duration-500" />
+           <img src="/salaaslogouzun.png" alt="Salaaş Cafe Restaurant" className="max-w-full h-auto max-h-24 sm:max-h-32 object-contain hover:scale-[1.02] transition-transform duration-500" />
         </header>
 
         {/* Ana İçerik */}
