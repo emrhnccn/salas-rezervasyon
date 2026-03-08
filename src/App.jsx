@@ -436,11 +436,9 @@ export default function App() {
                   <div className="flex items-center gap-4 text-[#FBE18D]">
                     <div className="bg-white/10 p-3 rounded-2xl"><ChefHat size={28} /></div>
                     <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-orange-400">İftar Mutfak Özeti ({visitorDate})</p>
+                      <p className="text-xs font-black uppercase tracking-widest text-orange-400">İftar Özeti ({visitorDate})</p>
                       <div className="flex gap-3 items-baseline mt-0.5">
-                        <p className="text-2xl font-black text-white">Kişi: <span className="text-orange-400">{visitorIftarSummary.totalPeople}</span></p>
-                        <span className="text-emerald-500 font-bold">|</span>
-                        <p className="text-xl font-bold text-slate-200">Sipariş: <span className="text-yellow-400">{visitorIftarSummary.totalMenu}</span></p>
+                        <p className="text-2xl font-black text-white">Kayıtlı: <span className="text-orange-400">{visitorIftarSummary.totalPeople}</span> Kişi</p>
                       </div>
                     </div>
                   </div>
@@ -479,6 +477,65 @@ export default function App() {
                 </div>
               </div>
 
+              {/* YENİ: DİJİTAL MENÜ BUTONU */}
+              <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-3xl p-6 shadow-xl flex items-center justify-between hover:scale-[1.02] hover:shadow-2xl transition-all relative overflow-hidden group mt-2">
+                <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform"><UtensilsCrossed size={120} /></div>
+                <div className="flex items-center gap-5 relative z-10">
+                  <div className="bg-white text-orange-500 p-4 rounded-2xl shadow-inner group-hover:scale-110 transition-transform">
+                    <UtensilsCrossed size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-wide">Dijital Menümüz</h3>
+                    <p className="text-sm text-orange-100 font-medium mt-1">Tüm lezzetlerimizi ve fiyatlarımızı inceleyin.</p>
+                  </div>
+                </div>
+                <div className="bg-orange-600/50 p-3 rounded-full relative z-10">
+                  <ArrowRight size={24} className="text-white" />
+                </div>
+              </a>
+
+              {/* YENİ: GÖRSEL GALERİ */}
+              <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 mt-2">
+                <h4 className="text-lg font-black mb-4 text-[#0B3B2C] flex items-center gap-2">
+                  <Flame className="text-orange-500" size={20} /> Öne Çıkan Lezzetlerimiz
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
+                    <img 
+                      src="" 
+                      alt="Karışık Izgara" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-3">
+                       <span className="text-white font-bold text-xs">Izgara Çeşitleri</span>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-square relative group">
+                    <img 
+                      src="" 
+                      alt="Kahve ve Tatlı" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-3">
+                       <span className="text-white font-bold text-xs">Kahve & Tatlı Keyfi</span>
+                    </div>
+                  </div>
+                  <div className="rounded-2xl overflow-hidden shadow-sm aspect-[4/3] relative group col-span-2">
+                    <img 
+                      src="" 
+                      alt="İftar Sofrası" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+                       <span className="text-white font-bold text-sm">Geleneksel İftar Sofraları</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* İletişim / Bilgi Kartı */}
               <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-6 shadow-lg mt-2">
                 <h4 className="text-lg font-bold mb-4 flex items-center gap-2 text-orange-400"><MapPin size={20}/> İletişim & Rezervasyon</h4>
@@ -499,7 +556,7 @@ export default function App() {
 
         {/* Footer & Personel Girişi Tetikleyici */}
         <footer className="py-6 text-center relative z-10 mt-auto">
-          <p className="text-slate-400 text-xs font-medium mb-3">© 2026 Salaaş Cafe. Tüm hakları saklıdır.</p>
+          <p className="text-slate-400 text-xs font-medium mb-3">© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
           <button 
             onClick={() => setShowLoginModal(true)} 
             className="text-[10px] font-bold text-slate-300 hover:text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1 mx-auto transition-colors"
