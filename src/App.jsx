@@ -555,7 +555,7 @@ export default function App() {
                <h2 className="text-sm font-black tracking-[0.3em] text-orange-400 uppercase mb-3">Davet & Organizasyon</h2>
                <h3 className="text-3xl sm:text-5xl font-serif font-black mb-6">Özel Günleriniz İçin Yanınızdayız</h3>
                <p className="text-lg text-emerald-100 font-light mb-10 max-w-2xl mx-auto">
-                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 150 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
+                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 500 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
                </p>
                <a href="tel:+902626421413" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest transition-transform hover:scale-105 shadow-xl">
                  <Phone size={18}/> Rezervasyon Hattı
@@ -668,7 +668,7 @@ export default function App() {
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               {/* LOGO FİLTRESİ KALDIRILDI */}
               <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-16 object-contain mb-4 opacity-90" />
-              <p className="text-sm leading-relaxed mb-4 max-w-xs">Şehrin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
+              <p className="text-sm leading-relaxed mb-4 max-w-xs">Gebze'nin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
             </div>
 
             {/* İletişim */}
@@ -677,7 +677,7 @@ export default function App() {
               <ul className="space-y-3 text-sm">
                 <li><a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center gap-2"><Phone size={16}/> 0262 642 14 13</a></li>
                 <li><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-orange-400 transition-colors flex items-center gap-2"><Instagram size={16}/> @salascaferestaurant</a></li>
-                <li className="flex items-start gap-2 text-left"><MapPin size={16} className="shrink-0 mt-1"/> Gebze, Kocaeli (Adres Detayı Eklenebilir)</li>
+                <li className="flex items-start gap-2 text-left"><MapPin size={16} className="shrink-0 mt-1"/> Hacı Halil Mahallesi, Yıldız Caddesi No:25/A Gebze, Kocaeli</li>
               </ul>
             </div>
 
