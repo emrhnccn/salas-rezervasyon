@@ -399,7 +399,7 @@ export default function App() {
         <nav className="sticky top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 border-b border-slate-100">
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="h-10 sm:h-12 flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
-              
+              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-full object-contain" />
             </div>
             <div className="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
               <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
@@ -422,8 +422,6 @@ export default function App() {
            </div>
            
            <div className="relative z-10 text-center px-4 flex flex-col items-center w-full max-w-4xl mx-auto mt-10">
-              {/* LOGO FİLTRESİ (brightness-0 invert) KALDIRILDI - DOĞAL RENKLERİYLE GÖZÜKECEK */}
-              <img src="/salaaslogobg.png" alt="Salaaş Cafe" className="h-28 sm:h-40 object-contain mb-6 drop-shadow-2xl opacity-100" />
               <h1 className="text-4xl sm:text-6xl font-black tracking-wide text-white font-serif mb-4 drop-shadow-lg">
                 Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
               </h1>
