@@ -524,7 +524,7 @@ export default function App() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* 1. Kahvaltı (Özel Boyut) */}
                 <div className="lg:col-span-2 sm:col-span-2 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
-                  <img src="/salaaskoykahvaltisi.jpg" alt="Salaaş Köy Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={encodeURI("/salaaskoykahvaltisi.jpg")} alt="Salaaş Köy Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-6">
                      <span className="bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1"><Star size={12}/> İmza Lezzet</span>
                      <h4 className="text-white font-serif font-black text-2xl sm:text-3xl drop-shadow-md">Salaaş Köy Kahvaltısı</h4>
@@ -534,7 +534,7 @@ export default function App() {
                 
                 {/* 2. Burger */}
                 <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
-                  <img src="/mantarlıfırınburger.jpg" alt="Mantarlı Fırın Burger" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={encodeURI("/mantarlıfırınburger.jpg")} alt="Mantarlı Fırın Burger" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
                      <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Mantarlı Fırın Burger</h4>
                      <p className="text-slate-300 text-xs mt-1">Özel soslu nefis deneyim.</p>
@@ -543,7 +543,7 @@ export default function App() {
 
                 {/* 3. Hünkar */}
                 <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
-                  <img src="/hunkarkofte.jpg" alt="Hünkar Köfte" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={encodeURI("/hunkarkofte.jpg")} alt="Hünkar Köfte" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
                      <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Hünkar Köfte</h4>
                      <p className="text-slate-300 text-xs mt-1">Geleneksel lezzet şöleni.</p>
@@ -552,7 +552,7 @@ export default function App() {
 
                 {/* 4. Cafe de Paris */}
                 <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
-                  <img src="/cafedeparis.jpg" alt="Chicken Cafe de Paris" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={encodeURI("/cafedeparis.jpg")} alt="Chicken Cafe de Paris" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
                      <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Cafe de Paris Soslu Tavuk</h4>
                   </div>
@@ -560,7 +560,7 @@ export default function App() {
 
                 {/* 5. Nargile */}
                 <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
-                  <img src="/salaasnargilefoto.jpg" alt="Nargile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={encodeURI("/salaasnargilefoto.jpg")} alt="Nargile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-[#0a192f]/60 group-hover:bg-[#0a192f]/40 transition-colors flex flex-col justify-center items-center text-center p-6">
                      <Wind size={40} className="text-cyan-400 mb-3" />
                      <h4 className="text-white font-serif font-black text-2xl drop-shadow-md">Nargile Keyfi</h4>
@@ -572,7 +572,7 @@ export default function App() {
                   onClick={() => setShowDessertsModal(true)}
                   className="lg:col-span-2 sm:col-span-2 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer border-2 border-pink-100"
                 >
-                  <img src="/dubai cikolatalı.jpg" alt="Özel Tatlılarımız" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={encodeURI("/dubai cikolatalı.jpg")} alt="Özel Tatlılarımız" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-6">
                      <span className="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1 shadow-md group-hover:bg-pink-600 transition-colors">
                         Tüm Tatlılarımız <ChevronRight size={12}/>
@@ -779,14 +779,19 @@ export default function App() {
                 <h3 className="font-black tracking-wide flex items-center gap-2 text-xl"><Coffee size={24} className="text-pink-400"/> Tatlı Menümüz</h3>
                 <button onClick={() => setShowDessertsModal(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
               </div>
-              <div className="overflow-y-auto p-6 bg-slate-50 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              <div className="overflow-y-auto p-4 sm:p-6 bg-slate-50 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6">
                  {DESSERTS.map((tatli) => (
                    <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow flex flex-col">
-                     <div className="h-32 sm:h-40 overflow-hidden bg-slate-100 relative">
-                        <img src={tatli.image} alt={tatli.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                     <div className="w-full aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 relative">
+                        <img 
+                          src={encodeURI(tatli.image)} 
+                          alt={tatli.name} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
+                        />
                      </div>
-                     <div className="p-3 text-center">
-                        <h4 className="font-black text-[#0B3B2C] text-sm md:text-base">{tatli.name}</h4>
+                     <div className="p-2 sm:p-3 text-center flex-1 flex items-center justify-center">
+                        <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm md:text-base leading-tight">{tatli.name}</h4>
                      </div>
                    </div>
                  ))}
