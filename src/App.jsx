@@ -51,6 +51,37 @@ const TABLE_MAP = [
   { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
 ];
 
+// MAÇ FİKSTÜRÜ VERİTABANI
+const MATCH_FIXTURE = [
+  { date: '2026-03-10', displayDate: '10 Mart 2026', team1: 'Galatasaray', team2: 'Liverpool' },
+  { date: '2026-03-13', displayDate: '13 Mart 2026', team1: 'F. Karagümrük', team2: 'Fenerbahçe' },
+  { date: '2026-03-14', displayDate: '14 Mart 2026', team1: 'Galatasaray', team2: 'Başakşehir' },
+  { date: '2026-03-15', displayDate: '15 Mart 2026', team1: 'Gençlerbirliği', team2: 'Beşiktaş' },
+  { date: '2026-03-17', displayDate: '17 Mart 2026', team1: 'Fenerbahçe', team2: 'Gaziantep FK' },
+  { date: '2026-03-18', displayDate: '18 Mart 2026', team1: 'Göztepe', team2: 'Galatasaray' },
+  { date: '2026-03-18', displayDate: '18 Mart 2026', team1: 'Liverpool', team2: 'Galatasaray' },
+  { date: '2026-03-19', displayDate: '19 Mart 2026', team1: 'Beşiktaş', team2: 'Kasımpaşa' },
+  { date: '2026-04-05', displayDate: '05 Nisan 2026', team1: 'Fenerbahçe', team2: 'Beşiktaş' },
+  { date: '2026-04-05', displayDate: '05 Nisan 2026', team1: 'Trabzonspor', team2: 'Galatasaray' },
+  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Kayserispor', team2: 'Fenerbahçe' },
+  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Galatasaray', team2: 'Kocaelispor' },
+  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Beşiktaş', team2: 'Antalyaspor' },
+  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Fenerbahçe', team2: 'Ç. Rizespor' },
+  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Gençlerbirliği', team2: 'Galatasaray' },
+  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Samsunspor', team2: 'Beşiktaş' },
+  { date: '2026-04-26', displayDate: '26 Nisan 2026', team1: 'Galatasaray', team2: 'Fenerbahçe' },
+  { date: '2026-04-26', displayDate: '26 Nisan 2026', team1: 'Beşiktaş', team2: 'F. Karagümrük' },
+  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Fenerbahçe', team2: 'Başakşehir' },
+  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Samsunspor', team2: 'Galatasaray' },
+  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Gaziantep FK', team2: 'Beşiktaş' },
+  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Konyaspor', team2: 'Fenerbahçe' },
+  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Galatasaray', team2: 'Antalyaspor' },
+  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Beşiktaş', team2: 'Trabzonspor' },
+  { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Fenerbahçe', team2: 'Eyüpspor' },
+  { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Kasımpaşa', team2: 'Galatasaray' },
+  { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Ç. Rizespor', team2: 'Beşiktaş' }
+].sort((a, b) => new Date(a.date) - new Date(b.date));
+
 export default function App() {
   const getToday = () => {
     const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -72,6 +103,7 @@ export default function App() {
 
   // MÜŞTERİ EKRANI TARİH SEÇİMİ
   const [visitorDate, setVisitorDate] = useState(getToday());
+  const [showFixtureModal, setShowFixtureModal] = useState(false);
 
   // İFTAR STATE'LERİ
   const [reservations, setReservations] = useState([]);
@@ -335,6 +367,9 @@ export default function App() {
   const visitorMatchReservations = matchReservations.filter(res => res.date === visitorDate);
   const visitorTotalMatchPeople = visitorMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
 
+  // Sıradaki Maçı Bulma
+  const nextMatch = MATCH_FIXTURE.find(m => m.date >= getToday()) || MATCH_FIXTURE[MATCH_FIXTURE.length - 1];
+
   // ADMİN İFTAR FİLTRELEME & MATEMATİK
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
   const searchedReservations = filteredReservations.filter(res => {
@@ -528,7 +563,7 @@ export default function App() {
              </div>
           </section>
 
-          {/* CANLI YOĞUNLUK & DURUM (Kullanıcı İsteği) */}
+          {/* CANLI YOĞUNLUK & DURUM */}
           <section id="rezervasyon" className="py-20 max-w-5xl mx-auto px-6 w-full">
             <div className="text-center mb-10">
               <h2 className="text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Şeffaf Hizmet</h2>
@@ -590,19 +625,31 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Maç Kutusu */}
+                  {/* Maç Kutusu YENİ TASARIM */}
                   <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200 relative overflow-hidden flex flex-col justify-between">
                     <div className="absolute right-0 top-0 opacity-5 pointer-events-none"><MonitorPlay size={150} /></div>
-                    <div className="flex items-center gap-4 mb-6 relative z-10">
+                    <div className="flex items-center gap-4 mb-4 relative z-10">
                       <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl"><MonitorPlay size={28} /></div>
                       <div>
                         <h4 className="text-xl font-black text-[#0a192f]">Maç Yayını Katılım</h4>
                         <p className="text-sm font-bold text-slate-500">{visitorDate}</p>
                       </div>
                     </div>
+
+                    {/* SIRADAKİ MAÇ ALANI */}
+                    <div className="bg-white/70 p-3 rounded-xl border border-blue-100 mb-4 relative z-10 flex items-center justify-between">
+                       <div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-0.5 block">Sıradaki Maç</span>
+                          <p className="text-sm font-bold text-[#0a192f]">{nextMatch.team1} - {nextMatch.team2}</p>
+                          <p className="text-xs text-slate-500 font-medium">{nextMatch.displayDate}</p>
+                       </div>
+                       <button onClick={() => setShowFixtureModal(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm whitespace-nowrap">
+                          Fikstür
+                       </button>
+                    </div>
                     
                     <div className="relative z-10 mt-auto">
-                      <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Toplam Seyirci</p>
+                      <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Seçili Gün Seyirci</p>
                       <p className="text-5xl font-black text-blue-600">{visitorTotalMatchPeople} <span className="text-xl text-slate-600">Kişi</span></p>
                     </div>
                   </div>
@@ -656,6 +703,36 @@ export default function App() {
             <p>© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
           </div>
         </footer>
+
+        {/* FİKSTÜR MODAL */}
+        {showFixtureModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh] animate-in slide-in-from-bottom-4 duration-300">
+              <div className="bg-[#0a192f] p-5 flex items-center justify-between text-white shrink-0">
+                <h3 className="font-black tracking-wide flex items-center gap-2"><MonitorPlay size={18} className="text-cyan-400"/> Dev Ekran Maç Fikstürü</h3>
+                <button onClick={() => setShowFixtureModal(false)} className="p-1 hover:bg-white/20 rounded-lg transition-colors"><X size={20}/></button>
+              </div>
+              <div className="overflow-y-auto p-2 bg-slate-50">
+                <div className="space-y-2">
+                   {MATCH_FIXTURE.map((match, idx) => (
+                     <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors">
+                        <div>
+                           <p className="text-xs font-bold text-slate-400 flex items-center gap-1 mb-1"><CalendarDays size={12}/> {match.displayDate}</p>
+                           <p className="font-black text-[#0a192f] text-sm">{match.team1} <span className="text-slate-300 font-normal mx-1">vs</span> {match.team2}</p>
+                        </div>
+                        <button 
+                           onClick={() => { setVisitorDate(match.date); setShowFixtureModal(false); handleScroll('rezervasyon'); }} 
+                           className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-colors"
+                        >
+                          Seç
+                        </button>
+                     </div>
+                   ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* LOGIN MODAL (Sadece butona basıldığında açılır) */}
         {showLoginModal && (
