@@ -567,7 +567,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 6. TATLILAR (YENİ EKLENDİ - ÖZEL BOYUT) */}
+                {/* 6. TATLILAR (ÖZEL BOYUT) */}
                 <div 
                   onClick={() => setShowDessertsModal(true)}
                   className="lg:col-span-2 sm:col-span-2 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer border-2 border-pink-100"
@@ -771,31 +771,40 @@ export default function App() {
           </div>
         )}
 
-        {/* TATLILAR MENÜSÜ MODAL */}
+        {/* TATLILAR MENÜSÜ MODAL - MOBİL UYUMLU KATI GRID */}
         {showDessertsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh] animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-[#0B3B2C] p-5 flex items-center justify-between text-white shrink-0">
-                <h3 className="font-black tracking-wide flex items-center gap-2 text-xl"><Coffee size={24} className="text-pink-400"/> Tatlı Menümüz</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
+              
+              <div className="bg-[#0B3B2C] p-4 sm:p-5 flex items-center justify-between text-white shrink-0">
+                <h3 className="font-black tracking-wide flex items-center gap-2 text-lg sm:text-xl"><Coffee size={24} className="text-pink-400"/> Tatlı Menümüz</h3>
                 <button onClick={() => setShowDessertsModal(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
               </div>
-              <div className="overflow-y-auto p-4 sm:p-6 bg-slate-50 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6">
+              
+              {/* KATI GRID YAPISI: Mobil: 2 kolon, Tablet: 3 kolon, PC: 4 kolon */}
+              <div className="overflow-y-auto p-4 sm:p-6 bg-slate-50 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
                  {DESSERTS.map((tatli) => (
-                   <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow flex flex-col">
-                     <div className="w-full aspect-[4/3] shrink-0 overflow-hidden bg-slate-100 relative">
+                   <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+                     
+                     {/* Resim Alanı: aspect-[4/3] ile sabit oran, çökmeyi engeller */}
+                     <div className="w-full aspect-[4/3] shrink-0 bg-slate-100 relative overflow-hidden">
                         <img 
                           src={encodeURI(tatli.image)} 
                           alt={tatli.name} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                          className="absolute inset-0 w-full h-full object-cover hover:scale-110 transition-transform duration-500" 
                           onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
                         />
                      </div>
-                     <div className="p-2 sm:p-3 text-center flex-1 flex items-center justify-center">
-                        <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm md:text-base leading-tight">{tatli.name}</h4>
+                     
+                     {/* İsim Alanı: Sabit yükseklik ve ortalama */}
+                     <div className="p-3 text-center flex-1 flex items-center justify-center bg-white z-10 border-t border-slate-50">
+                        <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm leading-tight">{tatli.name}</h4>
                      </div>
+                     
                    </div>
                  ))}
               </div>
+
             </div>
           </div>
         )}
