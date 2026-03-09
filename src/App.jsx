@@ -771,7 +771,7 @@ export default function App() {
           </div>
         )}
 
-        {/* TATLILAR MENÜSÜ MODAL - MOBİL UYUMLU KATI GRID */}
+        {/* TATLILAR MENÜSÜ MODAL - GÜNCELLENMİŞ KATI GRID (İSİMLER HER ZAMAN GÖRÜNÜR) */}
         {showDessertsModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
@@ -782,27 +782,29 @@ export default function App() {
               </div>
               
               {/* KATI GRID YAPISI: Mobil: 2 kolon, Tablet: 3 kolon, PC: 4 kolon */}
-              <div className="overflow-y-auto p-4 sm:p-6 bg-slate-50 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-                 {DESSERTS.map((tatli) => (
-                   <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-                     
-                     {/* Resim Alanı: aspect-[4/3] ile sabit oran, çökmeyi engeller */}
-                     <div className="w-full aspect-[4/3] shrink-0 bg-slate-100 relative overflow-hidden">
-                        <img 
-                          src={encodeURI(tatli.image)} 
-                          alt={tatli.name} 
-                          className="absolute inset-0 w-full h-full object-cover hover:scale-110 transition-transform duration-500" 
-                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
-                        />
+              <div className="overflow-y-auto p-4 sm:p-6 bg-slate-50 flex-1">
+                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+                   {DESSERTS.map((tatli) => (
+                     <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-md transition-shadow">
+                       
+                       {/* Resim Alanı: Sabit oran ve her zaman aynı yükseklik davranışı */}
+                       <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
+                          <img 
+                            src={encodeURI(tatli.image)} 
+                            alt={tatli.name} 
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                            onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
+                          />
+                       </div>
+                       
+                       {/* İsim Alanı: Esnek yükseklik ile isimlerin her zaman görünmesini sağlar */}
+                       <div className="p-3 sm:p-4 text-center flex flex-col justify-center grow min-h-[60px] bg-white z-10">
+                          <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm md:text-base leading-snug">{tatli.name}</h4>
+                       </div>
+                       
                      </div>
-                     
-                     {/* İsim Alanı: Sabit yükseklik ve ortalama */}
-                     <div className="p-3 text-center flex-1 flex items-center justify-center bg-white z-10 border-t border-slate-50">
-                        <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm leading-tight">{tatli.name}</h4>
-                     </div>
-                     
-                   </div>
-                 ))}
+                   ))}
+                 </div>
               </div>
 
             </div>
