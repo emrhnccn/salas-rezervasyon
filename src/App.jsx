@@ -399,7 +399,7 @@ export default function App() {
         <nav className="sticky top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-50 border-b border-slate-100">
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="h-10 sm:h-12 flex items-center cursor-pointer" onClick={() => window.scrollTo(0,0)}>
-              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-full object-contain" />
+              
             </div>
             <div className="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
               <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
