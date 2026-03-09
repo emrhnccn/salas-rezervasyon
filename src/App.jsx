@@ -82,6 +82,29 @@ const MATCH_FIXTURE = [
   { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Ç. Rizespor', team2: 'Beşiktaş' }
 ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
+// TATLILAR VERİTABANI
+const DESSERTS = [
+  { id: 1, name: 'Dubai Çikolatalı', image: '/dubai cikolatalı.jpg' },
+  { id: 2, name: 'Lotus Dome', image: '/lotus dome.jpg' },
+  { id: 3, name: 'Profiterol', image: '/profiterol.jpg' },
+  { id: 4, name: 'Frambuaz Cheesecake', image: '/frambuaz cheescake.jpg' },
+  { id: 5, name: 'Luca', image: '/luca.jpg' },
+  { id: 6, name: 'İbiza', image: '/ibiza.jpg' },
+  { id: 7, name: 'Altın Çilek', image: '/altın cilek.jpg' },
+  { id: 8, name: 'Cocostar', image: '/cocostar.jpg' },
+  { id: 9, name: 'Orman Rulo', image: '/ormanrulo.jpg' },
+  { id: 10, name: 'Fıstık Melanga', image: '/fıstık melanga.jpg' },
+  { id: 11, name: 'Bella Vista', image: '/bella vista.jpg' },
+  { id: 12, name: 'Dark Moon', image: '/dark moon.jpg' },
+  { id: 13, name: 'Malaga', image: '/malaga.jpg' },
+  { id: 14, name: 'Mozaik', image: '/mozaik.jpg' },
+  { id: 15, name: 'Pink', image: '/Pink.jpg' },
+  { id: 16, name: 'Vişne Badem', image: '/visnebadem.jpg' },
+  { id: 17, name: 'Çikolata Linzer', image: '/çikolata linzer.jpg' },
+  { id: 18, name: 'Tiramisu', image: '/tiramisu.jpg' },
+  { id: 19, name: 'Brownie', image: '/brownie.jpg' }
+];
+
 export default function App() {
   const getToday = () => {
     const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -101,9 +124,10 @@ export default function App() {
   // SAYFA GEÇİŞ STATE'İ (Sadece admin için)
   const [activePage, setActivePage] = useState('iftar'); 
 
-  // MÜŞTERİ EKRANI TARİH SEÇİMİ
+  // MÜŞTERİ EKRANI MODALLAR & SEÇİMLER
   const [visitorDate, setVisitorDate] = useState(getToday());
   const [showFixtureModal, setShowFixtureModal] = useState(false);
+  const [showDessertsModal, setShowDessertsModal] = useState(false);
 
   // İFTAR STATE'LERİ
   const [reservations, setReservations] = useState([]);
@@ -451,7 +475,6 @@ export default function App() {
         {/* HERO SECTION */}
         <header className="relative w-full h-[60vh] sm:h-[70vh] bg-slate-900 flex items-center justify-center overflow-hidden">
            <div className="absolute inset-0 z-0">
-             {/* Background Image - Salaaş Vibe */}
              <img src="/salaasarkaplan.jpeg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50" />
              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
            </div>
@@ -510,7 +533,7 @@ export default function App() {
                 </div>
                 
                 {/* 2. Burger */}
-                <div className="rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
+                <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
                   <img src="/mantarlıfırınburger.jpg" alt="Mantarlı Fırın Burger" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
                      <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Mantarlı Fırın Burger</h4>
@@ -519,7 +542,7 @@ export default function App() {
                 </div>
 
                 {/* 3. Hünkar */}
-                <div className="rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
+                <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
                   <img src="/hunkarkofte.jpg" alt="Hünkar Köfte" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
                      <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Hünkar Köfte</h4>
@@ -528,7 +551,7 @@ export default function App() {
                 </div>
 
                 {/* 4. Cafe de Paris */}
-                <div className="rounded-3xl overflow-hidden shadow-lg relative group h-64 cursor-pointer">
+                <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
                   <img src="/cafedeparis.jpg" alt="Chicken Cafe de Paris" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex flex-col justify-end p-6">
                      <h4 className="text-white font-serif font-black text-xl drop-shadow-md">Cafe de Paris Soslu Tavuk</h4>
@@ -536,14 +559,29 @@ export default function App() {
                 </div>
 
                 {/* 5. Nargile */}
-                <div className="lg:col-span-3 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 cursor-pointer">
+                <div className="lg:col-span-1 sm:col-span-1 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer">
                   <img src="/salaasnargilefoto.jpg" alt="Nargile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-[#0a192f]/60 group-hover:bg-[#0a192f]/40 transition-colors flex flex-col justify-center items-center text-center p-6">
                      <Wind size={40} className="text-cyan-400 mb-3" />
-                     <h4 className="text-white font-serif font-black text-3xl drop-shadow-md">Premium Nargile Keyfi</h4>
-                     <p className="text-slate-300 text-sm mt-2">Günün yorgunluğunu birbirinden farklı aromalarla atın.</p>
+                     <h4 className="text-white font-serif font-black text-2xl drop-shadow-md">Nargile Keyfi</h4>
                   </div>
                 </div>
+
+                {/* 6. TATLILAR (YENİ EKLENDİ - ÖZEL BOYUT) */}
+                <div 
+                  onClick={() => setShowDessertsModal(true)}
+                  className="lg:col-span-2 sm:col-span-2 rounded-3xl overflow-hidden shadow-lg relative group h-64 sm:h-80 cursor-pointer border-2 border-pink-100"
+                >
+                  <img src="/dubai cikolatalı.jpg" alt="Özel Tatlılarımız" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-6">
+                     <span className="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1 shadow-md group-hover:bg-pink-600 transition-colors">
+                        Tüm Tatlılarımız <ChevronRight size={12}/>
+                     </span>
+                     <h4 className="text-white font-serif font-black text-2xl sm:text-3xl drop-shadow-md">Nefis Tatlı Çeşitleri</h4>
+                     <p className="text-slate-200 text-sm mt-2 max-w-sm">Dubai Çikolatalı, Lotus Dome, Profiterol ve daha fazlasını hemen keşfedin.</p>
+                  </div>
+                </div>
+
               </div>
             </div>
           </section>
@@ -555,7 +593,7 @@ export default function App() {
                <h2 className="text-sm font-black tracking-[0.3em] text-orange-400 uppercase mb-3">Davet & Organizasyon</h2>
                <h3 className="text-3xl sm:text-5xl font-serif font-black mb-6">Özel Günleriniz İçin Yanınızdayız</h3>
                <p className="text-lg text-emerald-100 font-light mb-10 max-w-2xl mx-auto">
-                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 500 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
+                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 150 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
                </p>
                <a href="tel:+902626421413" className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest transition-transform hover:scale-105 shadow-xl">
                  <Phone size={18}/> Rezervasyon Hattı
@@ -666,9 +704,8 @@ export default function App() {
             
             {/* Logo & About */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              {/* LOGO FİLTRESİ KALDIRILDI */}
               <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-16 object-contain mb-4 opacity-90" />
-              <p className="text-sm leading-relaxed mb-4 max-w-xs">Gebze'nin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
+              <p className="text-sm leading-relaxed mb-4 max-w-xs">Şehrin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
             </div>
 
             {/* İletişim */}
@@ -677,7 +714,7 @@ export default function App() {
               <ul className="space-y-3 text-sm">
                 <li><a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center gap-2"><Phone size={16}/> 0262 642 14 13</a></li>
                 <li><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-orange-400 transition-colors flex items-center gap-2"><Instagram size={16}/> @salascaferestaurant</a></li>
-                <li className="flex items-start gap-2 text-left"><MapPin size={16} className="shrink-0 mt-1"/> Hacı Halil Mahallesi, Yıldız Caddesi No:25/A Gebze, Kocaeli</li>
+                <li className="flex items-start gap-2 text-left"><MapPin size={16} className="shrink-0 mt-1"/> Gebze, Kocaeli (Adres Detayı Eklenebilir)</li>
               </ul>
             </div>
 
@@ -729,6 +766,30 @@ export default function App() {
                      </div>
                    ))}
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TATLILAR MENÜSÜ MODAL */}
+        {showDessertsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[85vh] animate-in slide-in-from-bottom-4 duration-300">
+              <div className="bg-[#0B3B2C] p-5 flex items-center justify-between text-white shrink-0">
+                <h3 className="font-black tracking-wide flex items-center gap-2 text-xl"><Coffee size={24} className="text-pink-400"/> Tatlı Menümüz</h3>
+                <button onClick={() => setShowDessertsModal(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
+              </div>
+              <div className="overflow-y-auto p-6 bg-slate-50 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                 {DESSERTS.map((tatli) => (
+                   <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group hover:shadow-md transition-shadow flex flex-col">
+                     <div className="h-32 sm:h-40 overflow-hidden bg-slate-100 relative">
+                        <img src={tatli.image} alt={tatli.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                     </div>
+                     <div className="p-3 text-center">
+                        <h4 className="font-black text-[#0B3B2C] text-sm md:text-base">{tatli.name}</h4>
+                     </div>
+                   </div>
+                 ))}
               </div>
             </div>
           </div>
