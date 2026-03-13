@@ -1040,7 +1040,7 @@ export default function App() {
                 </li>
                 <li>
                    <a href="https://wa.me/905392356004" target="_blank" rel="noreferrer" className="hover:text-[#25D366] transition-colors flex items-center justify-center md:justify-start gap-4">
-                     <MessageCircle size={20}/> 💬 WhatsApp: 0539 235 60 04
+                     <MessageCircle size={20}/> 💬 WhatsApp: 0532 643 46 72
                    </a>
                 </li>
                 <li>
