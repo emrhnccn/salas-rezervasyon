@@ -558,7 +558,7 @@ export default function App() {
   // =======================================================================
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-orange-50/40 to-emerald-50/60 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
         
         {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS */}
         <style dangerouslySetInnerHTML={{__html: `
@@ -598,16 +598,16 @@ export default function App() {
         `}} />
 
         {/* PREMIUM NAVBAR - DÜZELTİLMİŞ GENİŞ TASARIM */}
-        <div className="fixed top-0 left-0 w-full z-50 flex justify-center">
-          <nav className={`w-full max-w-7xl transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3 border-b border-slate-200 rounded-b-none sm:rounded-b-3xl' : 'bg-transparent py-4 sm:py-6'}`}>
-            <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
+          <nav className={`w-full pointer-events-auto transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3 border-b border-slate-200' : 'bg-transparent py-5 sm:py-6'}`}>
+            <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
               {/* LOGO */}
               <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center bg-transparent shrink-0 ${isScrolled ? 'h-10 sm:h-12' : 'h-12 sm:h-16'}`} onClick={() => window.scrollTo(0,0)}>
                 <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-full w-auto object-contain bg-transparent" />
               </div>
               
               {/* LINKS (Desktop) */}
-              <div className={`hidden md:flex flex-1 justify-center items-center gap-4 lg:gap-8 font-bold text-sm lg:text-base transition-colors duration-500 ${isScrolled ? 'text-slate-700' : 'text-white drop-shadow-md'}`}>
+              <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-12 font-bold text-sm xl:text-base transition-colors duration-500 ${isScrolled ? 'text-slate-700' : 'text-white drop-shadow-md'}`}>
                 <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Biz Kimiz?</button>
                 <button onClick={() => handleScroll('lezzetler')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Lezzetler</button>
                 <button onClick={() => handleScroll('rezervasyon')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Canlı Yoğunluk</button>
@@ -615,12 +615,12 @@ export default function App() {
               </div>
               
               {/* ACTION BUTTON */}
-              <div className="shrink-0 flex items-center justify-end gap-2 sm:gap-4">
-                <button onClick={() => setShowRequestModal(true)} className={`hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}>
+              <div className="shrink-0 flex items-center justify-end gap-3 sm:gap-4">
+                <button onClick={() => setShowRequestModal(true)} className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}>
                   <CalendarDays size={16} /> Rezervasyon Talebi
                 </button>
-                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2">
-                  Menüyü Gör <ChevronRight size={16} className="hidden sm:block"/>
+                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
+                  Menüyü Gör
                 </a>
               </div>
             </div>
@@ -628,7 +628,7 @@ export default function App() {
         </div>
 
         {/* HERO SECTION */}
-        <header className="relative w-full h-[80vh] min-h-[600px] bg-slate-900 flex items-center justify-center overflow-hidden">
+        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-16">
            {/* Arka Plan Görseli */}
            <div className="absolute inset-0 z-0">
              <img src="/salaasarkaplan.jpeg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50 scale-105 object-center" />
@@ -636,124 +636,124 @@ export default function App() {
            </div>
            
            {/* Hero İçerik */}
-           <div className="relative z-10 text-center px-4 w-full max-w-5xl mx-auto flex flex-col items-center justify-center pt-20">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wide text-white font-serif mb-4 sm:mb-6 drop-shadow-2xl animate-fade-in-up delay-100 leading-tight">
+           <div className="relative z-10 text-center px-4 sm:px-6 w-full mx-auto flex flex-col items-center justify-center h-full pb-10">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wide text-white font-serif mb-6 drop-shadow-2xl animate-fade-in-up delay-100 leading-tight">
                 Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
               </h1>
-              <p className="text-base sm:text-xl lg:text-2xl text-slate-200 max-w-3xl mx-auto font-medium mb-8 sm:mb-10 drop-shadow-lg animate-fade-in-up delay-200">
+              <p className="text-lg sm:text-xl lg:text-3xl text-slate-200 max-w-4xl mx-auto font-medium mb-10 drop-shadow-lg animate-fade-in-up delay-200">
                 Şehrin gürültüsünden uzak, samimi atmosferimizde unutulmaz tatlar ve anılar biriktirin.
               </p>
               
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in-up delay-300 w-full max-w-md mx-auto mb-8 sm:mb-10">
-                 <button onClick={() => setShowRequestModal(true)} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 sm:px-10 sm:py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-2xl flex items-center justify-center gap-2 text-sm sm:text-base">
-                   <CalendarDays size={20} /> Rezervasyon Talebi
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 animate-fade-in-up delay-300 w-full max-w-md lg:max-w-lg mx-auto mb-10">
+                 <button onClick={() => setShowRequestModal(true)} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 lg:px-10 lg:py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-2xl flex items-center justify-center gap-2 lg:text-lg">
+                   <CalendarDays size={24} /> Rezervasyon Talebi
                  </button>
               </div>
 
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-bold tracking-widest uppercase text-white animate-fade-in-up delay-400">
-                 <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-xl"><Coffee size={16} className="text-orange-400"/> Kahvaltı</span>
-                 <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-xl"><UtensilsCrossed size={16} className="text-orange-400"/> Izgara</span>
-                 <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-xl"><Wind size={16} className="text-orange-400"/> Nargile</span>
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-5 lg:gap-8 text-xs sm:text-sm lg:text-base font-bold tracking-widest uppercase text-white animate-fade-in-up delay-400">
+                 <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-full shadow-xl"><Coffee size={20} className="text-orange-400"/> Kahvaltı</span>
+                 <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-full shadow-xl"><UtensilsCrossed size={20} className="text-orange-400"/> Izgara</span>
+                 <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 sm:px-6 sm:py-3 lg:px-8 lg:py-4 rounded-full shadow-xl"><Wind size={20} className="text-orange-400"/> Nargile</span>
               </div>
            </div>
            
            {/* Scroll Down Indicator */}
            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 animate-bounce cursor-pointer z-20" onClick={() => handleScroll('hakkimizda')}>
               <span className="text-[10px] sm:text-xs tracking-widest uppercase font-bold block mb-2 opacity-70 text-center">Keşfet</span>
-              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1 mx-auto"><div className="w-1 h-2 bg-white/60 rounded-full"></div></div>
+              <div className="w-6 h-10 lg:w-8 lg:h-12 border-2 border-white/30 rounded-full flex justify-center p-1 mx-auto"><div className="w-1 h-2 lg:h-3 bg-white/60 rounded-full"></div></div>
            </div>
         </header>
 
         <main className="w-full relative z-10 flex-1 flex flex-col">
           
           {/* HAKKIMIZDA / BİZ KİMİZ */}
-          <section id="hakkimizda" className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
-            <div className="animate-float inline-block mb-4 sm:mb-6">
-              <MoonStar size={40} className="text-orange-400 opacity-80 sm:w-12 sm:h-12" />
+          <section id="hakkimizda" className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-20 md:py-32 text-center">
+            <div className="animate-float inline-block mb-6">
+              <MoonStar size={56} className="text-orange-400 opacity-80" />
             </div>
-            <h2 className="text-xs sm:text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-3 sm:mb-4">Hikayemiz</h2>
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#0B3B2C] mb-6 sm:mb-8">Sıcak, Samimi ve Lezzetli</h3>
-            <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed font-light">
+            <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-4">Hikayemiz</h2>
+            <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C] mb-8">Sıcak, Samimi ve Lezzetli</h3>
+            <p className="text-lg sm:text-xl lg:text-2xl text-slate-600 leading-relaxed font-light max-w-5xl mx-auto">
               Salaaş Cafe Restaurant olarak, misafirlerimize kendilerini evlerinde hissedecekleri sıcak bir ortam sunuyoruz. 
               Özenle seçilmiş malzemelerle hazırladığımız zengin menümüz, imza ızgaralarımız, serpme kahvaltımız ve 
               keyifli nargile köşemizle günün her saatinde kaliteli bir deneyim yaşatmayı hedefliyoruz.
             </p>
-            <div className="w-16 sm:w-24 h-1 sm:h-1.5 bg-gradient-to-r from-orange-400 to-yellow-400 mx-auto mt-10 sm:mt-12 rounded-full"></div>
+            <div className="w-24 lg:w-32 h-1.5 lg:h-2 bg-gradient-to-r from-orange-400 to-yellow-400 mx-auto mt-12 lg:mt-16 rounded-full"></div>
           </section>
 
           {/* DENEDİNİZ Mİ? (LEZZETLER) */}
-          <section id="lezzetler" className="w-full py-16 sm:py-24 border-y border-slate-200/50 bg-white/40 backdrop-blur-md">
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 sm:mb-12 gap-4">
+          <section id="lezzetler" className="w-full py-20 md:py-32 border-y border-slate-200/50 bg-white/40 backdrop-blur-md">
+            <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 xl:px-24">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
                 <div>
-                  <h2 className="text-xs sm:text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Vitrinimiz</h2>
-                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#0B3B2C]">Bunu Denediniz mi?</h3>
+                  <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Vitrinimiz</h2>
+                  <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C]">Bunu Denediniz mi?</h3>
                 </div>
-                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
-                  Tüm Menüyü Gör <div className="bg-orange-100 p-2 rounded-full group-hover:bg-orange-200 transition-colors"><ChevronRight size={16} className="text-orange-600"/></div>
+                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
+                  Tüm Menüyü Gör <div className="bg-orange-100 p-2 lg:p-3 rounded-full group-hover:bg-orange-200 transition-colors"><ChevronRight size={18} className="text-orange-600"/></div>
                 </a>
               </div>
 
               {/* Responsive Grid System for Showcase */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 xl:gap-10">
                 
                 {/* 1. Kahvaltı (Özel Boyut - 2 Kolon Kaplar) */}
-                <div className="lg:col-span-2 sm:col-span-2 rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-1 transition-all duration-500 relative group h-64 sm:h-80 md:h-96 cursor-pointer border border-slate-100">
+                <div className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100">
                   <img src={encodeURI("/salaaskoykahvaltisi.jpg")} alt="Salaaş Köy Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent flex flex-col justify-end p-6 sm:p-8">
-                     <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-full w-max mb-3 flex items-center gap-1 shadow-lg"><Star size={14}/> İmza Lezzet</span>
-                     <h4 className="text-white font-serif font-black text-2xl sm:text-3xl md:text-4xl drop-shadow-md mb-2">Salaaş Köy Kahvaltısı</h4>
-                     <p className="text-slate-200 text-xs sm:text-sm font-medium max-w-md opacity-90 hidden sm:block">Güne harika başlamak için yöresel peynirler, sıcaklar ve taze demlenmiş çay eşliğinde devasa bir sofra.</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                     <span className="bg-orange-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg"><Star size={16}/> İmza Lezzet</span>
+                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Salaaş Köy Kahvaltısı</h4>
+                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Güne harika başlamak için yöresel peynirler, sıcaklar ve taze demlenmiş çay eşliğinde devasa bir sofra.</p>
                   </div>
                 </div>
                 
                 {/* 2. Burger */}
-                <div className="rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative group h-64 sm:h-80 md:h-96 cursor-pointer border border-slate-100">
+                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100">
                   <img src={encodeURI("/mantarlıfırınburger.jpg")} alt="Mantarlı Fırın Burger" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-6">
-                     <h4 className="text-white font-serif font-black text-xl sm:text-2xl drop-shadow-md">Mantarlı Fırın Burger</h4>
-                     <p className="text-slate-300 text-xs sm:text-sm mt-1 font-medium">Özel soslu nefis deneyim.</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Mantarlı Fırın Burger</h4>
+                     <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Özel soslu nefis deneyim.</p>
                   </div>
                 </div>
 
                 {/* 3. Hünkar */}
-                <div className="rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative group h-64 sm:h-80 md:h-96 cursor-pointer border border-slate-100">
+                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100">
                   <img src={encodeURI("/hunkarkofte.jpg")} alt="Hünkar Köfte" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-6">
-                     <h4 className="text-white font-serif font-black text-xl sm:text-2xl drop-shadow-md">Hünkar Köfte</h4>
-                     <p className="text-slate-300 text-xs sm:text-sm mt-1 font-medium">Geleneksel lezzet şöleni.</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Hünkar Köfte</h4>
+                     <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Geleneksel lezzet şöleni.</p>
                   </div>
                 </div>
 
                 {/* 4. Cafe de Paris */}
-                <div className="rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative group h-64 sm:h-80 md:h-96 cursor-pointer border border-slate-100">
+                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100">
                   <img src={encodeURI("/cafedeparis.jpg")} alt="Chicken Cafe de Paris" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-6">
-                     <h4 className="text-white font-serif font-black text-xl sm:text-2xl drop-shadow-md leading-tight">Cafe de Paris<br/>Soslu Tavuk</h4>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md leading-tight">Cafe de Paris<br/>Soslu Tavuk</h4>
                   </div>
                 </div>
 
                 {/* 5. Nargile */}
-                <div className="rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-1 transition-all duration-500 relative group h-64 sm:h-80 md:h-96 cursor-pointer border border-slate-100">
+                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100">
                   <img src={encodeURI("/salaasnargilefoto.jpg")} alt="Nargile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-[#0a192f]/60 group-hover:bg-[#0a192f]/40 transition-colors flex flex-col justify-center items-center text-center p-6 backdrop-blur-[2px]">
-                     <Wind size={48} className="text-cyan-400 mb-3 drop-shadow-lg" />
-                     <h4 className="text-white font-serif font-black text-2xl sm:text-3xl drop-shadow-md">Nargile Keyfi</h4>
+                  <div className="absolute inset-0 bg-[#0a192f]/60 group-hover:bg-[#0a192f]/40 transition-colors flex flex-col justify-center items-center text-center p-8 lg:p-10 backdrop-blur-[2px]">
+                     <Wind size={64} className="text-cyan-400 mb-6 drop-shadow-lg" />
+                     <h4 className="text-white font-serif font-black text-3xl lg:text-4xl drop-shadow-md">Nargile Keyfi</h4>
                   </div>
                 </div>
 
                 {/* 6. TATLILAR (ÖZEL BOYUT - 2 Kolon Kaplar) */}
                 <div 
                   onClick={() => setShowDessertsModal(true)}
-                  className="lg:col-span-2 sm:col-span-2 rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-pink-500/20 hover:-translate-y-1 transition-all duration-500 relative group h-64 sm:h-80 md:h-96 cursor-pointer border-2 border-pink-200"
+                  className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-pink-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border-4 border-pink-200"
                 >
                   <img src={encodeURI("/dubai cikolatalı.jpg")} alt="Özel Tatlılarımız" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent flex flex-col justify-end p-6 sm:p-8">
-                     <span className="bg-pink-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-full w-max mb-3 flex items-center gap-1 shadow-lg group-hover:bg-pink-600 transition-colors">
-                        Tüm Tatlılarımız <ChevronRight size={14}/>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                     <span className="bg-pink-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg group-hover:bg-pink-600 group-hover:scale-105 transition-all">
+                        Tüm Tatlılarımız <ChevronRight size={16}/>
                      </span>
-                     <h4 className="text-white font-serif font-black text-2xl sm:text-3xl md:text-4xl drop-shadow-md mb-2">Nefis Tatlı Çeşitleri</h4>
-                     <p className="text-slate-200 text-xs sm:text-sm font-medium max-w-md opacity-90 hidden sm:block">Dubai Çikolatalı, Lotus Dome, Profiterol ve daha fazlasını hemen keşfedin.</p>
+                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Nefis Tatlı Çeşitleri</h4>
+                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Dubai Çikolatalı, Lotus Dome, Profiterol ve daha fazlasını hemen keşfedin.</p>
                   </div>
                 </div>
 
@@ -762,111 +762,111 @@ export default function App() {
           </section>
 
           {/* ORGANİZASYON & ETKİNLİK */}
-          <section className="w-full py-16 sm:py-24 bg-slate-900 text-white relative overflow-hidden">
+          <section className="w-full py-28 md:py-36 bg-slate-900 text-white relative overflow-hidden">
              <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
-             <div className="absolute -right-20 -top-20 opacity-10 text-orange-500 hidden md:block"><MoonStar size={400}/></div>
+             <div className="absolute -right-20 -top-20 opacity-10 text-orange-500 hidden md:block"><MoonStar size={500}/></div>
              
-             <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-               <h2 className="text-xs sm:text-sm font-black tracking-[0.4em] text-orange-400 uppercase mb-4">Davet & Organizasyon</h2>
-               <h3 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black mb-6 drop-shadow-lg">Özel Günleriniz İçin Yanınızdayız</h3>
-               <p className="text-base sm:text-lg text-slate-300 font-light mb-10 leading-relaxed">
+             <div className="w-full mx-auto px-4 sm:px-8 lg:px-16 text-center relative z-10">
+               <h2 className="text-base lg:text-lg font-black tracking-[0.4em] text-orange-400 uppercase mb-6">Davet & Organizasyon</h2>
+               <h3 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-10 drop-shadow-lg">Özel Günleriniz İçin Yanınızdayız</h3>
+               <p className="text-lg sm:text-xl lg:text-3xl text-slate-300 font-light mb-16 max-w-4xl mx-auto leading-relaxed">
                  Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 150 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
                </p>
-               <a href="tel:+902626421413" className="shine-effect inline-flex items-center gap-2 sm:gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 sm:px-10 sm:py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-2xl hover:shadow-orange-500/30 text-sm sm:text-base">
-                 <Phone size={20}/> Rezervasyon Hattı
+               <a href="tel:+902626421413" className="shine-effect inline-flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 lg:px-14 lg:py-6 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-2xl hover:shadow-orange-500/30 text-base lg:text-xl">
+                 <Phone size={24}/> Rezervasyon Hattı
                </a>
              </div>
           </section>
 
           {/* CANLI YOĞUNLUK & DURUM */}
-          <section id="rezervasyon" className="w-full py-16 sm:py-24 bg-slate-50">
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-10 sm:mb-12">
-                <h2 className="text-xs sm:text-sm font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Şeffaf Hizmet</h2>
-                <h3 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-[#0B3B2C]">Canlı Yoğunluk Durumu</h3>
-                <p className="text-slate-500 mt-3 sm:mt-4 text-sm sm:text-base font-medium max-w-xl mx-auto">Gelmeden önce seçtiğiniz tarihteki doluluk durumumuzu ve menü hazırlıklarımızı inceleyebilirsiniz.</p>
+          <section id="rezervasyon" className="w-full py-28 md:py-36 bg-slate-100">
+            <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 xl:px-24">
+              <div className="text-center mb-16">
+                <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-4">Şeffaf Hizmet</h2>
+                <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C]">Canlı Yoğunluk Durumu</h3>
+                <p className="text-slate-500 mt-6 text-lg lg:text-xl font-medium max-w-3xl mx-auto">Gelmeden önce seçtiğiniz tarihteki doluluk durumumuzu ve menü hazırlıklarımızı inceleyebilirsiniz.</p>
               </div>
 
               {loading ? (
-                <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={48} /></div>
+                <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={64} /></div>
               ) : (
-                <div className="bg-white rounded-[2rem] p-6 sm:p-8 md:p-10 shadow-2xl border border-slate-100 hover:shadow-slate-200/50 transition-shadow duration-500">
+                <div className="bg-transparent max-w-7xl mx-auto">
                   {/* Tarih Seçimi */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10 sm:mb-12">
-                     <span className="font-black text-slate-600 uppercase tracking-widest text-sm sm:text-base flex items-center gap-2">
-                       <CalendarDays className="text-orange-500" size={24} /> Tarih Seçiniz:
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
+                     <span className="font-black text-slate-600 uppercase tracking-widest text-base lg:text-xl flex items-center gap-3">
+                       <CalendarDays className="text-orange-500" size={28} /> Tarih Seçiniz:
                      </span>
                      <input 
                        type="date" 
                        value={visitorDate} 
                        onChange={(e) => setVisitorDate(e.target.value)} 
-                       className="bg-slate-50 border-2 border-slate-200 text-[#0B3B2C] px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-black outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer text-base sm:text-lg shadow-inner w-full sm:w-auto" 
+                       className="bg-white border-2 border-slate-200 text-[#0B3B2C] px-8 py-4 rounded-2xl font-black outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer text-xl lg:text-2xl shadow-sm w-full sm:w-auto" 
                      />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 lg:gap-16">
                     {/* İftar Kutusu */}
-                    <div className="bg-slate-50 rounded-3xl p-6 sm:p-8 border border-slate-200 relative overflow-hidden group hover:border-orange-200 transition-colors duration-300">
-                      <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 pointer-events-none"><MoonStar size={150} /></div>
-                      <div className="flex items-center gap-4 mb-6 relative z-10">
-                        <div className="bg-orange-100 text-orange-600 p-3 sm:p-4 rounded-2xl shadow-inner shrink-0"><ChefHat size={32} /></div>
+                    <div className="bg-white rounded-[2rem] lg:rounded-[3rem] p-8 lg:p-12 shadow-xl border border-slate-200 relative overflow-hidden group hover:border-orange-200 transition-colors duration-300">
+                      <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 pointer-events-none"><MoonStar size={300} /></div>
+                      <div className="flex items-center gap-6 mb-10 relative z-10">
+                        <div className="bg-orange-100 text-orange-600 p-5 lg:p-6 rounded-3xl shadow-inner shrink-0"><ChefHat size={40} /></div>
                         <div>
-                          <h4 className="text-xl sm:text-2xl font-black text-[#0B3B2C]">İftar Özeti</h4>
-                          <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">{visitorDate}</p>
+                          <h4 className="text-3xl lg:text-4xl font-black text-[#0B3B2C]">İftar Özeti</h4>
+                          <p className="text-base lg:text-lg font-bold text-slate-500 uppercase tracking-widest mt-2">{visitorDate}</p>
                         </div>
                       </div>
                       
-                      <div className="mb-6 relative z-10">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Toplam Rezerve</p>
-                        <p className="text-4xl sm:text-5xl font-black text-orange-500 drop-shadow-sm">{visitorIftarSummary.totalPeople} <span className="text-xl sm:text-2xl text-slate-400 font-bold">Kişi</span></p>
+                      <div className="mb-10 relative z-10">
+                        <p className="text-sm lg:text-base font-black text-slate-400 uppercase tracking-widest mb-2">Toplam Rezerve</p>
+                        <p className="text-6xl lg:text-8xl font-black text-orange-500 drop-shadow-sm">{visitorIftarSummary.totalPeople} <span className="text-3xl lg:text-4xl text-slate-400 font-bold">Kişi</span></p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3 relative z-10">
-                        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow">
-                          <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 sm:mb-0">Tavuk</span>
-                          <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalTavuk}</span>
+                      <div className="grid grid-cols-2 gap-4 lg:gap-6 relative z-10">
+                        <div className="bg-slate-50 p-5 lg:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow">
+                          <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-0">Tavuk</span>
+                          <span className="font-black text-3xl lg:text-4xl text-[#0B3B2C]">{visitorIftarSummary.totalTavuk}</span>
                         </div>
-                        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow">
-                          <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 sm:mb-0">Hünkar</span>
-                          <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalHunkar}</span>
+                        <div className="bg-slate-50 p-5 lg:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow">
+                          <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-0">Hünkar</span>
+                          <span className="font-black text-3xl lg:text-4xl text-[#0B3B2C]">{visitorIftarSummary.totalHunkar}</span>
                         </div>
-                        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow">
-                          <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 sm:mb-0">Izgara</span>
-                          <span className="font-black text-xl sm:text-2xl text-[#0B3B2C]">{visitorIftarSummary.totalKarisik}</span>
+                        <div className="bg-slate-50 p-5 lg:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow">
+                          <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-0">Izgara</span>
+                          <span className="font-black text-3xl lg:text-4xl text-[#0B3B2C]">{visitorIftarSummary.totalKarisik}</span>
                         </div>
-                        <div className="bg-orange-50 p-3 sm:p-4 rounded-2xl border border-orange-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md group-hover:border-orange-200 transition-all">
-                          <span className="text-[10px] sm:text-xs font-bold text-orange-600 uppercase tracking-wider mb-1 sm:mb-0">Çocuk</span>
-                          <span className="font-black text-xl sm:text-2xl text-orange-600">{visitorIftarSummary.totalCocuk}</span>
+                        <div className="bg-orange-50 p-5 lg:p-6 rounded-3xl border border-orange-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md group-hover:border-orange-200 transition-all">
+                          <span className="text-xs lg:text-sm font-bold text-orange-600 uppercase tracking-wider mb-2 sm:mb-0">Çocuk</span>
+                          <span className="font-black text-3xl lg:text-4xl text-orange-600">{visitorIftarSummary.totalCocuk}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Maç Kutusu */}
-                    <div className="bg-slate-50 rounded-3xl p-6 sm:p-8 border border-slate-200 relative overflow-hidden flex flex-col justify-between group hover:border-blue-200 transition-colors duration-300">
-                      <div className="absolute -right-6 -top-6 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 pointer-events-none"><MonitorPlay size={200} /></div>
-                      <div className="flex items-center gap-4 mb-6 relative z-10">
-                        <div className="bg-blue-100 text-blue-600 p-3 sm:p-4 rounded-2xl shadow-inner shrink-0"><MonitorPlay size={32} /></div>
+                    <div className="bg-white rounded-[2rem] lg:rounded-[3rem] p-8 lg:p-12 shadow-xl border border-slate-200 relative overflow-hidden flex flex-col justify-between group hover:border-blue-200 transition-colors duration-300">
+                      <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 pointer-events-none"><MonitorPlay size={300} /></div>
+                      <div className="flex items-center gap-6 mb-8 relative z-10">
+                        <div className="bg-blue-100 text-blue-600 p-5 lg:p-6 rounded-3xl shadow-inner shrink-0"><MonitorPlay size={40} /></div>
                         <div>
-                          <h4 className="text-xl sm:text-2xl font-black text-[#0a192f]">Maç Yayını</h4>
-                          <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">{visitorDate}</p>
+                          <h4 className="text-3xl lg:text-4xl font-black text-[#0a192f]">Maç Yayını</h4>
+                          <p className="text-base lg:text-lg font-bold text-slate-500 uppercase tracking-widest mt-2">{visitorDate}</p>
                         </div>
                       </div>
 
                       {/* SIRADAKİ MAÇ ALANI */}
-                      <div className="bg-white p-4 rounded-2xl border border-blue-100 mb-6 relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm group-hover:shadow-md transition-shadow">
+                      <div className="bg-slate-50 p-6 lg:p-8 rounded-3xl border border-blue-100 mb-10 relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-sm group-hover:shadow-lg transition-shadow">
                          <div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-1 block">Sıradaki Maç</span>
-                            <p className="text-sm sm:text-base font-black text-[#0a192f]">{nextMatch.team1} - {nextMatch.team2}</p>
-                            <p className="text-xs text-slate-500 font-bold mt-1">{nextMatch.displayDate}</p>
+                            <span className="text-xs lg:text-sm font-black uppercase tracking-widest text-blue-500 mb-2 block">Sıradaki Maç</span>
+                            <p className="text-xl lg:text-2xl font-black text-[#0a192f]">{nextMatch.team1} - {nextMatch.team2}</p>
+                            <p className="text-sm lg:text-base text-slate-500 font-bold mt-2">{nextMatch.displayDate}</p>
                          </div>
-                         <button onClick={() => setShowFixtureModal(true)} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 sm:py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-transform hover:scale-105 shadow-md whitespace-nowrap text-center">
+                         <button onClick={() => setShowFixtureModal(true)} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 lg:px-8 lg:py-5 rounded-2xl text-sm lg:text-base font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-md whitespace-nowrap text-center">
                             Fikstür
                          </button>
                       </div>
                       
                       <div className="relative z-10 mt-auto">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Seçili Gün Seyirci</p>
-                        <p className="text-4xl sm:text-5xl font-black text-blue-600 drop-shadow-sm">{visitorTotalMatchPeople} <span className="text-xl sm:text-2xl text-slate-400 font-bold">Kişi</span></p>
+                        <p className="text-sm lg:text-base font-black text-slate-400 uppercase tracking-widest mb-2">Seçili Gün Seyirci</p>
+                        <p className="text-7xl lg:text-8xl font-black text-blue-600 drop-shadow-sm">{visitorTotalMatchPeople} <span className="text-3xl lg:text-4xl text-slate-400 font-bold">Kişi</span></p>
                       </div>
                     </div>
                   </div>
@@ -878,44 +878,44 @@ export default function App() {
         </main>
 
         {/* PREMIUM FOOTER */}
-        <footer id="iletisim" className="w-full bg-slate-950 text-slate-400 py-16 sm:py-20 relative z-10 border-t border-slate-800">
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-12">
+        <footer id="iletisim" className="w-full bg-slate-950 text-slate-400 py-20 lg:py-24 relative z-10 border-t border-slate-800">
+          <div className="w-full mx-auto px-6 sm:px-12 lg:px-24 grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-24">
             
             {/* Logo & About */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-16 sm:h-20 object-contain mb-4 sm:mb-6 opacity-90" />
-              <p className="text-sm sm:text-base leading-relaxed mb-4 max-w-xs font-medium">Şehrin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
+              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-24 lg:h-32 object-contain mb-8 opacity-90" />
+              <p className="text-base lg:text-lg leading-relaxed mb-6 max-w-sm font-medium">Şehrin kalbinde, lezzet ve muhabbetin kesişme noktası. Sizi ağırlamaktan mutluluk duyarız.</p>
             </div>
 
             {/* İletişim */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="text-white font-black uppercase tracking-widest mb-4 sm:mb-6 text-sm sm:text-base">İletişim</h4>
-              <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base font-medium">
-                <li><a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-2 sm:gap-3"><Phone size={18}/> 0262 642 14 13</a></li>
-                <li><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-2 sm:gap-3"><Instagram size={18}/> @salascaferestaurant</a></li>
-                <li className="flex items-start justify-center md:justify-start gap-2 sm:gap-3 text-left"><MapPin size={18} className="shrink-0 mt-0.5"/> Gebze, Kocaeli</li>
+              <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">İletişim</h4>
+              <ul className="space-y-5 text-base lg:text-lg font-medium">
+                <li><a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-4"><Phone size={20}/> 0262 642 14 13</a></li>
+                <li><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-4"><Instagram size={20}/> @salascaferestaurant</a></li>
+                <li className="flex items-start justify-center md:justify-start gap-4 text-left"><MapPin size={20} className="shrink-0 mt-1"/> Gebze, Kocaeli</li>
               </ul>
             </div>
 
             {/* Linkler & Login */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="text-white font-black uppercase tracking-widest mb-4 sm:mb-6 text-sm sm:text-base">Hızlı Bağlantılar</h4>
-              <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base font-medium mb-6 sm:mb-8">
-                <li><a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-2"><ChevronRight size={16} className="text-orange-500"/> Dijital Menü</a></li>
-                <li><button onClick={() => handleScroll('rezervasyon')} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-2"><ChevronRight size={16} className="text-orange-500"/> Rezervasyon Durumu</button></li>
+              <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">Hızlı Bağlantılar</h4>
+              <ul className="space-y-5 text-base lg:text-lg font-medium mb-10">
+                <li><a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Dijital Menü</a></li>
+                <li><button onClick={() => handleScroll('rezervasyon')} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Rezervasyon Durumu</button></li>
               </ul>
               
               {/* PERSONEL GİRİŞİ */}
               <button 
                 onClick={() => setShowLoginModal(true)} 
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-black uppercase tracking-widest flex items-center gap-2 transition-all border border-slate-700 hover:border-slate-600 shadow-lg hover:shadow-xl hover:-translate-y-1"
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 lg:px-8 lg:py-4 rounded-2xl text-sm lg:text-base font-black uppercase tracking-widest flex items-center gap-3 transition-all border border-slate-700 hover:border-slate-600 shadow-lg hover:shadow-xl hover:-translate-y-1"
               >
-                <Lock size={16} /> Personel Girişi
+                <Lock size={18} /> Personel Girişi
               </button>
             </div>
           </div>
           
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-slate-800/50 text-center text-xs sm:text-sm font-medium opacity-60">
+          <div className="w-full mx-auto px-6 sm:px-12 lg:px-24 mt-20 pt-10 border-t border-slate-800/50 text-center text-sm font-medium opacity-60">
             <p>© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
           </div>
         </footer>
@@ -923,22 +923,22 @@ export default function App() {
         {/* FİKSTÜR MODAL */}
         {showFixtureModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh] animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-[#0a192f] p-5 sm:p-6 flex items-center justify-between text-white shrink-0">
-                <h3 className="font-black tracking-wide flex items-center gap-2 text-base sm:text-lg"><MonitorPlay size={20} className="text-cyan-400"/> Dev Ekran Maç Fikstürü</h3>
-                <button onClick={() => setShowFixtureModal(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh] animate-in slide-in-from-bottom-4 duration-300">
+              <div className="bg-[#0a192f] p-6 lg:p-8 flex items-center justify-between text-white shrink-0">
+                <h3 className="font-black tracking-wide flex items-center gap-3 text-lg lg:text-xl"><MonitorPlay size={24} className="text-cyan-400"/> Dev Ekran Maç Fikstürü</h3>
+                <button onClick={() => setShowFixtureModal(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
               </div>
-              <div className="overflow-y-auto p-3 sm:p-4 bg-slate-50">
-                <div className="space-y-3">
+              <div className="overflow-y-auto p-4 lg:p-6 bg-slate-50">
+                <div className="space-y-4">
                    {MATCH_FIXTURE.map((match, idx) => (
-                     <div key={idx} className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors">
+                     <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors">
                         <div>
-                           <p className="text-xs sm:text-sm font-bold text-slate-400 flex items-center gap-1.5 mb-1.5"><CalendarDays size={14}/> {match.displayDate}</p>
-                           <p className="font-black text-[#0a192f] text-sm sm:text-base">{match.team1} <span className="text-slate-300 font-normal mx-1 sm:mx-2">vs</span> {match.team2}</p>
+                           <p className="text-sm font-bold text-slate-400 flex items-center gap-2 mb-2"><CalendarDays size={16}/> {match.displayDate}</p>
+                           <p className="font-black text-[#0a192f] text-base lg:text-lg">{match.team1} <span className="text-slate-300 font-normal mx-2">vs</span> {match.team2}</p>
                         </div>
                         <button 
                            onClick={() => { setVisitorDate(match.date); setShowFixtureModal(false); handleScroll('rezervasyon'); }} 
-                           className="bg-blue-50 text-blue-600 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-colors"
+                           className="bg-blue-50 text-blue-600 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-colors"
                         >
                           Seç
                         </button>
@@ -953,17 +953,17 @@ export default function App() {
         {/* TATLILAR MENÜSÜ MODAL */}
         {showDessertsModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-4 duration-300">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[1400px] overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-4 duration-300">
               
-              <div className="bg-[#0B3B2C] p-4 sm:p-6 flex items-center justify-between text-white shrink-0">
-                <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl md:text-2xl"><Coffee size={24} className="text-pink-400"/> Tatlı Menümüz</h3>
-                <button onClick={() => setShowDessertsModal(false)} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
+              <div className="bg-[#0B3B2C] p-5 sm:p-8 flex items-center justify-between text-white shrink-0">
+                <h3 className="font-black tracking-wide flex items-center gap-3 text-xl sm:text-3xl"><Coffee size={32} className="text-pink-400"/> Tatlı Menümüz</h3>
+                <button onClick={() => setShowDessertsModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={32}/></button>
               </div>
               
-              <div className="overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 flex-1">
-                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="overflow-y-auto p-6 sm:p-10 lg:p-12 bg-slate-50 flex-1">
+                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
                    {DESSERTS.map((tatli) => (
-                     <div key={tatli.id} className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-1 sm:hover:-translate-y-2">
+                     <div key={tatli.id} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-2">
                        <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
                           <img 
                             src={encodeURI(tatli.image)} 
@@ -972,8 +972,8 @@ export default function App() {
                             onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
                           />
                        </div>
-                       <div className="p-3 sm:p-4 text-center flex flex-col justify-center grow min-h-[60px] sm:min-h-[70px] bg-white z-10">
-                          <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm md:text-base leading-snug">{tatli.name}</h4>
+                       <div className="p-5 sm:p-6 text-center flex flex-col justify-center grow min-h-[80px] bg-white z-10">
+                          <h4 className="font-black text-[#0B3B2C] text-sm sm:text-base lg:text-lg leading-snug">{tatli.name}</h4>
                        </div>
                      </div>
                    ))}
@@ -986,65 +986,65 @@ export default function App() {
         {/* ZİYARETÇİ REZERVASYON TALEBİ MODALI */}
         {showRequestModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-emerald-700 p-5 sm:p-6 flex items-center justify-between text-white">
-                <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl"><CalendarDays size={24} className="text-emerald-300"/> Rezervasyon Talebi Oluştur</h3>
-                <button onClick={() => setShowRequestModal(false)} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+              <div className="bg-emerald-700 p-6 sm:p-8 flex items-center justify-between text-white">
+                <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><CalendarDays size={28} className="text-emerald-300"/> Rezervasyon Talebi Oluştur</h3>
+                <button onClick={() => setShowRequestModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={28}/></button>
               </div>
               
               {requestSuccess ? (
-                 <div className="p-10 sm:p-16 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-6">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2 sm:mb-4">
-                       <CheckCircle2 size={40} className="sm:w-12 sm:h-12" />
+                 <div className="p-16 flex flex-col items-center justify-center text-center space-y-6">
+                    <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                       <CheckCircle2 size={48} />
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-black text-slate-800">Talebiniz Alındı!</h3>
-                    <p className="text-sm sm:text-base text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
+                    <h3 className="text-3xl font-black text-slate-800">Talebiniz Alındı!</h3>
+                    <p className="text-lg text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
                  </div>
               ) : (
-                <form onSubmit={submitRequest} className="p-6 sm:p-8 space-y-4 sm:space-y-5">
+                <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
                   
                   {/* Tür Seçimi */}
                   <div>
-                    <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Rezervasyon Türü</label>
-                    <div className="flex gap-3 sm:gap-4">
-                       <button type="button" onClick={() => setRequestData({...requestData, type: 'iftar'})} className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'iftar' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200'}`}>
-                         <MoonStar size={18}/> İftar
+                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Rezervasyon Türü</label>
+                    <div className="flex gap-4">
+                       <button type="button" onClick={() => setRequestData({...requestData, type: 'iftar'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'iftar' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200'}`}>
+                         <MoonStar size={20}/> İftar
                        </button>
-                       <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`flex-1 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200'}`}>
-                         <MonitorPlay size={18}/> Maç Yayını
+                       <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200'}`}>
+                         <MonitorPlay size={20}/> Maç Yayını
                        </button>
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex gap-5">
                     <div className="flex-[2]">
-                      <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Ad Soyad</label>
-                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-base sm:text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="Adınız Soyadınız" />
+                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
+                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="Adınız Soyadınız" />
                     </div>
                     <div className="flex-[1]">
-                      <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Kişi</label>
-                      <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-base sm:text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi</label>
+                      <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex gap-5">
                      <div className="flex-1">
-                        <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Telefon</label>
-                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-base sm:text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="05XX..." />
+                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
+                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="05XX..." />
                      </div>
                      <div className="flex-1">
-                        <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Tarih</label>
-                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className={`w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-base sm:text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tarih</label>
+                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
                      </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Notunuz (İsteğe Bağlı)</label>
-                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="2" className={`w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-sm sm:text-base ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} placeholder="Örn: Mama sandalyesi istiyoruz, cam kenarı olsun vb."></textarea>
+                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Notunuz (İsteğe Bağlı)</label>
+                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} placeholder="Örn: Mama sandalyesi istiyoruz, cam kenarı olsun vb."></textarea>
                   </div>
 
-                  <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all shadow-lg hover:shadow-xl mt-2 sm:mt-4 flex items-center justify-center gap-2 sm:gap-3 hover:-translate-y-0.5 text-base sm:text-lg ${requestData.type === 'iftar' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
-                    Talebi Gönder <ArrowRight size={20} />
+                  <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'iftar' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                    Talebi Gönder <ArrowRight size={24} />
                   </button>
                 </form>
               )}
@@ -1055,37 +1055,37 @@ export default function App() {
         {/* LOGIN MODAL */}
         {showLoginModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-[#0B3B2C] p-5 sm:p-6 flex items-center justify-between text-white">
-                <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl"><Lock size={20} className="text-orange-400"/> Sistem Girişi</h3>
-                <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+              <div className="bg-[#0B3B2C] p-6 sm:p-8 flex items-center justify-between text-white">
+                <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><Lock size={24} className="text-orange-400"/> Sistem Girişi</h3>
+                <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
               </div>
-              <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4 sm:space-y-6">
-                {loginError && <div className="bg-red-50 text-red-600 text-sm font-bold p-3 sm:p-4 rounded-xl border border-red-100 flex items-center gap-2"><X size={16}/> {loginError}</div>}
+              <form onSubmit={handleLogin} className="p-8 sm:p-10 space-y-6">
+                {loginError && <div className="bg-red-50 text-red-600 text-base font-bold p-4 rounded-xl border border-red-100 flex items-center gap-2"><X size={20}/> {loginError}</div>}
                 
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Kullanıcı Adı</label>
+                  <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kullanıcı Adı</label>
                   <input 
                     type="text" 
                     value={loginUser} 
                     onChange={(e) => setLoginUser(e.target.value)} 
-                    className="w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-base sm:text-lg" 
+                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-lg" 
                     placeholder="Kullanıcı adınızı girin" 
                     autoFocus
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Şifre</label>
+                  <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Şifre</label>
                   <input 
                     type="password" 
                     value={loginPass} 
                     onChange={(e) => setLoginPass(e.target.value)} 
-                    className="w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-base sm:text-lg" 
+                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-lg" 
                     placeholder="••••••••" 
                   />
                 </div>
-                <button type="submit" className="w-full bg-[#0B3B2C] hover:bg-emerald-900 text-white font-black tracking-widest uppercase py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 sm:mt-6 flex items-center justify-center gap-2 sm:gap-3 hover:-translate-y-0.5 text-base sm:text-lg">
-                  Giriş Yap <ArrowRight size={20} />
+                <button type="submit" className="w-full bg-[#0B3B2C] hover:bg-emerald-900 text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-6 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg">
+                  Giriş Yap <ArrowRight size={24} />
                 </button>
               </form>
             </div>
