@@ -686,7 +686,8 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
         
         {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
-        <style>{`
+        <style dangerouslySetInnerHTML={{__html: `
+          /* KESİN VITE CSS SIFIRLAMA (YANLARDAKİ SİYAH BOŞLUKLARI YOK EDER) */
           #root {
             max-width: 100% !important;
             width: 100% !important;
@@ -736,7 +737,7 @@ export default function App() {
             transform: skewX(-20deg);
             animation: shine 3s infinite;
           }
-        `}</style>
+        `}} />
 
         {/* PREMIUM NAVBAR - DÜZELTİLMİŞ GENİŞ TASARIM */}
         <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
@@ -1040,6 +1041,11 @@ export default function App() {
                 <li>
                    <a href="https://wa.me/905392356004" target="_blank" rel="noreferrer" className="hover:text-[#25D366] transition-colors flex items-center justify-center md:justify-start gap-4">
                      <MessageCircle size={20}/> 💬 WhatsApp: 0539 235 60 04
+                   </a>
+                </li>
+                <li>
+                   <a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-pink-500 transition-colors flex items-center justify-center md:justify-start gap-4">
+                     <Instagram size={20}/> 📸 Instagram: @salascaferestaurant
                    </a>
                 </li>
                 <li>
