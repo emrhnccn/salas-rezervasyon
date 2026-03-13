@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle
 } from 'lucide-react';
 // import { Analytics } from '@vercel/analytics/react'; // Analytics şimdilik yorum satırında
 
@@ -133,8 +133,20 @@ export default function App() {
   const [requestSuccess, setRequestSuccess] = useState(false);
   
   // MÜŞTERİ REZERVASYON TALEBİ STATE
-  const initialRequestState = { type: 'iftar', name: '', phone: '', peopleCount: 2, date: getToday(), notes: '' };
+  const initialRequestState = { 
+    type: 'iftar', 
+    name: '', 
+    phone: '', 
+    peopleCount: 2, 
+    date: getToday(), 
+    notes: '',
+    menuTavuk: 0,
+    menuHunkar: 0,
+    menuKarisik: 0,
+    menuDiger: 0
+  };
   const [requestData, setRequestData] = useState(initialRequestState);
+  const [requestError, setRequestError] = useState('');
 
   // NAVBAR SCROLL STATE
   const [isScrolled, setIsScrolled] = useState(false);
@@ -273,9 +285,10 @@ export default function App() {
   // --- MÜŞTERİ REZERVASYON TALEBİ GÖNDERME ---
   const handleRequestChange = (e) => {
     const { name, value } = e.target;
+    setRequestError(''); // Hata mesajını temizle
     setRequestData(prev => ({
       ...prev,
-      [name]: name === 'peopleCount' ? (value === '' ? '' : parseInt(value)) : value
+      [name]: name.includes('Count') || name.includes('menu') ? (value === '' ? '' : parseInt(value)) : value
     }));
   };
 
@@ -284,23 +297,49 @@ export default function App() {
     if (!user) return;
     if (!requestData.name?.trim() || !requestData.phone?.trim()) return;
 
+    if (requestData.type === 'iftar') {
+      const totalMenus = (parseInt(requestData.menuTavuk) || 0) + 
+                         (parseInt(requestData.menuHunkar) || 0) + 
+                         (parseInt(requestData.menuKarisik) || 0) + 
+                         (parseInt(requestData.menuDiger) || 0);
+
+      const peopleCount = parseInt(requestData.peopleCount) || 1;
+
+      if (totalMenus !== peopleCount) {
+        setRequestError(`Seçilen menü sayısı (${totalMenus}) ile kişi sayısı (${peopleCount}) uyuşmuyor. Lütfen kontrol ediniz.`);
+        return;
+      }
+    }
+
     try {
-      await addDoc(collection(db, 'reservationRequests'), {
+      const submissionData = {
         ...requestData,
         phone: requestData.phone.trim(),
         peopleCount: parseInt(requestData.peopleCount) || 1,
         status: 'pending',
         createdAt: new Date().toISOString(),
         createdBy: user.uid
-      });
+      };
+
+      // Maç yayınında menüleri sıfırla
+      if(requestData.type === 'mac') {
+        submissionData.menuTavuk = 0;
+        submissionData.menuHunkar = 0;
+        submissionData.menuKarisik = 0;
+        submissionData.menuDiger = 0;
+      }
+
+      await addDoc(collection(db, 'reservationRequests'), submissionData);
       setRequestSuccess(true);
       setTimeout(() => {
         setShowRequestModal(false);
         setRequestSuccess(false);
         setRequestData(initialRequestState);
+        setRequestError('');
       }, 3000);
     } catch (err) {
       console.error("Talep gönderilemedi:", err);
+      setRequestError("Bir hata oluştu. Lütfen tekrar deneyin.");
     }
   };
 
@@ -322,7 +361,11 @@ export default function App() {
       };
 
       if (req.type === 'iftar') {
-        newRes.menuTavuk = 0; newRes.menuHunkar = 0; newRes.menuKarisik = 0; newRes.menuCocuk = 0;
+        newRes.menuTavuk = req.menuTavuk || 0; 
+        newRes.menuHunkar = req.menuHunkar || 0; 
+        newRes.menuKarisik = req.menuKarisik || 0; 
+        // Admin panelinde çocuk menüsü var, talepte diğer. Eşleştirelim.
+        newRes.menuCocuk = req.menuDiger || 0; 
       }
 
       // Ana tabloya ekle
@@ -1020,7 +1063,7 @@ export default function App() {
               </div>
               
               {requestSuccess ? (
-                 <div className="p-16 flex flex-col items-center justify-center text-center space-y-6">
+                 <div className="p-16 flex flex-col items-center justify-center text-center space-y-6 bg-white">
                     <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
                        <CheckCircle2 size={48} />
                     </div>
@@ -1028,52 +1071,94 @@ export default function App() {
                     <p className="text-lg text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
                  </div>
               ) : (
-                <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
-                  
-                  {/* Tür Seçimi */}
-                  <div>
-                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Rezervasyon Türü</label>
-                    <div className="flex gap-4">
-                       <button type="button" onClick={() => setRequestData({...requestData, type: 'iftar'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'iftar' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200'}`}>
-                         <MoonStar size={20}/> İftar
-                       </button>
-                       <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200'}`}>
-                         <MonitorPlay size={20}/> Maç Yayını
-                       </button>
+                <div className="bg-white">
+                  <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
+                    
+                    {requestError && (
+                      <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold border border-red-100 flex items-center gap-3">
+                        <AlertTriangle size={20} className="shrink-0" />
+                        {requestError}
+                      </div>
+                    )}
+
+                    {/* Tür Seçimi */}
+                    <div>
+                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Rezervasyon Türü</label>
+                      <div className="flex gap-4">
+                         <button type="button" onClick={() => setRequestData({...requestData, type: 'iftar'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'iftar' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white'}`}>
+                           <MoonStar size={20}/> İftar
+                         </button>
+                         <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200 bg-white'}`}>
+                           <MonitorPlay size={20}/> Maç Yayını
+                         </button>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex gap-5">
-                    <div className="flex-[2]">
-                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
-                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="Adınız Soyadınız" />
+                    <div className="flex gap-5">
+                      <div className="flex-[2]">
+                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
+                        <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="Adınız Soyadınız" />
+                      </div>
+                      <div className="flex-[1]">
+                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi</label>
+                        <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+                      </div>
                     </div>
-                    <div className="flex-[1]">
-                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi</label>
-                      <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+
+                    {/* İftar Menü Seçimi */}
+                    {requestData.type === 'iftar' && (
+                      <div className="bg-orange-50/50 p-5 rounded-2xl border border-orange-100">
+                        <label className="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+                           <UtensilsCrossed size={18} className="text-orange-500"/> İftar Menüsü Seçimi
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                              <span className="block text-xs font-bold text-slate-500 mb-2">Tavuk</span>
+                              <input type="number" name="menuTavuk" min="0" value={requestData.menuTavuk} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
+                           </div>
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                              <span className="block text-xs font-bold text-slate-500 mb-2">Hünkar</span>
+                              <input type="number" name="menuHunkar" min="0" value={requestData.menuHunkar} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
+                           </div>
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                              <span className="block text-xs font-bold text-slate-500 mb-2">Izgara</span>
+                              <input type="number" name="menuKarisik" min="0" value={requestData.menuKarisik} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
+                           </div>
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                              <span className="block text-xs font-bold text-slate-500 mb-2">Diğer</span>
+                              <input type="number" name="menuDiger" min="0" value={requestData.menuDiger} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
+                           </div>
+                        </div>
+                        {requestData.menuDiger > 0 && (
+                          <div className="mt-4 text-xs font-bold text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-200 flex items-start gap-2">
+                             <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+                             <span>Diğer menü seçimleriniz için iftardan en geç 3 saat öncesine kadar iletişim adreslerimizden bize bilgi vermeyi unutmayın. Aksi takdirde hazırlık yapılamayabilir.</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex gap-5">
+                       <div className="flex-1">
+                          <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
+                          <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="05XX..." />
+                       </div>
+                       <div className="flex-1">
+                          <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tarih</label>
+                          <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex gap-5">
-                     <div className="flex-1">
-                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
-                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="05XX..." />
-                     </div>
-                     <div className="flex-1">
-                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tarih</label>
-                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
-                     </div>
-                  </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Notunuz (İsteğe Bağlı)</label>
+                      <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} placeholder="Örn: Mama sandalyesi istiyoruz, cam kenarı olsun vb."></textarea>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Notunuz (İsteğe Bağlı)</label>
-                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" className={`w-full px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} placeholder="Örn: Mama sandalyesi istiyoruz, cam kenarı olsun vb."></textarea>
-                  </div>
-
-                  <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'iftar' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
-                    Talebi Gönder <ArrowRight size={24} />
-                  </button>
-                </form>
+                    <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'iftar' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                      Talebi Gönder <ArrowRight size={24} />
+                    </button>
+                  </form>
+                </div>
               )}
             </div>
           </div>
@@ -1087,7 +1172,7 @@ export default function App() {
                 <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><Lock size={24} className="text-orange-400"/> Sistem Girişi</h3>
                 <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
               </div>
-              <form onSubmit={handleLogin} className="p-8 sm:p-10 space-y-6">
+              <form onSubmit={handleLogin} className="p-8 sm:p-10 space-y-6 bg-white">
                 {loginError && <div className="bg-red-50 text-red-600 text-base font-bold p-4 rounded-xl border border-red-100 flex items-center gap-2"><X size={20}/> {loginError}</div>}
                 
                 <div>
@@ -1096,7 +1181,7 @@ export default function App() {
                     type="text" 
                     value={loginUser} 
                     onChange={(e) => setLoginUser(e.target.value)} 
-                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-lg" 
+                    className="w-full bg-white px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none font-bold text-slate-800 transition-all text-lg" 
                     placeholder="Kullanıcı adınızı girin" 
                     autoFocus
                   />
@@ -1107,7 +1192,7 @@ export default function App() {
                     type="password" 
                     value={loginPass} 
                     onChange={(e) => setLoginPass(e.target.value)} 
-                    className="w-full px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-lg" 
+                    className="w-full bg-white px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none font-bold text-slate-800 transition-all text-lg" 
                     placeholder="••••••••" 
                   />
                 </div>
