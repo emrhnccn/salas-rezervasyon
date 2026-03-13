@@ -305,7 +305,7 @@ export default function App() {
   };
 
   // --- ADMIN TALEP YÖNETİMİ ---
-  const handleApproveRequest = async (req) => {
+  const handleApproveRequest = async (req, sendWhatsapp = false) => {
     if (!user) return;
     try {
       const targetCollection = req.type === 'iftar' ? 'reservations' : 'matchReservations';
@@ -329,6 +329,11 @@ export default function App() {
       await addDoc(collection(db, targetCollection), newRes);
       // Talebi sil
       await deleteDoc(doc(db, 'reservationRequests', req.id));
+
+      if (sendWhatsapp) {
+        sendWhatsApp(newRes, req.type, true); // Onay mesajı gönder
+      }
+
     } catch(err) { console.error("Onay hatası:", err); }
   };
 
@@ -456,7 +461,7 @@ export default function App() {
     } catch (err) { console.error("Silme hatası:", err); }
   };
 
-  const sendWhatsApp = (res, type) => {
+  const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
     let cleanPhone = res.phone.replace(/\D/g, '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
@@ -465,7 +470,12 @@ export default function App() {
     const eventName = type === 'iftar' ? 'iftar' : 'maç yayını';
     const masaMetni = res.table ? `${res.table} nolu masanız için ` : '';
     const nameStr = res.name || 'Misafirimiz';
-    const message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihindeki ${masaMetni}${res.peopleCount} kişilik ${eventName} rezervasyonunuz alınmıştır. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+    let message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihindeki ${masaMetni}${res.peopleCount} kişilik ${eventName} rezervasyonunuz alınmıştır. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+
+    if (isApproval) {
+        message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihi için oluşturduğunuz ${res.peopleCount} kişilik ${eventName} rezervasyon talebiniz ONAYLANMIŞTIR. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+    }
+
     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -1244,7 +1254,7 @@ export default function App() {
           <p className="font-bold text-lg tracking-widest animate-pulse uppercase">Sisteme Bağlanıyor...</p>
         </div>
       ) : (
-        <main className="w-full px-4 sm:px-8 lg:px-12 xl:px-20 mt-8 lg:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 print:block print:m-0 print:p-0 relative z-10">
+        <main className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-20 mt-8 lg:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 print:block print:m-0 print:p-0 relative z-10">
           
           {/* ----------------------------- */}
           {/* TALEPLER EKRANI */}
@@ -1266,7 +1276,7 @@ export default function App() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 lg:gap-8 w-full">
                        {pendingRequests.map((req) => (
-                         <div key={req.id} className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-6 lg:p-8 hover:shadow-xl transition-all relative overflow-hidden group w-full">
+                         <div key={req.id} className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-6 lg:p-8 hover:shadow-xl transition-all relative overflow-hidden group w-full flex flex-col">
                            {/* Tür Belirteci */}
                            <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-2xl font-black text-xs uppercase tracking-widest text-white shadow-md ${req.type === 'iftar' ? 'bg-orange-500' : 'bg-blue-600'}`}>
                              {req.type === 'iftar' ? 'İFTAR' : 'MAÇ YAYINI'}
@@ -1288,13 +1298,18 @@ export default function App() {
                               </div>
                            )}
 
-                           <div className="flex items-center gap-3 pt-6 border-t border-slate-200 mt-auto">
-                              <button onClick={() => handleApproveRequest(req)} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl text-sm font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-md flex items-center justify-center gap-2">
-                                 <Check size={20}/> Onayla Listeye Ekle
+                           <div className="flex flex-col gap-3 pt-6 border-t border-slate-200 mt-auto">
+                              <button onClick={() => handleApproveRequest(req, true)} className="w-full bg-[#25D366] hover:bg-[#20b858] text-white py-3.5 rounded-2xl text-sm font-black uppercase tracking-widest transition-transform hover:scale-[1.02] shadow-md flex items-center justify-center gap-2">
+                                 <MessageCircle size={20}/> Onayla & WA Gönder
                               </button>
-                              <button onClick={() => handleRejectRequest(req.id)} className="flex-none bg-slate-200 hover:bg-red-500 hover:text-white text-slate-500 p-3.5 rounded-2xl transition-colors shadow-sm" title="Reddet / Sil">
-                                 <Trash2 size={20}/>
-                              </button>
+                              <div className="flex gap-3">
+                                 <button onClick={() => handleApproveRequest(req, false)} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-colors shadow-sm flex items-center justify-center gap-2">
+                                    <Check size={18}/> Sadece Onayla
+                                 </button>
+                                 <button onClick={() => handleRejectRequest(req.id)} className="flex-none bg-slate-200 hover:bg-red-500 hover:text-white text-slate-600 px-4 py-3 rounded-2xl transition-colors shadow-sm" title="Reddet / Sil">
+                                    <Trash2 size={18}/>
+                                 </button>
+                              </div>
                            </div>
                          </div>
                        ))}
@@ -1631,7 +1646,7 @@ export default function App() {
                   {sortedMatchReservations.length === 0 ? (
                     <div className="bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 p-24 text-center text-slate-400 print:hidden w-full"><Search size={56} className="opacity-50 text-blue-400 mx-auto mb-5" /><p className="font-black text-2xl">Bu maça ait kayıt bulunamadı.</p></div>
                   ) : (
-                    <div className={`grid grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6 w-full ${printSingleId ? 'print:grid-cols-1 print:gap-0' : 'print:grid-cols-2 print:gap-4'}`}>
+                    <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-8 w-full ${printSingleId ? 'print:grid-cols-1 print:gap-0' : 'print:grid-cols-2 print:gap-4'}`}>
                       {sortedMatchReservations.map((res) => {
                         const isArrived = res.isArrived || false;
                         const isPrinting = printSingleId === res.id;
