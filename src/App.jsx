@@ -3,6 +3,7 @@ import {
   CalendarDays, Users, UtensilsCrossed, Armchair, 
   Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react'; // VERCEL ANALYTICS EKLENDİ
 
 // Firebase importları
 import { initializeApp } from 'firebase/app';
@@ -863,13 +864,10 @@ export default function App() {
                 <button onClick={() => setShowDessertsModal(false)} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
               </div>
               
-              {/* KATI GRID YAPISI: Mobil: 2 kolon, Tablet: 3 kolon, Laptop: 4 kolon, Desktop: 5 kolon */}
               <div className="overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 flex-1">
                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                    {DESSERTS.map((tatli) => (
                      <div key={tatli.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-1">
-                       
-                       {/* Resim Alanı: Sabit oran ve her zaman aynı yükseklik davranışı */}
                        <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
                           <img 
                             src={encodeURI(tatli.image)} 
@@ -878,17 +876,13 @@ export default function App() {
                             onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }}
                           />
                        </div>
-                       
-                       {/* İsim Alanı: Esnek yükseklik ile isimlerin her zaman görünmesini sağlar */}
                        <div className="p-3 sm:p-4 text-center flex flex-col justify-center grow min-h-[60px] sm:min-h-[70px] bg-white z-10">
                           <h4 className="font-black text-[#0B3B2C] text-xs sm:text-sm md:text-base leading-snug">{tatli.name}</h4>
                        </div>
-                       
                      </div>
                    ))}
                  </div>
               </div>
-
             </div>
           </div>
         )}
@@ -932,6 +926,7 @@ export default function App() {
             </div>
           </div>
         )}
+        <Analytics />
       </div>
     );
   }
@@ -1373,7 +1368,7 @@ export default function App() {
                           {isPrinting && <div className="hidden print:block text-center font-bold text-[12px] uppercase mb-2 border-b border-black">Salaaş Cafe MAÇ<br/>{selectedMatchDate}</div>}
                           
                           {matchDeleteConfirmId === res.id && (
-                             <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center p-4 border border-red-200 rounded-2xl print:hidden backdrop-blur-sm">
+                             <div className="absolute inset-0 bg-white/95 z-10 flex flex-col items-center justify-center p-4 border border-red-200 rounded-2xl print:hidden backdrop-blur-sm">
                                <p className="font-black text-slate-800 mb-4 text-lg">Silinsin mi?</p>
                                <div className="flex gap-3"><button onClick={() => executeDelete(res.id, 'matchReservations')} className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-md transition-colors">Evet, Sil</button><button onClick={() => setMatchDeleteConfirmId(null)} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-6 py-2 rounded-xl text-sm font-bold transition-colors">İptal</button></div>
                              </div>
@@ -1417,6 +1412,8 @@ export default function App() {
 
         </main>
       )}
+      
+      <Analytics />
     </div>
   );
 }
