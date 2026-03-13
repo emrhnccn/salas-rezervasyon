@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, Send
 } from 'lucide-react';
+// import { Analytics } from '@vercel/analytics/react'; // Analytics şimdilik yorum satırında
 
 // Firebase importları
 import { initializeApp } from 'firebase/app';
@@ -122,7 +123,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   
   // SAYFA GEÇİŞ STATE'İ (Sadece admin için)
-  const [activePage, setActivePage] = useState('iftar'); // 'iftar', 'mac', 'talepler'
+  const [activePage, setActivePage] = useState('iftar'); // 'iftar', 'mac', 'talepler', 'gecmis'
 
   // MÜŞTERİ EKRANI MODALLAR & SEÇİMLER
   const [visitorDate, setVisitorDate] = useState(getToday());
@@ -174,6 +175,10 @@ export default function App() {
 
   // TALEPLER (PENDING REQUESTS) STATE
   const [pendingRequests, setPendingRequests] = useState([]);
+
+  // GEÇMİŞ (HISTORY) STATE
+  const [historyDateFilter, setHistoryDateFilter] = useState(''); // '' means all history
+  const [historyTypeFilter, setHistoryTypeFilter] = useState('all'); // 'all', 'iftar', 'mac'
 
   // İFTAR SAYAÇ STATE'LERİ
   const [iftarTime, setIftarTime] = useState(null);
@@ -587,7 +592,7 @@ export default function App() {
     return 'reserved';
   };
 
-  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 150) * 100));
+  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 300) * 100)); // Kapasite 300'e güncellendi
   
   const handlePrintSingle = (id) => {
     setPrintSingleId(id);
@@ -602,6 +607,81 @@ export default function App() {
       window.scrollTo({top: y, behavior: 'smooth'});
     }
   };
+
+  // YENİ: WHATSAPP TOPLU BİLDİRİM FONKSİYONU
+  const sendBulkWhatsApp = (reservationsList, type) => {
+    if (!reservationsList || reservationsList.length === 0) {
+        alert("Bu tarihte gönderilecek rezervasyon bulunmuyor.");
+        return;
+    }
+    
+    // Geçerli telefon numarası olanları filtrele
+    const validReservations = reservationsList.filter(res => res.phone && res.phone.trim().length >= 10);
+    
+    if (validReservations.length === 0) {
+        alert("Geçerli telefon numarası bulunan kayıt yok.");
+        return;
+    }
+
+    const eventName = type === 'iftar' ? 'iftar' : 'maç yayını';
+    const dateStr = type === 'iftar' ? selectedFilterDate : selectedMatchDate;
+
+    // Her numara için yeni bir sekme açmak tarayıcı tarafından engellenebilir (pop-up blocker).
+    // Bu yüzden numaraları virgülle ayırarak tek bir WA yönlendirmesi veya liste sunumu yapılabilir.
+    // WhatsApp web/app çoklu gönderimi direkt desteklemiyor (broadcast list haricinde API lazım).
+    // Geçici/pratik çözüm: Numaraları virgülle ayırıp toplu panoya (clipboard) kopyalamak ve kullanıcıyı bilgilendirmek.
+    
+    let phoneListStr = "";
+    validReservations.forEach(res => {
+        let cleanPhone = res.phone.replace(/\D/g, '');
+        if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
+        else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
+        phoneListStr += cleanPhone + ",";
+    });
+    
+    // Sondaki virgülü al
+    phoneListStr = phoneListStr.slice(0, -1);
+
+    const message = `Salaaş Cafe'ye ${dateStr} tarihindeki ${eventName} rezervasyonunuzu hatırlatırız. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+    
+    // Tarayıcı destekliyorsa panoya kopyala
+    navigator.clipboard.writeText(phoneListStr).then(() => {
+        alert(`Toplam ${validReservations.length} numara kopyalandı! \n\nWhatsApp Broadcast (Toplu Mesaj) listenize bu numaraları yapıştırarak şu mesajı gönderebilirsiniz:\n\n"${message}"\n\n(Not: WhatsApp doğrudan toplu mesaj API'si olmadan tek tıkla çoklu gönderime izin vermez, numaraları panoya kopyaladık.)`);
+    }).catch(err => {
+        console.error('Panoya kopyalanamadı: ', err);
+        alert("Numaralar kopyalanamadı, lütfen konsolu kontrol edin.");
+    });
+  };
+
+  // YENİ: GEÇMİŞ (HISTORY) HESAPLAMALARI
+  const getHistoryData = () => {
+    let allData = [];
+    if (historyTypeFilter === 'all' || historyTypeFilter === 'iftar') {
+        const iftarHistory = reservations.map(r => ({ ...r, eventType: 'İftar' }));
+        allData = [...allData, ...iftarHistory];
+    }
+    if (historyTypeFilter === 'all' || historyTypeFilter === 'mac') {
+        const macHistory = matchReservations.map(r => ({ ...r, eventType: 'Maç' }));
+        allData = [...allData, ...macHistory];
+    }
+
+    // Tarihe göre filtrele
+    if (historyDateFilter) {
+        allData = allData.filter(r => r.date === historyDateFilter);
+    }
+
+    // Tarihe göre sırala (en yeni en üstte)
+    allData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Haftalık veya genel toplamları hesapla
+    const totalPeople = allData.reduce((acc, curr) => acc + (parseInt(curr.peopleCount) || 0), 0);
+    const totalArrived = allData.filter(r => r.isArrived).reduce((acc, curr) => acc + (parseInt(curr.peopleCount) || 0), 0);
+    const arrivalRate = totalPeople > 0 ? Math.round((totalArrived / totalPeople) * 100) : 0;
+
+    return { list: allData, totalPeople, totalArrived, arrivalRate };
+  };
+
+  const historyStats = getHistoryData();
 
 
   // =======================================================================
@@ -838,7 +918,7 @@ export default function App() {
                <h2 className="text-base lg:text-lg font-black tracking-[0.4em] text-orange-400 uppercase mb-6">Davet & Organizasyon</h2>
                <h3 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-10 drop-shadow-lg">Özel Günleriniz İçin Yanınızdayız</h3>
                <p className="text-lg sm:text-xl lg:text-3xl text-slate-300 font-light mb-16 max-w-4xl mx-auto leading-relaxed">
-                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 150 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
+                 Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 300 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
                </p>
                <a href="tel:+902626421413" className="shine-effect inline-flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 lg:px-14 lg:py-6 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-2xl hover:shadow-orange-500/30 text-base lg:text-xl">
                  <Phone size={24}/> Rezervasyon Hattı
@@ -1204,7 +1284,7 @@ export default function App() {
   // 2. PERSONEL / ADMİN YÖNETİM EKRANI
   // =======================================================================
   return (
-    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'iftar' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : 'bg-slate-100'}`}>
+    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'iftar' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : activePage === 'gecmis' ? 'bg-slate-100' : 'bg-slate-100'}`}>
       
       {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
       <style dangerouslySetInnerHTML={{__html: `
@@ -1296,6 +1376,12 @@ export default function App() {
                   <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full animate-bounce shadow-md">{pendingRequests.length}</span>
                 )}
               </button>
+              <button 
+                onClick={() => setActivePage('gecmis')} 
+                className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activePage === 'gecmis' ? 'bg-purple-600 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
+              >
+                <History size={16} className={activePage === 'gecmis' ? '' : 'opacity-50'}/> GEÇMİŞ
+              </button>
             </div>
           </div>
 
@@ -1310,7 +1396,7 @@ export default function App() {
                 </div>
              ) : null}
 
-            {activePage !== 'talepler' && (
+            {activePage !== 'talepler' && activePage !== 'gecmis' && (
               <div className={`flex shrink-0 items-center bg-white/10 rounded-xl px-4 py-2.5 lg:px-5 lg:py-3 border border-white/10 hover:bg-white/20 transition-colors w-full lg:w-auto justify-center`}>
                 <CalendarDays className={`mr-2 ${activePage === 'iftar' ? 'text-orange-400' : 'text-cyan-400'}`} size={20} />
                 <span className="text-[10px] lg:text-xs font-bold uppercase tracking-widest opacity-70 text-cyan-100 hidden lg:inline mr-3">Tarih Seç:</span>
@@ -1535,7 +1621,7 @@ export default function App() {
                     </div>
                     <div className="w-full sm:w-1/3 pt-2 print:hidden">
                        <div className="flex justify-between items-end mb-2 px-1">
-                         <span className="text-xs font-bold text-emerald-200 uppercase">Kapasite: 150</span>
+                         <span className="text-xs font-bold text-emerald-200 uppercase">Kapasite: 300</span>
                          <span className={`text-xs font-black ${occupancyRate >= 90 ? 'text-red-400' : 'text-emerald-300'}`}>DOLULUK: %{occupancyRate}</span>
                        </div>
                        <div className="w-full bg-emerald-950/60 rounded-full h-3 shadow-inner overflow-hidden">
@@ -1548,6 +1634,13 @@ export default function App() {
                     <div className="bg-white/95 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-2"><span className="block text-xs text-slate-500 font-bold mb-1">HÜNKAR</span><span className="font-black text-3xl sm:text-4xl text-[#0B3B2C] print:text-black">{dailySummary.totalHunkar}</span></div>
                     <div className="bg-white/95 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-2"><span className="block text-xs text-slate-500 font-bold mb-1">IZGARA</span><span className="font-black text-3xl sm:text-4xl text-[#0B3B2C] print:text-black">{dailySummary.totalKarisik}</span></div>
                     <div className="bg-orange-50 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-orange-200 print:border-black print:bg-white print:rounded-md print:py-2"><span className="block text-xs text-orange-600 font-bold mb-1">ÇOCUK</span><span className="font-black text-3xl sm:text-4xl text-orange-600 print:text-black">{dailySummary.totalCocuk}</span></div>
+                  </div>
+                  
+                  {/* YENİ: İftar İçin WhatsApp Toplu Mesaj Butonu */}
+                  <div className="mt-4 pt-4 border-t border-emerald-700/50 flex justify-end print:hidden">
+                      <button onClick={() => sendBulkWhatsApp(filteredReservations, 'iftar')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105">
+                         <MessageCircle size={18} /> Tümüne Hatırlatma Gönder
+                      </button>
                   </div>
                 </div>
 
@@ -1704,6 +1797,13 @@ export default function App() {
                       <p className="text-4xl sm:text-5xl font-black text-white mt-1 print:text-black">Toplam: <span className="text-cyan-400 print:text-black">{totalMatchPeople}</span> Seyirci</p>
                     </div>
                   </div>
+                  
+                  {/* YENİ: Maç İçin WhatsApp Toplu Mesaj Butonu */}
+                  <div className="mt-2 pt-4 border-t border-blue-800/50 flex justify-end print:hidden">
+                      <button onClick={() => sendBulkWhatsApp(filteredMatchReservations, 'mac')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105">
+                         <MessageCircle size={18} /> Tümüne Hatırlatma Gönder
+                      </button>
+                  </div>
                 </div>
 
                 <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-6 sm:p-8 lg:p-10 min-h-[500px] print:p-0 print:border-none print:shadow-none print:bg-white w-full">
@@ -1771,6 +1871,102 @@ export default function App() {
                 </div>
               </div>
             </>
+          )}
+
+          {/* ----------------------------- */}
+          {/* GEÇMİŞ (HISTORY) EKRANI */}
+          {/* ----------------------------- */}
+          {activePage === 'gecmis' && (
+            <div className="lg:col-span-12 space-y-6 w-full">
+               
+               {/* Geçmiş Özet Kartı */}
+               <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col sm:flex-row justify-between items-center gap-6 relative overflow-hidden w-full text-white">
+                  <div className="absolute right-0 top-0 opacity-10 pointer-events-none"><History size={250} /></div>
+                  <div className="flex items-center gap-5 z-10 w-full sm:w-auto">
+                    <div className="bg-white/10 p-4 rounded-2xl shrink-0"><History size={36} className="text-purple-300" /></div>
+                    <div>
+                      <h2 className="text-2xl lg:text-3xl font-black">Sistem Geçmişi & İstatistikler</h2>
+                      <p className="text-sm font-medium text-purple-200 mt-1">Geçmişe dönük tüm rezervasyon ve katılım verileri</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 w-full sm:w-auto z-10">
+                     <div className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 text-center flex-1">
+                        <span className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-1">Toplam Rezerve</span>
+                        <span className="text-3xl font-black">{historyStats.totalPeople}</span>
+                     </div>
+                     <div className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 text-center flex-1">
+                        <span className="block text-xs font-bold text-emerald-300 uppercase tracking-wider mb-1">Gelen Misafir</span>
+                        <span className="text-3xl font-black text-emerald-400">{historyStats.totalArrived} <span className="text-sm text-purple-200 font-medium">(%{historyStats.arrivalRate})</span></span>
+                     </div>
+                  </div>
+               </div>
+
+               {/* Geçmiş Filtreleri ve Liste */}
+               <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl border border-slate-100 w-full min-h-[500px]">
+                  
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 pb-6 border-b border-slate-100 gap-5">
+                     <h3 className="text-xl sm:text-2xl font-black text-slate-800">Geçmiş Kayıtlar</h3>
+                     
+                     <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                        <select value={historyTypeFilter} onChange={(e) => setHistoryTypeFilter(e.target.value)} className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-slate-700 outline-none focus:border-purple-500">
+                           <option value="all">Tümü (İftar + Maç)</option>
+                           <option value="iftar">Sadece İftar</option>
+                           <option value="mac">Sadece Maç</option>
+                        </select>
+                        <input type="date" value={historyDateFilter} onChange={(e) => setHistoryDateFilter(e.target.value)} className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-slate-700 outline-none focus:border-purple-500 cursor-pointer" />
+                        {historyDateFilter && (
+                           <button onClick={() => setHistoryDateFilter('')} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-3 rounded-xl font-bold transition-colors">Tarihi Sıfırla</button>
+                        )}
+                     </div>
+                  </div>
+
+                  {historyStats.list.length === 0 ? (
+                     <div className="bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 p-24 text-center text-slate-400 w-full">
+                       <History size={56} className="opacity-50 text-purple-400 mx-auto mb-5" />
+                       <p className="font-black text-2xl text-slate-600">Kayıt Bulunamadı</p>
+                       <p className="font-medium text-lg mt-3">Seçilen kriterlere uygun geçmiş veri bulunmuyor.</p>
+                     </div>
+                  ) : (
+                     <div className="overflow-x-auto w-full">
+                        <table className="w-full text-left border-collapse">
+                           <thead>
+                              <tr className="border-b-2 border-slate-200">
+                                 <th className="py-4 px-4 text-xs font-black uppercase tracking-wider text-slate-400">Tarih</th>
+                                 <th className="py-4 px-4 text-xs font-black uppercase tracking-wider text-slate-400">Tür</th>
+                                 <th className="py-4 px-4 text-xs font-black uppercase tracking-wider text-slate-400">Müşteri</th>
+                                 <th className="py-4 px-4 text-xs font-black uppercase tracking-wider text-slate-400">Telefon</th>
+                                 <th className="py-4 px-4 text-xs font-black uppercase tracking-wider text-slate-400 text-center">Kişi</th>
+                                 <th className="py-4 px-4 text-xs font-black uppercase tracking-wider text-slate-400 text-center">Durum</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {historyStats.list.map((res, idx) => (
+                                 <tr key={res.id || idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                    <td className="py-4 px-4 font-bold text-slate-700 whitespace-nowrap">{res.date}</td>
+                                    <td className="py-4 px-4">
+                                       <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg ${res.eventType === 'İftar' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                                          {res.eventType}
+                                       </span>
+                                    </td>
+                                    <td className="py-4 px-4 font-bold text-slate-800">{res.name}</td>
+                                    <td className="py-4 px-4 text-slate-500 font-medium">{res.phone}</td>
+                                    <td className="py-4 px-4 text-center font-black text-slate-700">{res.peopleCount}</td>
+                                    <td className="py-4 px-4 text-center">
+                                       {res.isArrived ? (
+                                          <span className="inline-flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg text-xs font-bold"><CheckCircle2 size={14}/> Geldi</span>
+                                       ) : (
+                                          <span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-3 py-1 rounded-lg text-xs font-bold"><X size={14}/> Gelmedi</span>
+                                       )}
+                                    </td>
+                                 </tr>
+                              ))}
+                           </tbody>
+                        </table>
+                     </div>
+                  )}
+               </div>
+            </div>
           )}
 
         </main>
