@@ -143,7 +143,7 @@ export default function App() {
     menuTavuk: 0,
     menuHunkar: 0,
     menuKarisik: 0,
-    menuDiger: 0
+    menuCocuk: 0
   };
   const [requestData, setRequestData] = useState(initialRequestState);
   const [requestError, setRequestError] = useState('');
@@ -301,7 +301,7 @@ export default function App() {
       const totalMenus = (parseInt(requestData.menuTavuk) || 0) + 
                          (parseInt(requestData.menuHunkar) || 0) + 
                          (parseInt(requestData.menuKarisik) || 0) + 
-                         (parseInt(requestData.menuDiger) || 0);
+                         (parseInt(requestData.menuCocuk) || 0);
 
       const peopleCount = parseInt(requestData.peopleCount) || 1;
 
@@ -326,7 +326,7 @@ export default function App() {
         submissionData.menuTavuk = 0;
         submissionData.menuHunkar = 0;
         submissionData.menuKarisik = 0;
-        submissionData.menuDiger = 0;
+        submissionData.menuCocuk = 0;
       }
 
       await addDoc(collection(db, 'reservationRequests'), submissionData);
@@ -364,8 +364,7 @@ export default function App() {
         newRes.menuTavuk = req.menuTavuk || 0; 
         newRes.menuHunkar = req.menuHunkar || 0; 
         newRes.menuKarisik = req.menuKarisik || 0; 
-        // Admin panelinde çocuk menüsü var, talepte diğer. Eşleştirelim.
-        newRes.menuCocuk = req.menuDiger || 0; 
+        newRes.menuCocuk = req.menuCocuk || 0; 
       }
 
       // Ana tabloya ekle
@@ -1056,23 +1055,23 @@ export default function App() {
         {/* ZİYARETÇİ REZERVASYON TALEBİ MODALI */}
         {showRequestModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-emerald-700 p-6 sm:p-8 flex items-center justify-between text-white">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
+              <div className="bg-emerald-700 p-6 sm:p-8 flex items-center justify-between text-white shrink-0 z-10">
                 <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><CalendarDays size={28} className="text-emerald-300"/> Rezervasyon Talebi Oluştur</h3>
                 <button onClick={() => setShowRequestModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={28}/></button>
               </div>
               
-              {requestSuccess ? (
-                 <div className="p-16 flex flex-col items-center justify-center text-center space-y-6 bg-white">
-                    <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
-                       <CheckCircle2 size={48} />
-                    </div>
-                    <h3 className="text-3xl font-black text-slate-800">Talebiniz Alındı!</h3>
-                    <p className="text-lg text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
-                 </div>
-              ) : (
-                <div className="bg-white">
-                  <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
+              <div className="overflow-y-auto bg-white flex-1 relative">
+                {requestSuccess ? (
+                   <div className="p-16 flex flex-col items-center justify-center text-center space-y-6 h-full min-h-[400px]">
+                      <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                         <CheckCircle2 size={48} />
+                      </div>
+                      <h3 className="text-3xl font-black text-slate-800">Talebiniz Alındı!</h3>
+                      <p className="text-lg text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
+                   </div>
+                ) : (
+                  <form onSubmit={submitRequest} className="p-6 sm:p-10 space-y-6">
                     
                     {requestError && (
                       <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold border border-red-100 flex items-center gap-3">
@@ -1094,13 +1093,13 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="flex gap-5">
+                    <div className="flex flex-col sm:flex-row gap-5">
                       <div className="flex-[2]">
                         <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
                         <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="Adınız Soyadınız" />
                       </div>
                       <div className="flex-[1]">
-                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi</label>
+                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi Sayısı</label>
                         <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
                       </div>
                     </div>
@@ -1112,33 +1111,27 @@ export default function App() {
                            <UtensilsCrossed size={18} className="text-orange-500"/> İftar Menüsü Seçimi
                         </label>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                               <span className="block text-xs font-bold text-slate-500 mb-2">Tavuk</span>
                               <input type="number" name="menuTavuk" min="0" value={requestData.menuTavuk} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
                            </div>
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                               <span className="block text-xs font-bold text-slate-500 mb-2">Hünkar</span>
                               <input type="number" name="menuHunkar" min="0" value={requestData.menuHunkar} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
                            </div>
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                               <span className="block text-xs font-bold text-slate-500 mb-2">Izgara</span>
                               <input type="number" name="menuKarisik" min="0" value={requestData.menuKarisik} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
                            </div>
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                              <span className="block text-xs font-bold text-slate-500 mb-2">Diğer</span>
-                              <input type="number" name="menuDiger" min="0" value={requestData.menuDiger} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
+                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                              <span className="block text-xs font-bold text-orange-600 mb-2">Çocuk</span>
+                              <input type="number" name="menuCocuk" min="0" value={requestData.menuCocuk} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-orange-200 text-orange-700 text-center font-bold outline-none focus:border-orange-500" />
                            </div>
                         </div>
-                        {requestData.menuDiger > 0 && (
-                          <div className="mt-4 text-xs font-bold text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-200 flex items-start gap-2">
-                             <AlertTriangle size={16} className="shrink-0 mt-0.5" />
-                             <span>Diğer menü seçimleriniz için iftardan en geç 3 saat öncesine kadar iletişim adreslerimizden bize bilgi vermeyi unutmayın. Aksi takdirde hazırlık yapılamayabilir.</span>
-                          </div>
-                        )}
                       </div>
                     )}
 
-                    <div className="flex gap-5">
+                    <div className="flex flex-col sm:flex-row gap-5">
                        <div className="flex-1">
                           <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
                           <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="05XX..." />
@@ -1159,7 +1152,7 @@ export default function App() {
                     </button>
                   </form>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         )}
