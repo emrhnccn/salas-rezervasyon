@@ -510,28 +510,32 @@ export default function App() {
           }
         `}} />
 
-        {/* PREMIUM NAVBAR - DİNAMİK SCROLL EFEKTİ */}
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3 border-b border-slate-200' : 'bg-transparent py-5 sm:py-6'}`}>
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-            {/* LOGO */}
-            <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center bg-transparent ${isScrolled ? 'h-10 sm:h-12' : 'h-12 sm:h-16'}`} onClick={() => window.scrollTo(0,0)}>
-              <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-full w-auto object-contain bg-transparent" />
+        {/* PREMIUM NAVBAR - DÜZELTİLMİŞ VE ORTALANMIŞ */}
+        <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
+          <nav className={`w-full max-w-7xl pointer-events-auto transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3 border-b border-slate-200' : 'bg-transparent py-5 sm:py-6'}`}>
+            <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+              {/* LOGO */}
+              <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center bg-transparent shrink-0 ${isScrolled ? 'h-10 sm:h-12' : 'h-12 sm:h-16'}`} onClick={() => window.scrollTo(0,0)}>
+                <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-full w-auto object-contain bg-transparent" />
+              </div>
+              
+              {/* LINKS (Desktop) */}
+              <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 lg:gap-10 font-bold text-sm lg:text-base transition-colors duration-500 ${isScrolled ? 'text-slate-700' : 'text-white drop-shadow-md'}`}>
+                <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Biz Kimiz?</button>
+                <button onClick={() => handleScroll('lezzetler')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Lezzetler</button>
+                <button onClick={() => handleScroll('rezervasyon')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Canlı Yoğunluk</button>
+                <button onClick={() => handleScroll('iletisim')} className="hover:text-orange-500 transition-colors whitespace-nowrap">İletişim</button>
+              </div>
+              
+              {/* ACTION BUTTON */}
+              <div className="shrink-0 flex justify-end">
+                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
+                  Menüyü Gör
+                </a>
+              </div>
             </div>
-            
-            {/* LINKS (Desktop) */}
-            <div className={`hidden md:flex items-center gap-6 lg:gap-10 font-bold text-sm lg:text-base transition-colors duration-500 ${isScrolled ? 'text-slate-700' : 'text-white drop-shadow-md'}`}>
-              <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
-              <button onClick={() => handleScroll('lezzetler')} className="hover:text-orange-500 transition-colors">Lezzetler</button>
-              <button onClick={() => handleScroll('rezervasyon')} className="hover:text-orange-500 transition-colors">Canlı Yoğunluk</button>
-              <button onClick={() => handleScroll('iletisim')} className="hover:text-orange-500 transition-colors">İletişim</button>
-            </div>
-            
-            {/* ACTION BUTTON */}
-            <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg shrink-0">
-              Menüyü Gör
-            </a>
-          </div>
-        </nav>
+          </nav>
+        </div>
 
         {/* HERO SECTION */}
         <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[900px] bg-slate-900 flex items-center justify-center overflow-hidden pt-16">
