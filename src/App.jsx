@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, Send
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History
 } from 'lucide-react';
-// import { Analytics } from '@vercel/analytics/react'; // Analytics şimdilik yorum satırında
 
 // Firebase importları
 import { initializeApp } from 'firebase/app';
@@ -626,11 +625,6 @@ export default function App() {
     const eventName = type === 'iftar' ? 'iftar' : 'maç yayını';
     const dateStr = type === 'iftar' ? selectedFilterDate : selectedMatchDate;
 
-    // Her numara için yeni bir sekme açmak tarayıcı tarafından engellenebilir (pop-up blocker).
-    // Bu yüzden numaraları virgülle ayırarak tek bir WA yönlendirmesi veya liste sunumu yapılabilir.
-    // WhatsApp web/app çoklu gönderimi direkt desteklemiyor (broadcast list haricinde API lazım).
-    // Geçici/pratik çözüm: Numaraları virgülle ayırıp toplu panoya (clipboard) kopyalamak ve kullanıcıyı bilgilendirmek.
-    
     let phoneListStr = "";
     validReservations.forEach(res => {
         let cleanPhone = res.phone.replace(/\D/g, '');
@@ -692,8 +686,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
         
         {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
-        <style dangerouslySetInnerHTML={{__html: `
-          /* KESİN VITE CSS SIFIRLAMA (YANLARDAKİ SİYAH BOŞLUKLARI YOK EDER) */
+        <style>{`
           #root {
             max-width: 100% !important;
             width: 100% !important;
@@ -743,7 +736,7 @@ export default function App() {
             transform: skewX(-20deg);
             animation: shine 3s infinite;
           }
-        `}} />
+        `}</style>
 
         {/* PREMIUM NAVBAR - DÜZELTİLMİŞ GENİŞ TASARIM */}
         <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
@@ -1038,10 +1031,28 @@ export default function App() {
             {/* İletişim */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">İletişim</h4>
-              <ul className="space-y-5 text-base lg:text-lg font-medium text-slate-300">
-                <li><a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-4"><Phone size={20}/> 0262 642 14 13</a></li>
-                <li><a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-4"><Instagram size={20}/> @salascaferestaurant</a></li>
-                <li className="flex items-start justify-center md:justify-start gap-4 text-left"><MapPin size={20} className="shrink-0 mt-1"/> Gebze, Kocaeli</li>
+              <ul className="space-y-6 text-base lg:text-lg font-medium text-slate-300">
+                <li>
+                   <a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-4">
+                     <Phone size={20}/> 📞 Telefon: 0262 642 14 13
+                   </a>
+                </li>
+                <li>
+                   <a href="https://wa.me/905392356004" target="_blank" rel="noreferrer" className="hover:text-[#25D366] transition-colors flex items-center justify-center md:justify-start gap-4">
+                     <MessageCircle size={20}/> 💬 WhatsApp: 0539 235 60 04
+                   </a>
+                </li>
+                <li>
+                   <div className="flex flex-col items-center md:items-start gap-3">
+                     <div className="flex items-start justify-center md:justify-start gap-4 text-left">
+                        <MapPin size={20} className="shrink-0 mt-1"/> 
+                        <span>📍 Harita<br/>Gebze, Kocaeli</span>
+                     </div>
+                     <a href="https://www.google.com/maps/dir/?api=1&destination=Salaaş+Cafe+Restaurant+Gebze" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-md mt-2 ml-0 md:ml-9">
+                        Yol Tarifi Al <ArrowRight size={16}/>
+                     </a>
+                   </div>
+                </li>
               </ul>
             </div>
 
@@ -1244,7 +1255,7 @@ export default function App() {
                 <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl"><Lock size={20} className="text-orange-400"/> Sistem Girişi</h3>
                 <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
               </div>
-              <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4 sm:space-y-6">
+              <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4 sm:space-y-6 bg-white">
                 {loginError && <div className="bg-red-50 text-red-600 text-sm font-bold p-3 sm:p-4 rounded-xl border border-red-100 flex items-center gap-2"><X size={16}/> {loginError}</div>}
                 
                 <div>
@@ -1276,6 +1287,16 @@ export default function App() {
           </div>
         )}
         
+        {/* WHATSAPP FLOATING BUTTON */}
+        <a 
+          href="https://wa.me/905392356004?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." 
+          target="_blank" 
+          rel="noreferrer"
+          className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
+        >
+          <MessageCircle size={24} />
+          <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
+        </a>
       </div>
     );
   }
@@ -1287,7 +1308,7 @@ export default function App() {
     <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'iftar' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : activePage === 'gecmis' ? 'bg-slate-100' : 'bg-slate-100'}`}>
       
       {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         /* KESİN VITE CSS SIFIRLAMA (YANLARDAKİ SİYAH BOŞLUKLARI YOK EDER) */
         #root {
           max-width: 100% !important;
@@ -1303,7 +1324,7 @@ export default function App() {
           max-width: 100% !important;
           overflow-x: hidden !important;
         }
-      `}} />
+      `}</style>
 
       {/* İSLAMİ DESEN */}
       {activePage === 'iftar' && (
