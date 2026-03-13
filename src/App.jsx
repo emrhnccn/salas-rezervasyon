@@ -1071,7 +1071,7 @@ export default function App() {
                       <p className="text-lg text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
                    </div>
                 ) : (
-                  <form onSubmit={submitRequest} className="p-6 sm:p-10 space-y-6">
+                  <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
                     
                     {requestError && (
                       <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold border border-red-100 flex items-center gap-3">
@@ -1160,37 +1160,37 @@ export default function App() {
         {/* LOGIN MODAL */}
         {showLoginModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
               <div className="bg-[#0B3B2C] p-6 sm:p-8 flex items-center justify-between text-white">
-                <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><Lock size={24} className="text-orange-400"/> Sistem Girişi</h3>
-                <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
+                <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl"><Lock size={20} className="text-orange-400"/> Sistem Girişi</h3>
+                <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
               </div>
-              <form onSubmit={handleLogin} className="p-8 sm:p-10 space-y-6 bg-white">
-                {loginError && <div className="bg-red-50 text-red-600 text-base font-bold p-4 rounded-xl border border-red-100 flex items-center gap-2"><X size={20}/> {loginError}</div>}
+              <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4 sm:space-y-6">
+                {loginError && <div className="bg-red-50 text-red-600 text-sm font-bold p-3 sm:p-4 rounded-xl border border-red-100 flex items-center gap-2"><X size={16}/> {loginError}</div>}
                 
                 <div>
-                  <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kullanıcı Adı</label>
+                  <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Kullanıcı Adı</label>
                   <input 
                     type="text" 
                     value={loginUser} 
                     onChange={(e) => setLoginUser(e.target.value)} 
-                    className="w-full bg-white px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none font-bold text-slate-800 transition-all text-lg" 
+                    className="w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-base sm:text-lg" 
                     placeholder="Kullanıcı adınızı girin" 
                     autoFocus
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Şifre</label>
+                  <label className="block text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Şifre</label>
                   <input 
                     type="password" 
                     value={loginPass} 
                     onChange={(e) => setLoginPass(e.target.value)} 
-                    className="w-full bg-white px-6 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none font-bold text-slate-800 transition-all text-lg" 
+                    className="w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-[#0B3B2C]/10 focus:border-[#0B3B2C] outline-none bg-slate-50 font-bold text-slate-800 transition-all text-base sm:text-lg" 
                     placeholder="••••••••" 
                   />
                 </div>
-                <button type="submit" className="w-full bg-[#0B3B2C] hover:bg-emerald-900 text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-6 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg">
-                  Giriş Yap <ArrowRight size={24} />
+                <button type="submit" className="w-full bg-[#0B3B2C] hover:bg-emerald-900 text-white font-black tracking-widest uppercase py-4 sm:py-5 rounded-xl sm:rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 sm:mt-6 flex items-center justify-center gap-2 sm:gap-3 hover:-translate-y-0.5 text-base sm:text-lg">
+                  Giriş Yap <ArrowRight size={20} />
                 </button>
               </form>
             </div>
@@ -1307,7 +1307,7 @@ export default function App() {
                   <Clock className={`mr-2 ${isPrepTime ? 'animate-bounce text-red-400' : 'opacity-80'}`} size={20} />
                   <div className="flex flex-col items-center lg:items-start">
                      <span className="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest opacity-70">İftara Kalan</span>
-                     <span className={`font-mono font-black text-base lg:text-xl tracking-widest drop-shadow-md ${isPrepTime ? 'text-red-300' : isIftarTime ? 'text-emerald-300' : 'text-white'}`}>{countdown}</span>
+                     <span className={`font-mono font-black text-base lg:text-xl tracking-widest drop-shadow-md ${isPrepTime ? 'text-red-300' : isIftarTime ? 'textemerald-300' : 'text-white'}`}>{countdown}</span>
                   </div>
                 </div>
              ) : null}
