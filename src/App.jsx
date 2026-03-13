@@ -3,7 +3,6 @@ import {
   CalendarDays, Users, UtensilsCrossed, Armchair, 
   Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle
 } from 'lucide-react';
-// import { Analytics } from '@vercel/analytics/react'; // Analytics şimdilik yorum satırında
 
 // Firebase importları
 import { initializeApp } from 'firebase/app';
@@ -1151,7 +1150,7 @@ export default function App() {
                       Talebi Gönder <ArrowRight size={24} />
                     </button>
                   </form>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -1197,7 +1196,6 @@ export default function App() {
           </div>
         )}
         
-        {/* <Analytics /> Vercel paketini yüklemeden bu satırı açmayın, uygulamayı çökertebilir. */}
       </div>
     );
   }
@@ -1307,7 +1305,7 @@ export default function App() {
                   <Clock className={`mr-2 ${isPrepTime ? 'animate-bounce text-red-400' : 'opacity-80'}`} size={20} />
                   <div className="flex flex-col items-center lg:items-start">
                      <span className="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest opacity-70">İftara Kalan</span>
-                     <span className={`font-mono font-black text-base lg:text-xl tracking-widest drop-shadow-md ${isPrepTime ? 'text-red-300' : isIftarTime ? 'textemerald-300' : 'text-white'}`}>{countdown}</span>
+                     <span className={`font-mono font-black text-base lg:text-xl tracking-widest drop-shadow-md ${isPrepTime ? 'text-red-300' : isIftarTime ? 'text-emerald-300' : 'text-white'}`}>{countdown}</span>
                   </div>
                 </div>
              ) : null}
