@@ -125,7 +125,6 @@ export default function App() {
   const [activePage, setActivePage] = useState('iftar'); // 'iftar', 'mac', 'talepler', 'gecmis'
 
   // MÜŞTERİ EKRANI MODALLAR & SEÇİMLER
-  const [visitorDate, setVisitorDate] = useState(getToday());
   const [showFixtureModal, setShowFixtureModal] = useState(false);
   const [showDessertsModal, setShowDessertsModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -532,24 +531,6 @@ export default function App() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // MÜŞTERİ GİRİŞİ (VISITOR) HESAPLAMALARI
-  const visitorIftarReservations = reservations.filter(res => res.date === visitorDate);
-  const visitorIftarSummary = visitorIftarReservations.reduce((acc, res) => {
-    acc.totalPeople += (parseInt(res.peopleCount) || 0);
-    acc.totalTavuk += (parseInt(res.menuTavuk) || 0);
-    acc.totalHunkar += (parseInt(res.menuHunkar) || 0);
-    acc.totalKarisik += (parseInt(res.menuKarisik) || 0);
-    acc.totalCocuk += (parseInt(res.menuCocuk) || 0);
-    acc.totalMenu += ((parseInt(res.menuTavuk) || 0) + (parseInt(res.menuHunkar) || 0) + (parseInt(res.menuKarisik) || 0) + (parseInt(res.menuCocuk) || 0));
-    return acc;
-  }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
-
-  const visitorMatchReservations = matchReservations.filter(res => res.date === visitorDate);
-  const visitorTotalMatchPeople = visitorMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
-
-  // Sıradaki Maçı Bulma
-  const nextMatch = MATCH_FIXTURE.find(m => m.date >= getToday()) || MATCH_FIXTURE[MATCH_FIXTURE.length - 1];
-
   // ADMİN İFTAR FİLTRELEME & MATEMATİK
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
   const searchedReservations = filteredReservations.filter(res => {
@@ -752,7 +733,6 @@ export default function App() {
               <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-12 font-bold text-sm xl:text-base transition-colors duration-500 ${isScrolled ? 'text-slate-700' : 'text-white drop-shadow-md'}`}>
                 <button onClick={() => handleScroll('hakkimizda')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Biz Kimiz?</button>
                 <button onClick={() => handleScroll('lezzetler')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Lezzetler</button>
-                <button onClick={() => handleScroll('rezervasyon')} className="hover:text-orange-500 transition-colors whitespace-nowrap">Canlı Yoğunluk</button>
                 <button onClick={() => handleScroll('iletisim')} className="hover:text-orange-500 transition-colors whitespace-nowrap">İletişim</button>
               </div>
               
@@ -920,103 +900,6 @@ export default function App() {
              </div>
           </section>
 
-          {/* CANLI YOĞUNLUK & DURUM */}
-          <section id="rezervasyon" className="w-full py-28 md:py-36 bg-white">
-            <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 xl:px-24">
-              <div className="text-center mb-16">
-                <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-4">Şeffaf Hizmet</h2>
-                <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C]">Canlı Yoğunluk Durumu</h3>
-                <p className="text-slate-500 mt-6 text-lg lg:text-xl font-medium max-w-3xl mx-auto">Gelmeden önce seçtiğiniz tarihteki doluluk durumumuzu ve menü hazırlıklarımızı inceleyebilirsiniz.</p>
-              </div>
-
-              {loading ? (
-                <div className="flex justify-center py-10 text-orange-500"><Loader2 className="animate-spin" size={64} /></div>
-              ) : (
-                <div className="bg-slate-50 rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] p-6 sm:p-10 md:p-16 lg:p-20 shadow-xl border border-slate-200 hover:shadow-slate-300/50 transition-shadow duration-500 w-full max-w-[1600px] mx-auto">
-                  {/* Tarih Seçimi */}
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
-                     <span className="font-black text-slate-600 uppercase tracking-widest text-base lg:text-xl flex items-center gap-3">
-                       <CalendarDays className="text-orange-500" size={28} /> Tarih Seçiniz:
-                     </span>
-                     <input 
-                       type="date" 
-                       value={visitorDate} 
-                       onChange={(e) => setVisitorDate(e.target.value)} 
-                       className="bg-white border-2 border-slate-200 text-[#0B3B2C] px-8 py-4 rounded-2xl font-black outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all cursor-pointer text-xl lg:text-2xl shadow-sm w-full sm:w-auto" 
-                     />
-                  </div>
-
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 lg:gap-16">
-                    {/* İftar Kutusu */}
-                    <div className="bg-white rounded-[2rem] lg:rounded-[3rem] p-8 lg:p-12 shadow-md border border-slate-200 relative overflow-hidden group hover:border-orange-300 transition-colors duration-300 w-full">
-                      <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 pointer-events-none"><MoonStar size={300} /></div>
-                      <div className="flex items-center gap-6 mb-10 relative z-10">
-                        <div className="bg-orange-100 text-orange-600 p-5 lg:p-6 rounded-3xl shadow-inner shrink-0"><ChefHat size={40} /></div>
-                        <div>
-                          <h4 className="text-3xl lg:text-4xl font-black text-[#0B3B2C]">İftar Özeti</h4>
-                          <p className="text-base lg:text-lg font-bold text-slate-500 uppercase tracking-widest mt-2">{visitorDate}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="mb-10 relative z-10">
-                        <p className="text-sm lg:text-base font-black text-slate-400 uppercase tracking-widest mb-2">Toplam Rezerve</p>
-                        <p className="text-6xl lg:text-8xl font-black text-orange-500 drop-shadow-sm">{visitorIftarSummary.totalPeople} <span className="text-3xl lg:text-4xl text-slate-400 font-bold">Kişi</span></p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 lg:gap-6 relative z-10">
-                        <div className="bg-slate-50 p-5 lg:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow w-full">
-                          <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-0">Tavuk</span>
-                          <span className="font-black text-3xl lg:text-4xl text-[#0B3B2C]">{visitorIftarSummary.totalTavuk}</span>
-                        </div>
-                        <div className="bg-slate-50 p-5 lg:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow w-full">
-                          <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-0">Hünkar</span>
-                          <span className="font-black text-3xl lg:text-4xl text-[#0B3B2C]">{visitorIftarSummary.totalHunkar}</span>
-                        </div>
-                        <div className="bg-slate-50 p-5 lg:p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md transition-shadow w-full">
-                          <span className="text-xs lg:text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 sm:mb-0">Izgara</span>
-                          <span className="font-black text-3xl lg:text-4xl text-[#0B3B2C]">{visitorIftarSummary.totalKarisik}</span>
-                        </div>
-                        <div className="bg-orange-50 p-5 lg:p-6 rounded-3xl border border-orange-200 shadow-sm flex flex-col sm:flex-row justify-between items-center sm:items-end group-hover:shadow-md group-hover:border-orange-300 transition-all w-full">
-                          <span className="text-xs lg:text-sm font-bold text-orange-600 uppercase tracking-wider mb-2 sm:mb-0">Çocuk</span>
-                          <span className="font-black text-3xl lg:text-4xl text-orange-600">{visitorIftarSummary.totalCocuk}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Maç Kutusu */}
-                    <div className="bg-white rounded-[2rem] lg:rounded-[3rem] p-8 lg:p-12 shadow-md border border-slate-200 relative overflow-hidden flex flex-col justify-between group hover:border-blue-300 transition-colors duration-300 w-full">
-                      <div className="absolute -right-10 -top-10 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 pointer-events-none"><MonitorPlay size={300} /></div>
-                      <div className="flex items-center gap-6 mb-8 relative z-10">
-                        <div className="bg-blue-100 text-blue-600 p-5 lg:p-6 rounded-3xl shadow-inner shrink-0"><MonitorPlay size={40} /></div>
-                        <div>
-                          <h4 className="text-3xl lg:text-4xl font-black text-[#0a192f]">Maç Yayını</h4>
-                          <p className="text-base lg:text-lg font-bold text-slate-500 uppercase tracking-widest mt-2">{visitorDate}</p>
-                        </div>
-                      </div>
-
-                      {/* SIRADAKİ MAÇ ALANI */}
-                      <div className="bg-slate-50 p-6 lg:p-8 rounded-3xl border border-blue-200 mb-10 relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-sm group-hover:shadow-md transition-shadow w-full">
-                         <div>
-                            <span className="text-xs lg:text-sm font-black uppercase tracking-widest text-blue-600 mb-2 block">Sıradaki Maç</span>
-                            <p className="text-xl lg:text-2xl font-black text-[#0a192f]">{nextMatch.team1} - {nextMatch.team2}</p>
-                            <p className="text-sm lg:text-base text-slate-500 font-bold mt-2">{nextMatch.displayDate}</p>
-                         </div>
-                         <button onClick={() => setShowFixtureModal(true)} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 lg:px-8 lg:py-5 rounded-2xl text-sm lg:text-base font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-md whitespace-nowrap text-center">
-                            Fikstür
-                         </button>
-                      </div>
-                      
-                      <div className="relative z-10 mt-auto">
-                        <p className="text-sm lg:text-base font-black text-slate-400 uppercase tracking-widest mb-2">Seçili Gün Seyirci</p>
-                        <p className="text-7xl lg:text-8xl font-black text-blue-600 drop-shadow-sm">{visitorTotalMatchPeople} <span className="text-3xl lg:text-4xl text-slate-400 font-bold">Kişi</span></p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-
         </main>
 
         {/* PREMIUM FOOTER */}
@@ -1040,7 +923,7 @@ export default function App() {
                 </li>
                 <li>
                    <a href="https://wa.me/905392356004" target="_blank" rel="noreferrer" className="hover:text-[#25D366] transition-colors flex items-center justify-center md:justify-start gap-4">
-                     <MessageCircle size={20}/> 💬 WhatsApp: 0532 643 46 72
+                     <MessageCircle size={20}/> 💬 WhatsApp: 0539 235 60 04
                    </a>
                 </li>
                 <li>
@@ -1067,7 +950,6 @@ export default function App() {
               <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">Hızlı Bağlantılar</h4>
               <ul className="space-y-5 text-base lg:text-lg font-medium mb-10 text-slate-300">
                 <li><a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Dijital Menü</a></li>
-                <li><button onClick={() => handleScroll('rezervasyon')} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Rezervasyon Durumu</button></li>
               </ul>
               
               {/* PERSONEL GİRİŞİ */}
@@ -1102,7 +984,7 @@ export default function App() {
                            <p className="font-black text-[#0a192f] text-base lg:text-lg">{match.team1} <span className="text-slate-300 font-normal mx-2">vs</span> {match.team2}</p>
                         </div>
                         <button 
-                           onClick={() => { setVisitorDate(match.date); setShowFixtureModal(false); handleScroll('rezervasyon'); }} 
+                           onClick={() => { setRequestData({...requestData, type: 'mac', date: match.date}); setShowFixtureModal(false); setShowRequestModal(true); }} 
                            className="bg-blue-50 text-blue-600 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-colors"
                         >
                           Seç
@@ -1295,7 +1177,7 @@ export default function App() {
         
         {/* WHATSAPP FLOATING BUTTON */}
         <a 
-          href="https://wa.me/905326434672?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." 
+          href="https://wa.me/905392356004?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." 
           target="_blank" 
           rel="noreferrer"
           className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
