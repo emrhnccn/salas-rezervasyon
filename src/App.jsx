@@ -111,6 +111,15 @@ export default function App() {
     return formatter.format(new Date());
   };
 
+  const typeLabels = {
+    kahvalti: 'Kahvaltı',
+    yemek: 'Yemek',
+    dogum_gunu: 'Doğum Günü',
+    organizasyon: 'Organizasyon',
+    mac: 'Maç Yayını',
+    iftar: 'İftar' // Eskiden kalan veriler için
+  };
+
   // OTURUM AÇMA (LOGIN) STATE'LERİ
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -121,10 +130,11 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // SAYFA GEÇİŞ STATE'İ (Sadece admin için)
-  const [activePage, setActivePage] = useState('iftar'); // 'iftar', 'mac', 'talepler', 'gecmis'
+  // SAYFA GEÇİŞ STATE'İ
+  const [activePage, setActivePage] = useState('restoran'); // 'restoran', 'mac', 'talepler', 'gecmis'
 
   // MÜŞTERİ EKRANI MODALLAR & SEÇİMLER
+  const [visitorDate, setVisitorDate] = useState(getToday());
   const [showFixtureModal, setShowFixtureModal] = useState(false);
   const [showDessertsModal, setShowDessertsModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -132,16 +142,12 @@ export default function App() {
   
   // MÜŞTERİ REZERVASYON TALEBİ STATE
   const initialRequestState = { 
-    type: 'iftar', 
+    type: 'yemek', 
     name: '', 
     phone: '', 
     peopleCount: 2, 
     date: getToday(), 
-    notes: '',
-    menuTavuk: 0,
-    menuHunkar: 0,
-    menuKarisik: 0,
-    menuCocuk: 0
+    notes: ''
   };
   const [requestData, setRequestData] = useState(initialRequestState);
   const [requestError, setRequestError] = useState('');
@@ -149,7 +155,7 @@ export default function App() {
   // NAVBAR SCROLL STATE
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // İFTAR STATE'LERİ
+  // RESTORAN STATE'LERİ (Eski İftar)
   const [reservations, setReservations] = useState([]);
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [isEditing, setIsEditing] = useState(null);
@@ -158,7 +164,7 @@ export default function App() {
   const [printSingleId, setPrintSingleId] = useState(null);
   const [showTableMap, setShowTableMap] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const initialFormState = { name: '', phone: '', notes: '', peopleCount: 1, menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0, table: '', date: getToday() };
+  const initialFormState = { type: 'yemek', name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() };
   const [formData, setFormData] = useState(initialFormState);
 
   // MAÇ STATE'LERİ
@@ -166,7 +172,7 @@ export default function App() {
   const [selectedMatchDate, setSelectedMatchDate] = useState(getToday());
   const [isMatchEditing, setIsMatchEditing] = useState(null);
   const [matchSearchTerm, setMatchSearchTerm] = useState('');
-  const initialMatchFormState = { name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() };
+  const initialMatchFormState = { type: 'mac', name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() };
   const [matchFormData, setMatchFormData] = useState(initialMatchFormState);
   const [matchErrorMsg, setMatchErrorMsg] = useState('');
   const [matchDeleteConfirmId, setMatchDeleteConfirmId] = useState(null);
@@ -176,13 +182,7 @@ export default function App() {
 
   // GEÇMİŞ (HISTORY) STATE
   const [historyDateFilter, setHistoryDateFilter] = useState(''); // '' means all history
-  const [historyTypeFilter, setHistoryTypeFilter] = useState('all'); // 'all', 'iftar', 'mac'
-
-  // İFTAR SAYAÇ STATE'LERİ
-  const [iftarTime, setIftarTime] = useState(null);
-  const [countdown, setCountdown] = useState("Hesaplanıyor...");
-  const [isPrepTime, setIsPrepTime] = useState(false);
-  const [isIftarTime, setIsIftarTime] = useState(false);
+  const [historyTypeFilter, setHistoryTypeFilter] = useState('all'); // 'all', 'restoran', 'mac'
 
   useEffect(() => {
     document.title = "Salaaş Cafe Restaurant";
@@ -199,46 +199,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Gebze İftar Vakti Çekme
-  useEffect(() => {
-    fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.data && data.data.timings && data.data.timings.Maghrib) {
-          setIftarTime(data.data.timings.Maghrib);
-        }
-      })
-      .catch(err => console.error("İftar vakti çekilemedi", err));
-  }, []);
-
-  // Geri Sayım
-  useEffect(() => {
-    if (!iftarTime) return;
-    const interval = setInterval(() => {
-      const now = new Date();
-      const [hours, minutes] = iftarTime.split(':');
-      const iftarDate = new Date();
-      iftarDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      let diff = iftarDate - now;
-
-      if (diff < 0) {
-        setCountdown("İFTAR VAKTİ!");
-        setIsIftarTime(true);
-        setIsPrepTime(false);
-        clearInterval(interval);
-        return;
-      }
-      if (diff <= 600000 && diff > 0) setIsPrepTime(true);
-      else setIsPrepTime(false);
-
-      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const m = Math.floor((diff / 1000 / 60) % 60);
-      const s = Math.floor((diff / 1000) % 60);
-      setCountdown(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [iftarTime]);
-
   useEffect(() => {
     const handleAfterPrint = () => setPrintSingleId(null);
     window.addEventListener('afterprint', handleAfterPrint);
@@ -254,7 +214,7 @@ export default function App() {
 
   useEffect(() => {
     if (!user) return;
-    const iftarUnsubscribe = onSnapshot(collection(db, 'reservations'), (snapshot) => {
+    const restoranUnsubscribe = onSnapshot(collection(db, 'reservations'), (snapshot) => {
       setReservations(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
@@ -266,7 +226,7 @@ export default function App() {
       setPendingRequests(allReqs.filter(r => r.status === 'pending').sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt)));
     });
     return () => {
-      iftarUnsubscribe();
+      restoranUnsubscribe();
       matchUnsubscribe();
       requestsUnsubscribe();
     };
@@ -287,10 +247,10 @@ export default function App() {
   // --- MÜŞTERİ REZERVASYON TALEBİ GÖNDERME ---
   const handleRequestChange = (e) => {
     const { name, value } = e.target;
-    setRequestError(''); // Hata mesajını temizle
+    setRequestError('');
     setRequestData(prev => ({
       ...prev,
-      [name]: name.includes('Count') || name.includes('menu') ? (value === '' ? '' : parseInt(value)) : value
+      [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value)) : value
     }));
   };
 
@@ -299,18 +259,9 @@ export default function App() {
     if (!user) return;
     if (!requestData.name?.trim() || !requestData.phone?.trim()) return;
 
-    if (requestData.type === 'iftar') {
-      const totalMenus = (parseInt(requestData.menuTavuk) || 0) + 
-                         (parseInt(requestData.menuHunkar) || 0) + 
-                         (parseInt(requestData.menuKarisik) || 0) + 
-                         (parseInt(requestData.menuCocuk) || 0);
-
-      const peopleCount = parseInt(requestData.peopleCount) || 1;
-
-      if (totalMenus !== peopleCount) {
-        setRequestError(`Seçilen menü sayısı (${totalMenus}) ile kişi sayısı (${peopleCount}) uyuşmuyor. Lütfen kontrol ediniz.`);
-        return;
-      }
+    if ((requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') && (!requestData.notes || !requestData.notes.trim())) {
+      setRequestError("Doğum günü ve organizasyonlar için lütfen detaylı açıklama giriniz.");
+      return;
     }
 
     try {
@@ -322,14 +273,6 @@ export default function App() {
         createdAt: new Date().toISOString(),
         createdBy: user.uid
       };
-
-      // Maç yayınında menüleri sıfırla
-      if(requestData.type === 'mac') {
-        submissionData.menuTavuk = 0;
-        submissionData.menuHunkar = 0;
-        submissionData.menuKarisik = 0;
-        submissionData.menuCocuk = 0;
-      }
 
       await addDoc(collection(db, 'reservationRequests'), submissionData);
       setRequestSuccess(true);
@@ -349,8 +292,9 @@ export default function App() {
   const handleApproveRequest = async (req, sendWhatsapp = false) => {
     if (!user) return;
     try {
-      const targetCollection = req.type === 'iftar' ? 'reservations' : 'matchReservations';
+      const targetCollection = req.type === 'mac' ? 'matchReservations' : 'reservations';
       const newRes = {
+        type: req.type || 'yemek',
         name: req.name,
         phone: req.phone,
         notes: req.notes || '',
@@ -362,20 +306,11 @@ export default function App() {
         createdBy: user.uid
       };
 
-      if (req.type === 'iftar') {
-        newRes.menuTavuk = req.menuTavuk || 0; 
-        newRes.menuHunkar = req.menuHunkar || 0; 
-        newRes.menuKarisik = req.menuKarisik || 0; 
-        newRes.menuCocuk = req.menuCocuk || 0; 
-      }
-
-      // Ana tabloya ekle
       await addDoc(collection(db, targetCollection), newRes);
-      // Talebi sil
       await deleteDoc(doc(db, 'reservationRequests', req.id));
 
       if (sendWhatsapp) {
-        sendWhatsApp(newRes, req.type, true); // Onay mesajı gönder
+        sendWhatsApp(newRes, req.type, true);
       }
 
     } catch(err) { console.error("Onay hatası:", err); }
@@ -384,19 +319,18 @@ export default function App() {
   const handleRejectRequest = async (id) => {
     if (!user) return;
     try {
-      // Çöpe atıyoruz (veritabanından siliyoruz)
       await deleteDoc(doc(db, 'reservationRequests', id));
     } catch(err) { console.error("Red hatası:", err); }
   };
 
 
-  // --- İFTAR FONKSİYONLARI ---
+  // --- RESTORAN FONKSİYONLARI ---
   const handleChange = (e) => {
     const { name, value } = e.target;
     setErrorMsg('');
     setFormData(prev => ({
       ...prev,
-      [name]: name.includes('Count') || name.includes('menu') ? (value === '' ? '' : parseInt(value)) : value
+      [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value)) : value
     }));
   };
 
@@ -410,10 +344,6 @@ export default function App() {
       phone: formData.phone?.trim() || '',
       notes: formData.notes?.trim() || '', 
       peopleCount: parseInt(formData.peopleCount) || 1,
-      menuTavuk: parseInt(formData.menuTavuk) || 0,
-      menuHunkar: parseInt(formData.menuHunkar) || 0,
-      menuKarisik: parseInt(formData.menuKarisik) || 0,
-      menuCocuk: parseInt(formData.menuCocuk) || 0,
     };
 
     try {
@@ -429,7 +359,7 @@ export default function App() {
   };
 
   const handleEditClick = (res) => {
-    setFormData({ ...res, phone: res.phone || '', notes: res.notes || '', menuCocuk: res.menuCocuk || 0 });
+    setFormData({ ...res, phone: res.phone || '', notes: res.notes || '' });
     setIsEditing(res.id);
     setSelectedFilterDate(res.date);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -511,7 +441,7 @@ export default function App() {
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
 
-    const eventName = type === 'iftar' ? 'iftar' : 'maç yayını';
+    const eventName = typeLabels[res.type] ? typeLabels[res.type].toLowerCase() : 'rezervasyon';
     const masaMetni = res.table ? `${res.table} nolu masanız için ` : '';
     const nameStr = res.name || 'Misafirimiz';
     let message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihindeki ${masaMetni}${res.peopleCount} kişilik ${eventName} rezervasyonunuz alınmıştır. Bizi tercih ettiğiniz için teşekkür ederiz.`;
@@ -531,7 +461,10 @@ export default function App() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // ADMİN İFTAR FİLTRELEME & MATEMATİK
+  // Sıradaki Maçı Bulma
+  const nextMatch = MATCH_FIXTURE.find(m => m.date >= getToday()) || MATCH_FIXTURE[MATCH_FIXTURE.length - 1];
+
+  // ADMİN RESTORAN FİLTRELEME & MATEMATİK
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
   const searchedReservations = filteredReservations.filter(res => {
     if (!searchTerm) return true;
@@ -544,13 +477,8 @@ export default function App() {
   });
   const dailySummary = filteredReservations.reduce((acc, res) => {
     acc.totalPeople += (parseInt(res.peopleCount) || 0);
-    acc.totalTavuk += (parseInt(res.menuTavuk) || 0);
-    acc.totalHunkar += (parseInt(res.menuHunkar) || 0);
-    acc.totalKarisik += (parseInt(res.menuKarisik) || 0);
-    acc.totalCocuk += (parseInt(res.menuCocuk) || 0);
-    acc.totalMenu += ((parseInt(res.menuTavuk) || 0) + (parseInt(res.menuHunkar) || 0) + (parseInt(res.menuKarisik) || 0) + (parseInt(res.menuCocuk) || 0));
     return acc;
-  }, { totalPeople: 0, totalTavuk: 0, totalHunkar: 0, totalKarisik: 0, totalCocuk: 0, totalMenu: 0 });
+  }, { totalPeople: 0 });
 
   // ADMİN MAÇ FİLTRELEME & MATEMATİK
   const filteredMatchReservations = matchReservations.filter(res => res.date === selectedMatchDate);
@@ -572,7 +500,7 @@ export default function App() {
     return 'reserved';
   };
 
-  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 300) * 100)); // Kapasite 300'e güncellendi
+  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 300) * 100)); // Kapasite 300
   
   const handlePrintSingle = (id) => {
     setPrintSingleId(id);
@@ -603,8 +531,8 @@ export default function App() {
         return;
     }
 
-    const eventName = type === 'iftar' ? 'iftar' : 'maç yayını';
-    const dateStr = type === 'iftar' ? selectedFilterDate : selectedMatchDate;
+    const eventName = type === 'mac' ? 'maç yayını' : 'rezervasyonunuzu';
+    const dateStr = type === 'mac' ? selectedMatchDate : selectedFilterDate;
 
     let phoneListStr = "";
     validReservations.forEach(res => {
@@ -617,7 +545,7 @@ export default function App() {
     // Sondaki virgülü al
     phoneListStr = phoneListStr.slice(0, -1);
 
-    const message = `Salaaş Cafe'ye ${dateStr} tarihindeki ${eventName} rezervasyonunuzu hatırlatırız. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+    const message = `Salaaş Cafe'ye ${dateStr} tarihindeki ${eventName} hatırlatırız. Bizi tercih ettiğiniz için teşekkür ederiz.`;
     
     // Tarayıcı destekliyorsa panoya kopyala
     navigator.clipboard.writeText(phoneListStr).then(() => {
@@ -628,12 +556,12 @@ export default function App() {
     });
   };
 
-  // YENİ: GEÇMİŞ (HISTORY) HESAPLAMALARI
+  // GEÇMİŞ (HISTORY) HESAPLAMALARI
   const getHistoryData = () => {
     let allData = [];
-    if (historyTypeFilter === 'all' || historyTypeFilter === 'iftar') {
-        const iftarHistory = reservations.map(r => ({ ...r, eventType: 'İftar' }));
-        allData = [...allData, ...iftarHistory];
+    if (historyTypeFilter === 'all' || historyTypeFilter === 'restoran') {
+        const restoranHistory = reservations.map(r => ({ ...r, eventType: typeLabels[r.type] || 'Genel' }));
+        allData = [...allData, ...restoranHistory];
     }
     if (historyTypeFilter === 'all' || historyTypeFilter === 'mac') {
         const macHistory = matchReservations.map(r => ({ ...r, eventType: 'Maç' }));
@@ -1061,71 +989,63 @@ export default function App() {
                     {/* Tür Seçimi */}
                     <div>
                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Rezervasyon Türü</label>
-                      <div className="flex gap-4">
-                         <button type="button" onClick={() => setRequestData({...requestData, type: 'iftar'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'iftar' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white'}`}>
-                           <MoonStar size={20}/> İftar
-                         </button>
-                         <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`flex-1 py-4 rounded-2xl font-black text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200 bg-white'}`}>
-                           <MonitorPlay size={20}/> Maç Yayını
-                         </button>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          <button type="button" onClick={() => setRequestData({...requestData, type: 'kahvalti'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'kahvalti' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white'}`}>
+                             <Coffee size={18}/> Kahvaltı
+                          </button>
+                          <button type="button" onClick={() => setRequestData({...requestData, type: 'yemek'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'yemek' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white'}`}>
+                             <UtensilsCrossed size={18}/> Yemek
+                          </button>
+                          <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200 bg-white'}`}>
+                             <MonitorPlay size={18}/> Maç
+                          </button>
+                          <button type="button" onClick={() => setRequestData({...requestData, type: 'dogum_gunu'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'dogum_gunu' ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-purple-200 bg-white'}`}>
+                             <Star size={18}/> Doğum Günü
+                          </button>
+                          <button type="button" onClick={() => setRequestData({...requestData, type: 'organizasyon'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 md:col-span-2 ${requestData.type === 'organizasyon' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-emerald-200 bg-white'}`}>
+                             <Users size={18}/> Organizasyon
+                          </button>
                       </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-5">
                       <div className="flex-[2]">
                         <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
-                        <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="Adınız Soyadınız" />
+                        <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'mac' ? 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} required placeholder="Adınız Soyadınız" />
                       </div>
                       <div className="flex-[1]">
                         <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi Sayısı</label>
-                        <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+                        <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-center text-lg ${requestData.type === 'mac' ? 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} required />
                       </div>
                     </div>
-
-                    {/* İftar Menü Seçimi */}
-                    {requestData.type === 'iftar' && (
-                      <div className="bg-orange-50/50 p-5 rounded-2xl border border-orange-100">
-                        <label className="block text-sm font-bold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-                           <UtensilsCrossed size={18} className="text-orange-500"/> İftar Menüsü Seçimi
-                        </label>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                              <span className="block text-xs font-bold text-slate-500 mb-2">Tavuk</span>
-                              <input type="number" name="menuTavuk" min="0" value={requestData.menuTavuk} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
-                           </div>
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                              <span className="block text-xs font-bold text-slate-500 mb-2">Hünkar</span>
-                              <input type="number" name="menuHunkar" min="0" value={requestData.menuHunkar} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
-                           </div>
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                              <span className="block text-xs font-bold text-slate-500 mb-2">Izgara</span>
-                              <input type="number" name="menuKarisik" min="0" value={requestData.menuKarisik} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-slate-200 text-center font-bold outline-none focus:border-orange-500" />
-                           </div>
-                           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                              <span className="block text-xs font-bold text-orange-600 mb-2">Çocuk</span>
-                              <input type="number" name="menuCocuk" min="0" value={requestData.menuCocuk} onChange={handleRequestChange} className="w-full bg-slate-50 px-2 py-2 rounded-lg border border-orange-200 text-orange-700 text-center font-bold outline-none focus:border-orange-500" />
-                           </div>
-                        </div>
-                      </div>
-                    )}
 
                     <div className="flex flex-col sm:flex-row gap-5">
                        <div className="flex-1">
                           <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
-                          <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required placeholder="05XX..." />
+                          <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'mac' ? 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} required placeholder="05XX..." />
                        </div>
                        <div className="flex-1">
                           <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tarih</label>
-                          <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} required />
+                          <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-bold text-slate-800 transition-all text-lg ${requestData.type === 'mac' ? 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} required />
                        </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Notunuz (İsteğe Bağlı)</label>
-                      <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${requestData.type === 'iftar' ? 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500' : 'border-slate-200 focus:ring-blue-500/10 focus:border-blue-500'}`} placeholder="Örn: Mama sandalyesi istiyoruz, cam kenarı olsun vb."></textarea>
+                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">
+                        {(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'Detaylı Açıklama (Zorunlu)' : 'Notunuz (İsteğe Bağlı)'}
+                      </label>
+                      <textarea 
+                        name="notes" 
+                        value={requestData.notes} 
+                        onChange={handleRequestChange} 
+                        rows="3" 
+                        required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')}
+                        className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'border-slate-200 focus:ring-purple-500/10 focus:border-purple-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} 
+                        placeholder={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? "Lütfen organizasyonunuzun konsepti, pasta, süsleme vb. özel isteklerinizi buraya detaylıca yazın." : "Örn: Mama sandalyesi istiyoruz, cam kenarı olsun vb."}
+                      ></textarea>
                     </div>
 
-                    <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'iftar' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                    <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'mac' ? 'bg-blue-600 hover:bg-blue-700' : requestData.type === 'dogum_gunu' ? 'bg-purple-500 hover:bg-purple-600' : requestData.type === 'organizasyon' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-orange-500 hover:bg-orange-600'}`}>
                       Talebi Gönder <ArrowRight size={24} />
                     </button>
                   </form>
@@ -1193,7 +1113,7 @@ export default function App() {
   // 2. PERSONEL / ADMİN YÖNETİM EKRANI
   // =======================================================================
   return (
-    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'iftar' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : activePage === 'gecmis' ? 'bg-slate-100' : 'bg-slate-100'}`}>
+    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'restoran' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : activePage === 'gecmis' ? 'bg-slate-100' : 'bg-slate-100'}`}>
       
       {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
       <style>{`
@@ -1214,11 +1134,10 @@ export default function App() {
         }
       `}</style>
 
-      {/* İSLAMİ DESEN */}
-      {activePage === 'iftar' && (
+      {/* RESTORAN DESEN */}
+      {activePage === 'restoran' && (
         <>
           <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03] print:hidden w-full h-full" style={{ backgroundImage: 'radial-gradient(#f97316 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-          <div className="fixed top-20 right-10 z-0 pointer-events-none opacity-5 text-emerald-900 rotate-12 print:hidden"><MoonStar size={400} strokeWidth={1} /></div>
         </>
       )}
 
@@ -1227,29 +1146,14 @@ export default function App() {
         <div className="fixed top-20 right-10 z-0 pointer-events-none opacity-[0.03] text-blue-900 rotate-12 print:hidden"><MonitorPlay size={400} strokeWidth={1} /></div>
       )}
 
-      {/* BİLDİRİMLER */}
-      {activePage === 'iftar' && isPrepTime && (
-        <div className="fixed top-0 left-0 right-0 w-full z-50 bg-red-600 text-white p-3 flex items-center justify-center gap-3 shadow-2xl animate-pulse print:hidden">
-          <BellRing className="animate-bounce" />
-          <span className="font-black tracking-widest text-sm md:text-lg uppercase">Mutfak Bildirimi: İftara son 10 Dakika! Servis Hazırlığı Başlasın!</span>
-          <Flame className="animate-bounce text-yellow-300" />
-        </div>
-      )}
-      {activePage === 'iftar' && isIftarTime && (
-        <div className="fixed top-0 left-0 right-0 w-full z-50 bg-emerald-600 text-white p-3 flex items-center justify-center gap-3 shadow-2xl print:hidden">
-          <MoonStar className="animate-spin-slow text-yellow-300" />
-          <span className="font-black tracking-widest text-lg uppercase">Hayırlı İftarlar - İftar Vakti!</span>
-        </div>
-      )}
-
       {/* Genel Yazdırma Modu İçin Gizli Başlık */}
       <div className={`hidden ${!printSingleId ? 'print:block' : ''} text-center mb-4 border-b-2 border-black pb-2 relative z-10 w-full`}>
-        <h1 className="text-xl font-bold font-sans uppercase">{activePage === 'iftar' ? 'Salaaş Cafe İftar' : 'Salaaş Cafe Maç'}</h1>
-        <p className="text-sm mt-1 font-bold text-black">Tarih: {activePage === 'iftar' ? selectedFilterDate : selectedMatchDate}</p>
+        <h1 className="text-xl font-bold font-sans uppercase">{activePage === 'restoran' ? 'Salaaş Cafe' : 'Salaaş Cafe Maç'}</h1>
+        <p className="text-sm mt-1 font-bold text-black">Tarih: {activePage === 'restoran' ? selectedFilterDate : selectedMatchDate}</p>
       </div>
 
       {/* Üst Bilgi Barı - GENİŞ EKRANA UYARLANDI */}
-      <header className={`${activePage === 'iftar' ? 'bg-[#0B3B2C]' : activePage === 'mac' ? 'bg-[#0a192f]' : 'bg-slate-900'} text-white shadow-lg sticky z-20 print:hidden transition-colors duration-500 w-full ${(isPrepTime || isIftarTime) && activePage === 'iftar' ? 'top-[52px]' : 'top-0'}`}>
+      <header className={`${activePage === 'restoran' ? 'bg-[#0B3B2C]' : activePage === 'mac' ? 'bg-[#0a192f]' : 'bg-slate-900'} text-white shadow-lg sticky z-20 print:hidden transition-colors duration-500 w-full top-0`}>
         <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-20 py-3 sm:py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
           
           <div className="flex items-center justify-between w-full lg:w-auto gap-4">
@@ -1258,17 +1162,17 @@ export default function App() {
                  <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="h-full w-auto object-contain bg-transparent" />
               </div>
               <div className="flex flex-col hidden sm:block">
-                <h1 className={`text-base md:text-lg lg:text-xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activePage === 'iftar' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : activePage === 'mac' ? 'bg-gradient-to-r from-blue-400 to-cyan-300' : 'bg-gradient-to-r from-slate-200 to-white'}`}>Yönetim Paneli</h1>
+                <h1 className={`text-base md:text-lg lg:text-xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activePage === 'restoran' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : activePage === 'mac' ? 'bg-gradient-to-r from-blue-400 to-cyan-300' : 'bg-gradient-to-r from-slate-200 to-white'}`}>Yönetim Paneli</h1>
               </div>
             </div>
 
             {/* SEKMELER / GEÇİŞ BUTONLARI */}
             <div className="flex items-center bg-black/40 p-1.5 rounded-xl border border-white/10 shadow-inner ml-2 sm:ml-0 overflow-x-auto">
               <button 
-                onClick={() => setActivePage('iftar')} 
-                className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activePage === 'iftar' ? 'bg-orange-500 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
+                onClick={() => setActivePage('restoran')} 
+                className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activePage === 'restoran' ? 'bg-orange-500 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
               >
-                <MoonStar size={16} className={activePage === 'iftar' ? '' : 'opacity-50'}/> İFTAR
+                <UtensilsCrossed size={16} className={activePage === 'restoran' ? '' : 'opacity-50'}/> RESTORAN
               </button>
               <button 
                 onClick={() => setActivePage('mac')} 
@@ -1295,21 +1199,12 @@ export default function App() {
           </div>
 
           <div className="flex flex-row items-center justify-end gap-3 w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
-             {activePage === 'iftar' ? (
-                <div className={`flex shrink-0 items-center rounded-xl px-4 py-2 border lg:w-auto justify-center shadow-inner transition-colors duration-500 ${isPrepTime ? 'bg-red-500/20 border-red-500 text-red-100' : isIftarTime ? 'bg-emerald-500/20 border-emerald-500 text-emerald-200' : 'bg-white/5 border-orange-500/30 text-orange-200'}`}>
-                  <Clock className={`mr-2 ${isPrepTime ? 'animate-bounce text-red-400' : 'opacity-80'}`} size={20} />
-                  <div className="flex flex-col items-center lg:items-start">
-                     <span className="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest opacity-70">İftara Kalan</span>
-                     <span className={`font-mono font-black text-base lg:text-xl tracking-widest drop-shadow-md ${isPrepTime ? 'text-red-300' : isIftarTime ? 'text-emerald-300' : 'text-white'}`}>{countdown}</span>
-                  </div>
-                </div>
-             ) : null}
 
             {activePage !== 'talepler' && activePage !== 'gecmis' && (
               <div className={`flex shrink-0 items-center bg-white/10 rounded-xl px-4 py-2.5 lg:px-5 lg:py-3 border border-white/10 hover:bg-white/20 transition-colors w-full lg:w-auto justify-center`}>
-                <CalendarDays className={`mr-2 ${activePage === 'iftar' ? 'text-orange-400' : 'text-cyan-400'}`} size={20} />
+                <CalendarDays className={`mr-2 ${activePage === 'restoran' ? 'text-orange-400' : 'text-cyan-400'}`} size={20} />
                 <span className="text-[10px] lg:text-xs font-bold uppercase tracking-widest opacity-70 text-cyan-100 hidden lg:inline mr-3">Tarih Seç:</span>
-                <input type="date" value={activePage === 'iftar' ? selectedFilterDate : selectedMatchDate} onChange={(e) => activePage === 'iftar' ? setSelectedFilterDate(e.target.value) : setSelectedMatchDate(e.target.value)} className="bg-transparent text-white outline-none font-bold cursor-pointer text-sm lg:text-base w-full lg:w-auto" />
+                <input type="date" value={activePage === 'restoran' ? selectedFilterDate : selectedMatchDate} onChange={(e) => activePage === 'restoran' ? setSelectedFilterDate(e.target.value) : setSelectedMatchDate(e.target.value)} className="bg-transparent text-white outline-none font-bold cursor-pointer text-sm lg:text-base w-full lg:w-auto" />
               </div>
             )}
 
@@ -1320,7 +1215,7 @@ export default function App() {
       </header>
 
       {loading ? (
-        <div className={`flex flex-col items-center justify-center mt-32 relative z-10 w-full ${activePage === 'iftar' ? 'text-orange-600' : 'text-blue-600'}`}>
+        <div className={`flex flex-col items-center justify-center mt-32 relative z-10 w-full ${activePage === 'restoran' ? 'text-orange-600' : 'text-blue-600'}`}>
           <Loader2 className="animate-spin mb-4" size={64} />
           <p className="font-bold text-lg tracking-widest animate-pulse uppercase">Sisteme Bağlanıyor...</p>
         </div>
@@ -1349,8 +1244,8 @@ export default function App() {
                        {pendingRequests.map((req) => (
                          <div key={req.id} className="bg-slate-50 border-2 border-slate-200 rounded-3xl p-6 lg:p-8 hover:shadow-xl transition-all relative overflow-hidden group w-full flex flex-col">
                            {/* Tür Belirteci */}
-                           <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-2xl font-black text-xs uppercase tracking-widest text-white shadow-md ${req.type === 'iftar' ? 'bg-orange-500' : 'bg-blue-600'}`}>
-                             {req.type === 'iftar' ? 'İFTAR' : 'MAÇ YAYINI'}
+                           <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-2xl font-black text-xs uppercase tracking-widest text-white shadow-md ${req.type === 'mac' ? 'bg-blue-600' : req.type === 'dogum_gunu' ? 'bg-purple-500' : req.type === 'organizasyon' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
+                             {typeLabels[req.type] || 'REZERVASYON'}
                            </div>
 
                            <div className="mt-4 mb-6">
@@ -1392,9 +1287,9 @@ export default function App() {
 
 
           {/* ----------------------------- */}
-          {/* İFTAR EKRANI */}
+          {/* RESTORAN (YEMEK/KAHVALTI/ORGANİZASYON) EKRANI */}
           {/* ----------------------------- */}
-          {activePage === 'iftar' && (
+          {activePage === 'restoran' && (
             <>
               {/* SOL KOLON - FORM */}
               <div className="lg:col-span-4 xl:col-span-3 space-y-6 print:hidden w-full">
@@ -1402,7 +1297,7 @@ export default function App() {
                   <div className={`px-6 py-5 flex items-center justify-between ${isEditing ? 'bg-orange-50 border-b border-orange-100' : 'bg-gradient-to-r from-slate-50 to-white border-b border-slate-100'}`}>
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-xl ${isEditing ? 'bg-orange-100 text-orange-600' : 'bg-[#0B3B2C]/10 text-[#0B3B2C]'}`}><Edit2 size={20} /></div>
-                      <h2 className={`text-lg lg:text-xl font-black tracking-wide ${isEditing ? 'text-orange-800' : 'text-[#0B3B2C]'}`}>{isEditing ? 'Rezervasyonu Düzenle' : 'İftar Rezervasyonu'}</h2>
+                      <h2 className={`text-lg lg:text-xl font-black tracking-wide ${isEditing ? 'text-orange-800' : 'text-[#0B3B2C]'}`}>{isEditing ? 'Kayıt Düzenle' : 'Yeni Rezervasyon'}</h2>
                     </div>
                     {isEditing && <button onClick={cancelEdit} className="text-slate-400 p-1.5 hover:bg-white rounded-full shadow-sm border border-slate-200"><X size={18} /></button>}
                   </div>
@@ -1410,6 +1305,16 @@ export default function App() {
                   <form onSubmit={handleSubmit} className="p-6 lg:p-8 space-y-5">
                     {errorMsg && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-bold border border-red-100 flex items-center gap-2 shadow-sm"><X size={16} /> {errorMsg}</div>}
                     
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rezervasyon Türü</label>
+                      <select name="type" value={formData.type || 'yemek'} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 bg-slate-50/50 font-bold text-lg text-slate-700 outline-none">
+                         <option value="kahvalti">Kahvaltı</option>
+                         <option value="yemek">Yemek</option>
+                         <option value="dogum_gunu">Doğum Günü</option>
+                         <option value="organizasyon">Organizasyon</option>
+                      </select>
+                    </div>
+
                     <div className="flex flex-col gap-4">
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">İsim</label>
@@ -1491,18 +1396,8 @@ export default function App() {
                         <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-slate-50/50 font-bold text-[#0B3B2C] text-lg" required />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Özel Not (Opsiyonel)</label>
-                        <input type="text" name="notes" value={formData.notes} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-amber-500/10 bg-amber-50/50 placeholder:text-amber-400 font-medium text-lg" placeholder="Örn: Mama sandalyesi..." />
-                      </div>
-                    </div>
-                    
-                    <div className="pt-4">
-                      <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2"><UtensilsCrossed size={18} className="text-orange-500" /> İftar Menüsü (Adet)</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col"><div className="flex items-center justify-between mb-3"><span className="text-3xl">🐔</span><input type="number" inputMode="numeric" name="menuTavuk" min="0" value={formData.menuTavuk} onChange={handleChange} className="w-16 px-2 py-1.5 text-center border-2 rounded-xl outline-none font-black bg-slate-50 text-lg focus:border-orange-400" /></div><span className="text-sm font-bold text-slate-600">Tavuk Menü</span></div>
-                        <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col"><div className="flex items-center justify-between mb-3"><span className="text-3xl">🥩</span><input type="number" inputMode="numeric" name="menuHunkar" min="0" value={formData.menuHunkar} onChange={handleChange} className="w-16 px-2 py-1.5 text-center border-2 rounded-xl outline-none font-black bg-slate-50 text-lg focus:border-orange-400" /></div><span className="text-sm font-bold text-slate-600">Hünkar Beğendi</span></div>
-                        <div className="bg-white border-2 border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col"><div className="flex items-center justify-between mb-3"><span className="text-3xl">🍢</span><input type="number" inputMode="numeric" name="menuKarisik" min="0" value={formData.menuKarisik} onChange={handleChange} className="w-16 px-2 py-1.5 text-center border-2 rounded-xl outline-none font-black bg-slate-50 text-lg focus:border-orange-400" /></div><span className="text-sm font-bold text-slate-600">Karışık Izgara</span></div>
-                        <div className="bg-orange-50/50 border-2 border-orange-100 rounded-2xl p-4 shadow-sm flex flex-col"><div className="flex items-center justify-between mb-3"><span className="text-3xl">🧸</span><input type="number" inputMode="numeric" name="menuCocuk" min="0" value={formData.menuCocuk} onChange={handleChange} className="w-16 px-2 py-1.5 text-center border-2 border-orange-300 rounded-xl outline-none font-black text-orange-700 bg-white text-lg focus:border-orange-500" /></div><span className="text-sm font-bold text-orange-800">Çocuk Menüsü</span></div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Not / Açıklama</label>
+                        <textarea name="notes" value={formData.notes} onChange={handleChange} rows="2" className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-amber-500/10 bg-amber-50/50 placeholder:text-amber-400 font-medium text-lg resize-none" placeholder="Özel istekler..."></textarea>
                       </div>
                     </div>
                     
@@ -1513,18 +1408,16 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SAĞ KOLON - İFTAR LİSTESİ */}
+              {/* SAĞ KOLON - RESTORAN LİSTESİ */}
               <div className="lg:col-span-8 xl:col-span-9 space-y-6 print:w-full print:block print:space-y-4 w-full">
                 <div className={`bg-gradient-to-br from-[#0B3B2C] to-emerald-900 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col gap-6 relative overflow-hidden w-full ${printSingleId ? 'print:hidden' : 'print:bg-white print:from-white print:to-white print:border-b-2 print:border-black print:rounded-none print:shadow-none print:p-2 print:mb-4'}`}>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full border-b border-emerald-700/50 pb-6 z-10 print:border-black print:pb-2 gap-4">
                     <div className="flex items-center gap-5 text-[#FBE18D] w-full sm:w-auto">
-                      <div className="bg-white/10 p-4 rounded-2xl print:hidden shrink-0"><ChefHat size={36} /></div>
+                      <div className="bg-white/10 p-4 rounded-2xl print:hidden shrink-0"><UtensilsCrossed size={36} /></div>
                       <div>
-                        <p className="text-sm font-black uppercase tracking-widest text-orange-400 print:text-black">İftar Mutfak Özeti</p>
+                        <p className="text-sm font-black uppercase tracking-widest text-orange-400 print:text-black">Günlük Katılım Özeti</p>
                         <div className="flex gap-4 items-baseline mt-1">
-                          <p className="text-3xl sm:text-4xl font-black text-white print:text-black">Kişi: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span></p>
-                          <span className="text-emerald-500 font-bold print:hidden">|</span>
-                          <p className="text-xl sm:text-2xl font-bold text-slate-200 print:text-black">Menü: <span className="text-yellow-400 print:text-black">{dailySummary.totalMenu}</span></p>
+                          <p className="text-3xl sm:text-4xl font-black text-white print:text-black">Toplam: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span> Kişi</p>
                         </div>
                       </div>
                     </div>
@@ -1538,16 +1431,10 @@ export default function App() {
                        </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full z-10 print:grid-cols-2 print:gap-2">
-                    <div className="bg-white/95 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-2"><span className="block text-xs text-slate-500 font-bold mb-1">TAVUK</span><span className="font-black text-3xl sm:text-4xl text-[#0B3B2C] print:text-black">{dailySummary.totalTavuk}</span></div>
-                    <div className="bg-white/95 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-2"><span className="block text-xs text-slate-500 font-bold mb-1">HÜNKAR</span><span className="font-black text-3xl sm:text-4xl text-[#0B3B2C] print:text-black">{dailySummary.totalHunkar}</span></div>
-                    <div className="bg-white/95 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-slate-200 print:border print:border-black print:rounded-md print:py-2"><span className="block text-xs text-slate-500 font-bold mb-1">IZGARA</span><span className="font-black text-3xl sm:text-4xl text-[#0B3B2C] print:text-black">{dailySummary.totalKarisik}</span></div>
-                    <div className="bg-orange-50 px-4 py-4 lg:py-5 rounded-2xl text-center shadow-lg border-b-4 border-orange-200 print:border-black print:bg-white print:rounded-md print:py-2"><span className="block text-xs text-orange-600 font-bold mb-1">ÇOCUK</span><span className="font-black text-3xl sm:text-4xl text-orange-600 print:text-black">{dailySummary.totalCocuk}</span></div>
-                  </div>
                   
-                  {/* YENİ: İftar İçin WhatsApp Toplu Mesaj Butonu */}
-                  <div className="mt-4 pt-4 border-t border-emerald-700/50 flex justify-end print:hidden">
-                      <button onClick={() => sendBulkWhatsApp(filteredReservations, 'iftar')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105">
+                  {/* WhatsApp Toplu Mesaj Butonu */}
+                  <div className="pt-2 flex justify-end print:hidden relative z-10">
+                      <button onClick={() => sendBulkWhatsApp(filteredReservations, 'restoran')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105">
                          <MessageCircle size={18} /> Tümüne Hatırlatma Gönder
                       </button>
                   </div>
@@ -1574,9 +1461,14 @@ export default function App() {
                         const isArrived = res.isArrived || false;
                         const isPrinting = printSingleId === res.id;
                         return (
-                        <div key={res.id} className={`p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 relative group print:border-black print:border-dashed print:p-4 print:mb-2 w-full ${printSingleId && !isPrinting ? 'hidden print:hidden' : ''} ${isEditing === res.id ? 'border-orange-400 bg-orange-50/30 scale-[1.02] shadow-xl' : isArrived ? 'border-emerald-500 bg-emerald-50/50 opacity-80' : 'border-slate-100 bg-white hover:border-orange-200 hover:shadow-lg'}`}>
+                        <div key={res.id} className={`p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 relative group print:border-black print:border-dashed print:p-4 print:mb-2 w-full flex flex-col ${printSingleId && !isPrinting ? 'hidden print:hidden' : ''} ${isEditing === res.id ? 'border-orange-400 bg-orange-50/30 scale-[1.02] shadow-xl' : isArrived ? 'border-emerald-500 bg-emerald-50/50 opacity-80' : 'border-slate-100 bg-white hover:border-orange-200 hover:shadow-lg'}`}>
                           {isPrinting && <div className="hidden print:block text-center font-bold text-[14px] uppercase mb-4 border-b border-black">Salaaş Cafe<br/>{selectedFilterDate}</div>}
                           
+                          {/* Tür Belirteci */}
+                          <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase tracking-widest text-white shadow-sm ${res.type === 'dogum_gunu' ? 'bg-purple-500' : res.type === 'organizasyon' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
+                            {typeLabels[res.type] || 'REZERVASYON'}
+                          </div>
+
                           {deleteConfirmId === res.id && (
                              <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center p-6 border border-red-200 rounded-3xl print:hidden backdrop-blur-sm">
                                <p className="font-black text-slate-800 mb-5 text-xl">Silinsin mi?</p>
@@ -1584,7 +1476,7 @@ export default function App() {
                              </div>
                           )}
                           
-                          <div className="flex items-center gap-4 mb-4">
+                          <div className="flex items-center gap-4 mb-4 mt-2">
                              <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full flex items-center justify-center font-black text-base shadow-inner print:hidden ${isArrived ? 'bg-emerald-100 text-emerald-700' : 'bg-gradient-to-br from-orange-400 to-orange-500 text-white'}`}>{getInitials(res.name)}</div>
                              <h3 className={`text-2xl font-black truncate print:text-black ${isArrived ? 'line-through text-emerald-900' : 'text-[#0B3B2C]'}`}>{res.name || 'İsimsiz'}</h3>
                           </div>
@@ -1592,31 +1484,21 @@ export default function App() {
                           {res.phone && (
                             <div className="flex items-center gap-3 mt-2">
                               <p className="text-base font-semibold flex items-center gap-2 text-slate-500 print:text-black"><Phone size={16} className="print:hidden text-orange-400" /> {res.phone}</p>
-                              <button onClick={() => sendWhatsApp(res, 'iftar')} className="print:hidden bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white p-2 rounded-full transition-colors"><MessageCircle size={18} /></button>
+                              <button onClick={() => sendWhatsApp(res, 'restoran')} className="print:hidden bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white p-2 rounded-full transition-colors"><MessageCircle size={18} /></button>
                             </div>
                           )}
 
-                          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-base font-black mt-4 print:p-0 print:text-black ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-50 text-orange-800'}`}><Armchair size={18} className="print:hidden" /> Masa: {res.table}</div>
+                          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-base font-black mt-4 w-max print:p-0 print:text-black ${isArrived ? 'bg-emerald-100 text-emerald-800' : 'bg-orange-50 text-orange-800'}`}><Armchair size={18} className="print:hidden" /> Masa: {res.table}</div>
                           
                           {res.notes && <div className="mt-4 text-sm sm:text-base font-bold text-amber-800 bg-amber-50 p-4 rounded-xl border border-amber-200 print:border-black print:bg-white">Not: {res.notes}</div>}
 
-                          <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-6 border-t border-slate-200 print:hidden">
+                          <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 border-t border-slate-200 print:hidden">
                             <button onClick={() => handleToggleArrived(res.id, isArrived, 'reservations')} className={`px-6 py-3 rounded-xl flex items-center gap-3 text-sm font-black transition-colors ${isArrived ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}><CheckCircle size={20} /> {isArrived ? "MASADA" : "GELMEDİ"}</button>
                             <div className="flex gap-3">
                               <button onClick={() => handlePrintSingle(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-[#0B3B2C] hover:bg-slate-200 rounded-xl border border-slate-200 transition-colors"><Printer size={20} /></button>
                               <button onClick={() => handleEditClick(res)} className="p-3 text-slate-500 bg-slate-50 hover:text-orange-600 hover:bg-orange-100 rounded-xl border border-slate-200 transition-colors"><Edit2 size={20} /></button>
                               <button onClick={() => setDeleteConfirmId(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-red-600 hover:bg-red-100 rounded-xl border border-slate-200 transition-colors"><Trash2 size={20} /></button>
                             </div>
-                          </div>
-                          
-                          <div className="mt-5 p-4 sm:p-5 border-2 rounded-2xl print:border-t print:border-b-0 print:p-0 print:mt-2 bg-slate-50/80">
-                             <div className="flex items-center justify-between mb-4 border-b border-slate-200 pb-3 print:border-none print:mb-0"><p className="text-xs font-black uppercase text-slate-400 print:hidden">Sipariş Özeti</p><div className="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-black print:bg-transparent print:text-black print:p-0 shadow-sm"><Users size={16} className="inline print:hidden mr-1.5" />{res.peopleCount} KİŞİ</div></div>
-                             <ul className="text-sm sm:text-base font-bold text-slate-600 print:text-black space-y-2">
-                                {res.menuTavuk > 0 && <li className="flex justify-between"><span>Tavuk Menü</span> <span className="bg-white px-3 py-1 rounded-lg border shadow-sm">x {res.menuTavuk}</span></li>}
-                                {res.menuHunkar > 0 && <li className="flex justify-between"><span>Hünkar</span> <span className="bg-white px-3 py-1 rounded-lg border shadow-sm">x {res.menuHunkar}</span></li>}
-                                {res.menuKarisik > 0 && <li className="flex justify-between"><span>Izgara</span> <span className="bg-white px-3 py-1 rounded-lg border shadow-sm">x {res.menuKarisik}</span></li>}
-                                {res.menuCocuk > 0 && <li className="flex justify-between text-orange-600"><span>Çocuk</span> <span className="bg-orange-50 px-3 py-1 rounded-lg border border-orange-200 shadow-sm">x {res.menuCocuk}</span></li>}
-                             </ul>
                           </div>
                         </div>
                       )})}
@@ -1736,7 +1618,7 @@ export default function App() {
                         const isArrived = res.isArrived || false;
                         const isPrinting = printSingleId === res.id;
                         return (
-                        <div key={res.id} className={`p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 relative group print:border-black print:border-dashed print:p-4 print:mb-2 w-full ${printSingleId && !isPrinting ? 'hidden print:hidden' : ''} ${isMatchEditing === res.id ? 'border-blue-400 bg-blue-50/30 scale-[1.02] shadow-xl' : isArrived ? 'border-emerald-500 bg-emerald-50/50 opacity-80' : 'border-slate-100 bg-white hover:border-blue-200 hover:shadow-lg'}`}>
+                        <div key={res.id} className={`p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 relative group print:border-black print:border-dashed print:p-4 print:mb-2 w-full flex flex-col ${printSingleId && !isPrinting ? 'hidden print:hidden' : ''} ${isMatchEditing === res.id ? 'border-blue-400 bg-blue-50/30 scale-[1.02] shadow-xl' : isArrived ? 'border-emerald-500 bg-emerald-50/50 opacity-80' : 'border-slate-100 bg-white hover:border-blue-200 hover:shadow-lg'}`}>
                           {isPrinting && <div className="hidden print:block text-center font-bold text-[14px] uppercase mb-4 border-b border-black">Salaaş Cafe MAÇ<br/>{selectedMatchDate}</div>}
                           
                           {matchDeleteConfirmId === res.id && (
@@ -1746,7 +1628,7 @@ export default function App() {
                              </div>
                           )}
                           
-                          <div className="flex items-center gap-4 mb-4">
+                          <div className="flex items-center gap-4 mb-4 mt-2">
                              <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full flex items-center justify-center font-black text-base shadow-inner print:hidden ${isArrived ? 'bg-emerald-100 text-emerald-700' : 'bg-gradient-to-br from-blue-400 to-blue-600 text-white'}`}>{getInitials(res.name)}</div>
                              <h3 className={`text-2xl font-black truncate print:text-black ${isArrived ? 'line-through text-emerald-900' : 'text-[#0a192f]'}`}>{res.name || 'İsimsiz'}</h3>
                           </div>
@@ -1765,7 +1647,7 @@ export default function App() {
                           
                           {res.notes && <div className="mt-4 text-sm sm:text-base font-bold text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200 print:border-black print:bg-white">Not: {res.notes}</div>}
 
-                          <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-6 border-t border-slate-200 print:hidden">
+                          <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 border-t border-slate-200 print:hidden">
                             <button onClick={() => handleToggleArrived(res.id, isArrived, 'matchReservations')} className={`px-6 py-3 rounded-xl flex items-center gap-3 text-sm font-black transition-colors ${isArrived ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}><CheckCircle size={20} /> {isArrived ? "MASADA" : "GELMEDİ"}</button>
                             <div className="flex gap-3">
                               <button onClick={() => handlePrintSingle(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-[#0a192f] hover:bg-slate-200 rounded-xl border border-slate-200 transition-colors"><Printer size={20} /></button>
@@ -1819,8 +1701,8 @@ export default function App() {
                      
                      <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                         <select value={historyTypeFilter} onChange={(e) => setHistoryTypeFilter(e.target.value)} className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-slate-700 outline-none focus:border-purple-500">
-                           <option value="all">Tümü (İftar + Maç)</option>
-                           <option value="iftar">Sadece İftar</option>
+                           <option value="all">Tümü (Restoran + Maç)</option>
+                           <option value="restoran">Sadece Restoran</option>
                            <option value="mac">Sadece Maç</option>
                         </select>
                         <input type="date" value={historyDateFilter} onChange={(e) => setHistoryDateFilter(e.target.value)} className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-slate-700 outline-none focus:border-purple-500 cursor-pointer" />
@@ -1854,7 +1736,7 @@ export default function App() {
                                  <tr key={res.id || idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                     <td className="py-4 px-4 font-bold text-slate-700 whitespace-nowrap">{res.date}</td>
                                     <td className="py-4 px-4">
-                                       <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg ${res.eventType === 'İftar' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+                                       <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg ${res.eventType === 'Maç' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>
                                           {res.eventType}
                                        </span>
                                     </td>
