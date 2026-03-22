@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarDays, Users, UtensilsCrossed, Armchair, 
-  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History
+  Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare
 } from 'lucide-react';
 
 // Firebase importları
@@ -105,6 +105,31 @@ const DESSERTS = [
   { id: 19, name: 'Brownie', image: '/brownie.jpg' }
 ];
 
+// DİJİTAL MENÜ KATEGORİLERİ
+const MENU_CATEGORIES = [
+  { id: 'kahvalti', name: 'Kahvaltı', icon: <Coffee size={24} />, items: ['Serpme Kahvaltı', 'Kahvaltı Tabağı', 'Menemen', 'Sahanda Sucuklu Yumurta', 'Muhlama', 'Pankek'] },
+  { id: 'tostlar', name: 'Tostlar', icon: <UtensilsCrossed size={24} />, items: ['Kaşarlı Tost', 'Sucuklu Tost', 'Karışık Tost', 'Ayvalık Tostu', 'Bazlama Tost'] },
+  { id: 'wrap', name: 'Wrap & Quesadilla', icon: <UtensilsCrossed size={24} />, items: ['Etli Wrap', 'Tavuklu Wrap', 'Köfteli Wrap', 'Tavuklu Quesadilla', 'Etli Quesadilla'] },
+  { id: 'pizza', name: 'Pizza', icon: <UtensilsCrossed size={24} />, items: ['Margherita', 'Karışık Pizza', 'Sucuklu Pizza', 'Ton Balıklı Pizza', 'Meksika Ateşi'] },
+  { id: 'tavuk', name: 'Tavuk Lezzetleri', icon: <ChefHat size={24} />, items: ['Cafe de Paris Soslu Tavuk', 'Köri Soslu Tavuk', 'Meksika Soslu Tavuk', 'Barbekü Soslu Tavuk', 'Kekikli Tavuk', 'Tavuk Şinitzel', 'Izgara Tavuk Göğüs'] },
+  { id: 'et', name: 'Et Lezzetleri', icon: <ChefHat size={24} />, items: ['Dana Lokum', 'Çoban Kavurma', 'Sac Kavurma', 'Et Sote', 'Izgara Antrikot'] },
+  { id: 'kofte', name: 'Köfte Lezzetleri', icon: <ChefHat size={24} />, items: ['Izgara Köfte', 'Kaşarlı Köfte', 'Hünkar Beğendili Köfte', 'Kiremitte Köfte'] },
+  { id: 'burger', name: 'Hamburger', icon: <UtensilsCrossed size={24} />, items: ['Klasik Burger', 'Cheeseburger', 'Mantarlı Burger', 'Meksika Burger', 'Tavuk Burger'] },
+  { id: 'makarna', name: 'Makarna Çeşitleri', icon: <UtensilsCrossed size={24} />, items: ['Penne Arabiata', 'Fettuccine Alfredo', 'Spagetti Bolognese', 'Mantı', 'Noodle'] },
+  { id: 'salata', name: 'Salata Çeşitleri', icon: <UtensilsCrossed size={24} />, items: ['Sezar Salata', 'Ton Balıklı Salata', 'Izgara Tavuklu Salata', 'Akdeniz Salata', 'Hellim Peynirli Salata'] },
+  { id: 'tatli', name: 'Salaaş Tatlı', icon: <Star size={24} />, items: ['San Sebastian', 'Dubai Çikolatalı', 'Lotus Dome', 'Profiterol', 'Tiramisu', 'Brownie', 'Cheesecake Çeşitleri', 'Sütlaç', 'Magnolia'] },
+  { id: 'cay', name: 'Çaylar', icon: <Coffee size={24} />, items: ['Bardak Çay', 'Fincan Çay', 'Bitki Çayları', 'Yeşil Çay', 'Kış Çayı', 'Ada Çayı'] },
+  { id: 'turk_kahvesi', name: 'Türk Kahvesi', icon: <Coffee size={24} />, items: ['Klasik Türk Kahvesi', 'Damla Sakızlı Türk Kahvesi', 'Sütlü Türk Kahvesi', 'Dibek Kahvesi', 'Menengiç Kahvesi'] },
+  { id: 'sicak_kahve', name: 'Sıcak Kahveler', icon: <Coffee size={24} />, items: ['Espresso', 'Americano', 'Latte', 'Cappuccino', 'Mocha', 'Macchiato', 'Filtre Kahve'] },
+  { id: 'sicak_diger', name: 'Sıcak Çikolata & Sahlep', icon: <Coffee size={24} />, items: ['Sıcak Çikolata', 'Beyaz Sıcak Çikolata', 'Sahlep', 'Damla Sakızlı Sahlep'] },
+  { id: 'soguk_kahve', name: 'Soğuk Kahveler', icon: <Coffee size={24} />, items: ['Ice Latte', 'Ice Americano', 'Ice Mocha', 'Frappe', 'Cold Brew'] },
+  { id: 'kokteyl', name: 'Kokteyller', icon: <Coffee size={24} />, items: ['Mojito', 'Pina Colada', 'Blue Lagoon', 'Sex on the Beach', 'Margarita'] },
+  { id: 'soguk_icecek', name: 'Soğuk İçecekler', icon: <Coffee size={24} />, items: ['Kola', 'Fanta', 'Sprite', 'Ayran', 'Şalgam', 'Limonata', 'Meyve Suyu', 'Su', 'Soda', 'Churchill'] },
+  { id: 'vitamin', name: 'Vitamin Bar', icon: <Coffee size={24} />, items: ['Taze Sıkma Portakal Suyu', 'Nar Suyu', 'Havuç Suyu', 'Elma Suyu', 'Atom (Karışık Meyve Suyu)', 'Detox Suları'] },
+  { id: 'eglence', name: 'Eğlence Menüsü', icon: <Star size={24} />, items: ['Çerez Tabağı', 'Meyve Tabağı', 'Cips', 'Patlamış Mısır', 'Sigara Böreği', 'Sosis Tabağı', 'Patates Kızartması'] },
+  { id: 'nargile', name: 'Nargile Çeşitleri', icon: <Wind size={24} />, items: ['Elma', 'Nane', 'Kavun', 'Karpuz', 'Şeftali', 'Üzüm', 'Çilek', 'Cappuccino', 'Çikolata', 'Sakız', 'Gül', 'Özel Karışım (Spesiyal)'] },
+];
+
 export default function App() {
   const getToday = () => {
     const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -155,7 +180,7 @@ export default function App() {
   // NAVBAR SCROLL STATE
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // RESTORAN STATE'LERİ (Eski İftar)
+  // RESTORAN STATE'LERİ
   const [reservations, setReservations] = useState([]);
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [isEditing, setIsEditing] = useState(null);
@@ -181,8 +206,14 @@ export default function App() {
   const [pendingRequests, setPendingRequests] = useState([]);
 
   // GEÇMİŞ (HISTORY) STATE
-  const [historyDateFilter, setHistoryDateFilter] = useState(''); // '' means all history
-  const [historyTypeFilter, setHistoryTypeFilter] = useState('all'); // 'all', 'restoran', 'mac'
+  const [historyDateFilter, setHistoryDateFilter] = useState(''); 
+  const [historyTypeFilter, setHistoryTypeFilter] = useState('all'); 
+
+  // İFTAR SAYAÇ STATE'LERİ
+  const [iftarTime, setIftarTime] = useState(null);
+  const [countdown, setCountdown] = useState("Hesaplanıyor...");
+  const [isPrepTime, setIsPrepTime] = useState(false);
+  const [isIftarTime, setIsIftarTime] = useState(false);
 
   useEffect(() => {
     document.title = "Salaaş Cafe Restaurant";
@@ -198,6 +229,46 @@ export default function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Gebze İftar Vakti Çekme
+  useEffect(() => {
+    fetch('https://api.aladhan.com/v1/timingsByCity?city=Gebze&country=Turkey&method=13')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.data && data.data.timings && data.data.timings.Maghrib) {
+          setIftarTime(data.data.timings.Maghrib);
+        }
+      })
+      .catch(err => console.error("İftar vakti çekilemedi", err));
+  }, []);
+
+  // Geri Sayım
+  useEffect(() => {
+    if (!iftarTime) return;
+    const interval = setInterval(() => {
+      const now = new Date();
+      const [hours, minutes] = iftarTime.split(':');
+      const iftarDate = new Date();
+      iftarDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      let diff = iftarDate - now;
+
+      if (diff < 0) {
+        setCountdown("İFTAR VAKTİ!");
+        setIsIftarTime(true);
+        setIsPrepTime(false);
+        clearInterval(interval);
+        return;
+      }
+      if (diff <= 600000 && diff > 0) setIsPrepTime(true);
+      else setIsPrepTime(false);
+
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      setCountdown(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [iftarTime]);
 
   useEffect(() => {
     const handleAfterPrint = () => setPrintSingleId(null);
@@ -322,7 +393,6 @@ export default function App() {
       await deleteDoc(doc(db, 'reservationRequests', id));
     } catch(err) { console.error("Red hatası:", err); }
   };
-
 
   // --- RESTORAN FONKSİYONLARI ---
   const handleChange = (e) => {
@@ -669,8 +739,11 @@ export default function App() {
                 <button onClick={() => setShowRequestModal(true)} className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}>
                   <CalendarDays size={16} /> Rezervasyon Talebi
                 </button>
-                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
-                  Menüyü Gör
+                <button onClick={() => handleScroll('dijital-menu')} className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2">
+                  <MenuSquare size={16} /> Detaylı Menü
+                </button>
+                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap hidden md:block">
+                  Hızlı Sipariş
                 </a>
               </div>
             </div>
@@ -739,9 +812,9 @@ export default function App() {
                   <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Vitrinimiz</h2>
                   <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C]">Bunu Denediniz mi?</h3>
                 </div>
-                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
+                <button onClick={() => handleScroll('dijital-menu')} className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
                   Tüm Menüyü Gör <div className="bg-orange-100 p-2 lg:p-3 rounded-full group-hover:bg-orange-200 transition-colors"><ChevronRight size={18} className="text-orange-600"/></div>
-                </a>
+                </button>
               </div>
 
               {/* Responsive Grid System for Showcase */}
@@ -811,20 +884,72 @@ export default function App() {
             </div>
           </section>
 
+          {/* YENİ: PREMIUM DİJİTAL MENÜ BÖLÜMÜ (BLACK & GOLD THEME) */}
+          <section id="dijital-menu" className="w-full py-24 md:py-36 bg-[#0a0a0a] relative overflow-hidden">
+             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
+             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-yellow-600/10 rounded-full blur-[150px] pointer-events-none translate-y-1/2 -translate-x-1/3"></div>
+
+             <div className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 relative z-10">
+               <div className="text-center mb-16 md:mb-24">
+                  <h2 className="text-sm lg:text-base font-black tracking-[0.4em] text-orange-500 uppercase mb-4 flex items-center justify-center gap-3">
+                     <span className="w-8 h-[1px] bg-orange-500 hidden sm:block"></span> 
+                     Menü 
+                     <span className="w-8 h-[1px] bg-orange-500 hidden sm:block"></span>
+                  </h2>
+                  <h3 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-white mb-6">Salaaş Lezzetleri</h3>
+                  <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">Özenle hazırladığımız tariflerimiz ve imza lezzetlerimizle eşsiz bir gastronomi deneyimi yaşayın.</p>
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+                  {MENU_CATEGORIES.map((category) => (
+                     <div key={category.id} className="bg-[#111] border border-white/5 rounded-3xl p-8 hover:bg-[#151515] hover:border-orange-500/30 transition-all duration-500 group relative overflow-hidden shadow-2xl">
+                        <div className="absolute top-0 right-0 p-6 opacity-5 text-white group-hover:text-orange-500 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                           {category.icon}
+                        </div>
+                        
+                        <div className="flex items-center gap-4 mb-8">
+                           <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(249,115,22,0.3)]">
+                              {React.cloneElement(category.icon, { size: 20 })}
+                           </div>
+                           <h4 className="text-2xl font-serif font-black text-white tracking-wide">{category.name}</h4>
+                        </div>
+
+                        <ul className="space-y-4">
+                           {category.items.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-3">
+                                 <span className="mt-1.5 w-1.5 h-1.5 bg-orange-500 rounded-full shrink-0 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
+                                 <span className="text-slate-300 font-medium text-base leading-snug group-hover:text-slate-100 transition-colors">{item}</span>
+                              </li>
+                           ))}
+                        </ul>
+                     </div>
+                  ))}
+               </div>
+
+               <div className="mt-20 text-center flex flex-col sm:flex-row items-center justify-center gap-6">
+                  <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.4)] text-base lg:text-lg">
+                    Fiyatlı Dijital Menüye Git <ArrowRight size={20} />
+                  </a>
+                  <p className="text-slate-500 font-medium">veya siparişinizi masadan QR okutarak verin.</p>
+               </div>
+             </div>
+          </section>
+
           {/* ORGANİZASYON & ETKİNLİK */}
-          <section className="w-full py-28 md:py-36 bg-slate-900 text-white relative overflow-hidden">
+          <section className="w-full py-28 md:py-36 bg-emerald-950 text-white relative overflow-hidden">
              <div className="absolute inset-0 opacity-5 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
-             <div className="absolute -right-20 -top-20 opacity-10 text-orange-500 hidden md:block"><MoonStar size={500}/></div>
+             <div className="absolute -right-20 -top-20 opacity-10 text-emerald-500 hidden md:block"><Star size={500}/></div>
              
              <div className="w-full mx-auto px-4 sm:px-8 lg:px-16 text-center relative z-10">
-               <h2 className="text-base lg:text-lg font-black tracking-[0.4em] text-orange-400 uppercase mb-6">Davet & Organizasyon</h2>
-               <h3 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-10 drop-shadow-lg">Özel Günleriniz İçin Yanınızdayız</h3>
-               <p className="text-lg sm:text-xl lg:text-3xl text-slate-300 font-light mb-16 max-w-4xl mx-auto leading-relaxed">
+               <h2 className="text-base lg:text-lg font-black tracking-[0.4em] text-emerald-400 uppercase mb-6">Davet & Organizasyon</h2>
+               <h3 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-10 drop-shadow-lg text-white">Özel Günleriniz İçin Yanınızdayız</h3>
+               <p className="text-lg sm:text-xl lg:text-3xl text-emerald-100 font-light mb-16 max-w-4xl mx-auto leading-relaxed">
                  Doğum günü partileri, şirket yemekleri, toplu iftarlar ve tüm özel kutlamalarınız için 300 kişilik kapasitemiz ve size özel menülerimizle hizmetinizdeyiz.
                </p>
-               <a href="tel:+902626421413" className="shine-effect inline-flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-10 py-5 lg:px-14 lg:py-6 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-2xl hover:shadow-orange-500/30 text-base lg:text-xl">
-                 <Phone size={24}/> Rezervasyon Hattı
-               </a>
+               <button onClick={() => {setRequestData({...requestData, type: 'organizasyon'}); setShowRequestModal(true);}} className="shine-effect inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-400 text-white px-10 py-5 lg:px-14 lg:py-6 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(16,185,129,0.4)] text-base lg:text-xl border border-emerald-400">
+                 <CalendarDays size={24}/> Organizasyon Talebi
+               </button>
              </div>
           </section>
 
@@ -1049,7 +1174,7 @@ export default function App() {
                       Talebi Gönder <ArrowRight size={24} />
                     </button>
                   </form>
-                )}
+                </div>
               </div>
             </div>
           </div>
