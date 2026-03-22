@@ -130,6 +130,22 @@ const MENU_CATEGORIES = [
   { id: 'nargile', name: 'Nargile Çeşitleri', icon: <Wind size={24} />, items: ['Elma', 'Nane', 'Kavun', 'Karpuz', 'Şeftali', 'Üzüm', 'Çilek', 'Cappuccino', 'Çikolata', 'Sakız', 'Gül', 'Özel Karışım (Spesiyal)'] },
 ];
 
+const GLOBAL_CSS = `
+#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; text-align: left !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; }
+@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shine { 100% { left: 125%; } }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.shine-effect { position: relative; overflow: hidden; }
+.shine-effect::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); animation: shine 3s infinite; }
+`;
+
 export default function App() {
   const getToday = () => {
     const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -142,7 +158,7 @@ export default function App() {
     dogum_gunu: 'Doğum Günü',
     organizasyon: 'Organizasyon',
     mac: 'Maç Yayını',
-    iftar: 'İftar' // Eskiden kalan veriler için
+    iftar: 'İftar'
   };
 
   // OTURUM AÇMA (LOGIN) STATE'LERİ
@@ -154,9 +170,10 @@ export default function App() {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bulkMessage, setBulkMessage] = useState('');
   
   // SAYFA GEÇİŞ STATE'İ
-  const [activePage, setActivePage] = useState('restoran'); // 'restoran', 'mac', 'talepler', 'gecmis'
+  const [activePage, setActivePage] = useState('restoran');
 
   // MÜŞTERİ EKRANI MODALLAR & SEÇİMLER
   const [visitorDate, setVisitorDate] = useState(getToday());
@@ -172,7 +189,11 @@ export default function App() {
     phone: '', 
     peopleCount: 2, 
     date: getToday(), 
-    notes: ''
+    notes: '',
+    menuTavuk: 0,
+    menuHunkar: 0,
+    menuKarisik: 0,
+    menuCocuk: 0
   };
   const [requestData, setRequestData] = useState(initialRequestState);
   const [requestError, setRequestError] = useState('');
@@ -377,6 +398,13 @@ export default function App() {
         createdBy: user.uid
       };
 
+      if (req.type === 'iftar') {
+        newRes.menuTavuk = req.menuTavuk || 0; 
+        newRes.menuHunkar = req.menuHunkar || 0; 
+        newRes.menuKarisik = req.menuKarisik || 0; 
+        newRes.menuCocuk = req.menuCocuk || 0; 
+      }
+
       await addDoc(collection(db, targetCollection), newRes);
       await deleteDoc(doc(db, 'reservationRequests', req.id));
 
@@ -507,7 +535,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(/\D/g, '');
+    let cleanPhone = res.phone.replace(new RegExp('\\D', 'g'), '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
 
@@ -570,7 +598,7 @@ export default function App() {
     return 'reserved';
   };
 
-  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople / 300) * 100)); // Kapasite 300
+  const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople * 100) / 300)); 
   
   const handlePrintSingle = (id) => {
     setPrintSingleId(id);
@@ -580,24 +608,24 @@ export default function App() {
   const handleScroll = (id) => {
     const element = document.getElementById(id);
     if(element) {
-      // Menü barının yüksekliği kadar pay bırakarak kaydır
       const y = element.getBoundingClientRect().top + window.scrollY - 80;
       window.scrollTo({top: y, behavior: 'smooth'});
     }
   };
 
-  // YENİ: WHATSAPP TOPLU BİLDİRİM FONKSİYONU
+  // WHATSAPP TOPLU BİLDİRİM FONKSİYONU
   const sendBulkWhatsApp = (reservationsList, type) => {
     if (!reservationsList || reservationsList.length === 0) {
-        alert("Bu tarihte gönderilecek rezervasyon bulunmuyor.");
+        setBulkMessage("Bu tarihte gönderilecek rezervasyon bulunmuyor.");
+        setTimeout(() => setBulkMessage(''), 5000);
         return;
     }
     
-    // Geçerli telefon numarası olanları filtrele
     const validReservations = reservationsList.filter(res => res.phone && res.phone.trim().length >= 10);
     
     if (validReservations.length === 0) {
-        alert("Geçerli telefon numarası bulunan kayıt yok.");
+        setBulkMessage("Geçerli telefon numarası bulunan kayıt yok.");
+        setTimeout(() => setBulkMessage(''), 5000);
         return;
     }
 
@@ -606,24 +634,24 @@ export default function App() {
 
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(/\D/g, '');
+        let cleanPhone = res.phone.replace(new RegExp('\\D', 'g'), '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
     });
     
-    // Sondaki virgülü al
     phoneListStr = phoneListStr.slice(0, -1);
 
     const message = `Salaaş Cafe'ye ${dateStr} tarihindeki ${eventName} hatırlatırız. Bizi tercih ettiğiniz için teşekkür ederiz.`;
     
-    // Tarayıcı destekliyorsa panoya kopyala
-    navigator.clipboard.writeText(phoneListStr).then(() => {
-        alert(`Toplam ${validReservations.length} numara kopyalandı! \n\nWhatsApp Broadcast (Toplu Mesaj) listenize bu numaraları yapıştırarak şu mesajı gönderebilirsiniz:\n\n"${message}"\n\n(Not: WhatsApp doğrudan toplu mesaj API'si olmadan tek tıkla çoklu gönderime izin vermez, numaraları panoya kopyaladık.)`);
-    }).catch(err => {
-        console.error('Panoya kopyalanamadı: ', err);
-        alert("Numaralar kopyalanamadı, lütfen konsolu kontrol edin.");
-    });
+    if(navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(phoneListStr).then(() => {
+            setBulkMessage(`${validReservations.length} numara kopyalandı! Broadcast listenize yapıştırıp mesajınızı iletebilirsiniz.`);
+            setTimeout(() => setBulkMessage(''), 6000);
+        }).catch(err => {
+            console.error('Panoya kopyalanamadı: ', err);
+        });
+    }
   };
 
   // GEÇMİŞ (HISTORY) HESAPLAMALARI
@@ -638,18 +666,15 @@ export default function App() {
         allData = [...allData, ...macHistory];
     }
 
-    // Tarihe göre filtrele
     if (historyDateFilter) {
         allData = allData.filter(r => r.date === historyDateFilter);
     }
 
-    // Tarihe göre sırala (en yeni en üstte)
     allData.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Haftalık veya genel toplamları hesapla
     const totalPeople = allData.reduce((acc, curr) => acc + (parseInt(curr.peopleCount) || 0), 0);
     const totalArrived = allData.filter(r => r.isArrived).reduce((acc, curr) => acc + (parseInt(curr.peopleCount) || 0), 0);
-    const arrivalRate = totalPeople > 0 ? Math.round((totalArrived / totalPeople) * 100) : 0;
+    const arrivalRate = totalPeople > 0 ? Math.round((totalArrived * 100) / totalPeople) : 0;
 
     return { list: allData, totalPeople, totalArrived, arrivalRate };
   };
@@ -665,58 +690,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
         
         {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
-        <style dangerouslySetInnerHTML={{__html: `
-          /* KESİN VITE CSS SIFIRLAMA (YANLARDAKİ SİYAH BOŞLUKLARI YOK EDER) */
-          #root {
-            max-width: 100% !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            text-align: left !important;
-          }
-          body, html {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            overflow-x: hidden !important;
-            background-color: #f8fafc !important; /* slate-50 */
-          }
-
-          @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-            100% { transform: translateY(0px); }
-          }
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes shine {
-            100% { left: 125%; }
-          }
-          .animate-float { animation: float 6s ease-in-out infinite; }
-          .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
-          .delay-100 { animation-delay: 100ms; }
-          .delay-200 { animation-delay: 200ms; }
-          .delay-300 { animation-delay: 300ms; }
-          .delay-400 { animation-delay: 400ms; }
-          .shine-effect {
-            position: relative;
-            overflow: hidden;
-          }
-          .shine-effect::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-20deg);
-            animation: shine 3s infinite;
-          }
-        `}} />
+        <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
 
         {/* PREMIUM NAVBAR - DÜZELTİLMİŞ GENİŞ TASARIM */}
         <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
@@ -970,30 +944,30 @@ export default function App() {
               <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">İletişim</h4>
               <ul className="space-y-6 text-base lg:text-lg font-medium text-slate-300">
                 <li>
-                   <a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-4">
-                     <Phone size={20}/> 📞 Telefon: 0262 642 14 13
-                   </a>
-                </li>
-                <li>
-                   <a href="https://wa.me/905392356004" target="_blank" rel="noreferrer" className="hover:text-[#25D366] transition-colors flex items-center justify-center md:justify-start gap-4">
-                     <MessageCircle size={20}/> 💬 WhatsApp: 0539 235 60 04
-                   </a>
-                </li>
-                <li>
-                   <a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-pink-500 transition-colors flex items-center justify-center md:justify-start gap-4">
-                     <Instagram size={20}/> 📸 Instagram: @salascaferestaurant
-                   </a>
-                </li>
-                <li>
-                   <div className="flex flex-col items-center md:items-start gap-3">
-                     <div className="flex items-start justify-center md:justify-start gap-4 text-left">
-                        <MapPin size={20} className="shrink-0 mt-1"/> 
-                        <span>📍 Harita<br/>Gebze, Kocaeli</span>
+                   <div className="flex flex-col items-center md:items-start gap-2">
+                     <div className="flex items-center justify-center md:justify-start gap-3">
+                        <MapPin size={20} className="text-orange-500 shrink-0"/> 
+                        <span className="text-white font-bold">📍 Harita</span>
                      </div>
-                     <a href="https://www.google.com/maps/dir/?api=1&destination=Salaaş+Cafe+Restaurant+Gebze" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-md mt-2 ml-0 md:ml-9">
+                     <p className="ml-0 md:ml-8 text-slate-400">Gebze, Kocaeli</p>
+                     <a href="https://www.google.com/maps/dir/?api=1&destination=Salaaş+Cafe+Restaurant+Gebze" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shadow-md mt-1 ml-0 md:ml-8 border border-slate-700 w-max">
                         Yol Tarifi Al <ArrowRight size={16}/>
                      </a>
                    </div>
+                </li>
+                <li>
+                   <a href="tel:+902626421413" className="hover:text-orange-400 transition-colors flex items-center justify-center md:justify-start gap-3">
+                     <Phone size={20} className="text-orange-500 shrink-0"/> 
+                     <span className="text-white font-bold">📞 Telefon</span>
+                     <span className="ml-2">0262 642 14 13</span>
+                   </a>
+                </li>
+                <li>
+                   <a href="https://www.instagram.com/salascaferestaurant/" target="_blank" rel="noreferrer" className="hover:text-pink-500 transition-colors flex items-center justify-center md:justify-start gap-3">
+                     <Instagram size={20} className="text-pink-500 shrink-0"/> 
+                     <span className="text-white font-bold">📸 Instagram</span>
+                     <span className="ml-2">@salascaferestaurant</span>
+                   </a>
                 </li>
               </ul>
             </div>
@@ -1227,7 +1201,7 @@ export default function App() {
           rel="noreferrer"
           className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
         >
-          <MessageCircle size={24} />
+          <span className="text-xl">💬</span>
           <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
         </a>
       </div>
@@ -1240,24 +1214,17 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'restoran' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : activePage === 'gecmis' ? 'bg-slate-100' : 'bg-slate-100'}`}>
       
+      {/* BULK MESSAGE UI */}
+      {bulkMessage && (
+        <div className="fixed top-24 right-4 sm:right-10 z-[100] bg-slate-800 text-white p-4 sm:p-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-sm border border-slate-700 animate-in slide-in-from-right-8 duration-300">
+          <CheckCircle size={24} className="text-emerald-400 shrink-0" />
+          <p className="font-bold text-sm sm:text-base leading-snug">{bulkMessage}</p>
+          <button onClick={() => setBulkMessage('')} className="ml-auto text-slate-400 hover:text-white bg-slate-700 p-1.5 rounded-lg transition-colors shrink-0"><X size={18} /></button>
+        </div>
+      )}
+
       {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
-      <style>{`
-        /* KESİN VITE CSS SIFIRLAMA (YANLARDAKİ SİYAH BOŞLUKLARI YOK EDER) */
-        #root {
-          max-width: 100% !important;
-          width: 100% !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          text-align: left !important;
-        }
-        body, html {
-          margin: 0 !important;
-          padding: 0 !important;
-          width: 100% !important;
-          max-width: 100% !important;
-          overflow-x: hidden !important;
-        }
-      `}</style>
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
 
       {/* RESTORAN DESEN */}
       {activePage === 'restoran' && (
@@ -1522,7 +1489,7 @@ export default function App() {
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Not / Açıklama</label>
-                        <textarea name="notes" value={formData.notes} onChange={handleChange} rows="2" className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-amber-500/10 bg-amber-50/50 placeholder:text-amber-400 font-medium text-lg resize-none" placeholder="Özel istekler..."></textarea>
+                        <textarea name="notes" value={formData.notes} onChange={handleChange} rows={2} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-amber-500/10 bg-amber-50/50 placeholder:text-amber-400 font-medium text-lg resize-none" placeholder="Özel istekler..."></textarea>
                       </div>
                     </div>
                     
@@ -1691,7 +1658,7 @@ export default function App() {
 
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Özel Not (Opsiyonel)</label>
-                      <textarea name="notes" value={matchFormData.notes} onChange={handleMatchChange} rows="2" className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-medium text-lg resize-none" placeholder="Örn: Forma ile gelecek..."></textarea>
+                      <textarea name="notes" value={matchFormData.notes} onChange={handleMatchChange} rows={2} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-medium text-lg resize-none" placeholder="Örn: Forma ile gelecek..."></textarea>
                     </div>
                     
                     <button type="submit" className={`w-full font-black tracking-widest uppercase py-5 mt-4 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 text-white hover:scale-[1.02] active:scale-95 text-lg ${isMatchEditing ? 'bg-gradient-to-r from-[#0a192f] to-blue-900' : 'bg-gradient-to-r from-blue-500 to-cyan-600'}`}>
