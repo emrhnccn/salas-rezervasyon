@@ -1196,7 +1196,7 @@ export default function App() {
         
         {/* WHATSAPP FLOATING BUTTON */}
         <a 
-          href="https://wa.me/905392356004?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." 
+          href="https://wa.me/905432441440?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." 
           target="_blank" 
           rel="noreferrer"
           className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
