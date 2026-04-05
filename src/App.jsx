@@ -47,13 +47,18 @@ const MATCH_FIXTURE = [
   { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Ç. Rizespor', team2: 'Beşiktaş' }
 ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-const DESSERTS = [
-  { id: 1, name: 'Dubai Çikolatalı', image: '/dubai cikolatalı.jpg' }, { id: 2, name: 'Lotus Dome', image: '/lotus dome.jpg' }, { id: 3, name: 'Profiterol', image: '/profiterol.jpg' },
-  { id: 4, name: 'Frambuaz Cheesecake', image: '/frambuaz cheescake.jpg' }, { id: 5, name: 'Luca', image: '/luca.jpg' }, { id: 6, name: 'İbiza', image: '/ibiza.jpg' },
-  { id: 7, name: 'Altın Çilek', image: '/altın cilek.jpg' }, { id: 8, name: 'Cocostar', image: '/cocostar.jpg' }, { id: 9, name: 'Orman Rulo', image: '/ormanrulo.jpg' },
-  { id: 10, name: 'Fıstık Melanga', image: '/fıstık melanga.jpg' }, { id: 11, name: 'Bella Vista', image: '/bella vista.jpg' }, { id: 12, name: 'Dark Moon', image: '/dark moon.jpg' },
-  { id: 13, name: 'Malaga', image: '/malaga.jpg' }, { id: 14, name: 'Mozaik', image: '/mozaik.jpg' }, { id: 15, name: 'Pink', image: '/Pink.jpg' },
-  { id: 16, name: 'Vişne Badem', image: '/visnebadem.jpg' }, { id: 17, name: 'Çikolata Linzer', image: '/çikolata linzer.jpg' }, { id: 18, name: 'Tiramisu', image: '/tiramisu.jpg' }, { id: 19, name: 'Brownie', image: '/brownie.jpg' }
+// GÜNCELLENMİŞ YENİ GÖRSELLER (Öne Çıkanlar Galerisi İçin)
+const SHOWCASE_ITEMS = [
+  { id: 1, name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg' },
+  { id: 2, name: 'Köz Patlıcanlı Tavuk', image: '/közpatlıcanlıtavukbnfile.jpg' },
+  { id: 3, name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg' },
+  { id: 4, name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg' },
+  { id: 5, name: 'Cheddar Çıtır Makarna', image: '/chedarcitirmakarna.jpg' },
+  { id: 6, name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg' },
+  { id: 7, name: 'Cool Lime', image: '/coollime.jpg' },
+  { id: 8, name: 'Ice Mocha', image: '/icemocha.jpg' },
+  { id: 9, name: 'Caramel Macchiato', image: '/caramelmachiato.jpg' },
+  { id: 10, name: 'Kahvaltı Tabağı', image: '/kahvaltitabagi.jpg' }
 ];
 
 const MENU_CATEGORIES = [
@@ -116,10 +121,10 @@ export default function App() {
   const [activePage, setActivePage] = useState('restoran');
   const [visitorDate, setVisitorDate] = useState(getToday());
   const [showFixtureModal, setShowFixtureModal] = useState(false);
-  const [showDessertsModal, setShowDessertsModal] = useState(false);
+  const [showDessertsModal, setShowDessertsModal] = useState(false); // Yeni menü için galeriyi açacak state
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
-  const [showMenuPage, setShowMenuPage] = useState(false); // YENİ: Menü sayfası kontrolü
+  const [showMenuPage, setShowMenuPage] = useState(false); 
   
   const initialRequestState = { type: 'yemek', name: '', phone: '', peopleCount: 2, date: getToday(), notes: '', menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0 };
   const [requestData, setRequestData] = useState(initialRequestState);
@@ -159,7 +164,6 @@ export default function App() {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     
-    // YENİ: URL kontrolü ile menü sayfasına yönlendirme
     if (window.location.pathname === '/menu') {
         setShowMenuPage(true);
     }
@@ -329,7 +333,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(/\D/g, '');
+    let cleanPhone = res.phone.replace(new RegExp('\\D', 'g'), '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
     const eventName = typeLabels[res.type] ? typeLabels[res.type].toLowerCase() : 'rezervasyon';
@@ -384,7 +388,6 @@ export default function App() {
   const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople * 100) / 300)); 
   const handlePrintSingle = (id) => { setPrintSingleId(id); setTimeout(() => { window.print(); }, 150); };
   
-  // YENİ: Sadece id'ye kaydıran fonksiyon (Eski haline döndü)
   const handleScroll = (id) => {
     const element = document.getElementById(id);
     if(element) { const y = element.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({top: y, behavior: 'smooth'}); }
@@ -400,7 +403,7 @@ export default function App() {
 
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(/\D/g, '');
+        let cleanPhone = res.phone.replace(new RegExp('\\D', 'g'), '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
@@ -636,47 +639,46 @@ export default function App() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 xl:gap-10">
-                <div className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
-                  <img src={encodeURI("/salaaskoykahvaltisi.jpg")} alt="Salaaş Köy Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                  <img src={encodeURI("/patronkahvaltisi.jpg")} alt="Patron Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <span className="bg-orange-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg"><Star size={16}/> İmza Lezzet</span>
-                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Salaaş Köy Kahvaltısı</h4>
-                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Güne harika başlamak için yöresel peynirler, sıcaklar ve taze demlenmiş çay eşliğinde devasa bir sofra.</p>
+                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Patron Kahvaltısı</h4>
+                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Güne harika başlamak için Salaaş Cafe'ye özel enfes içeriklerle donatılmış patronlara layık sofra.</p>
                   </div>
                 </div>
-                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
-                  <img src={encodeURI("/mantarlıfırınburger.jpg")} alt="Mantarlı Fırın Burger" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                  <img src={encodeURI("/közpatlıcanlıtavukbnfile.jpg")} alt="Köz Patlıcanlı Tavuk" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
-                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Mantarlı Fırın Burger</h4>
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Köz Patlıcanlı Tavuk</h4>
                      <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Özel soslu nefis deneyim.</p>
                   </div>
                 </div>
-                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
-                  <img src={encodeURI("/hunkarkofte.jpg")} alt="Hünkar Köfte" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                  <img src={encodeURI("/etlibowltabagi.jpg")} alt="Etli Bowl Tabağı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
-                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Hünkar Köfte</h4>
-                     <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Geleneksel lezzet şöleni.</p>
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Etli Bowl Tabağı</h4>
+                     <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Doyurucu ve sağlıklı.</p>
                   </div>
                 </div>
-                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
-                  <img src={encodeURI("/cafedeparis.jpg")} alt="Chicken Cafe de Paris" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                  <img src={encodeURI("/ucrenklitortellini.jpg")} alt="Üç Renkli Tortellini" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
-                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md leading-tight">Cafe de Paris<br/>Soslu Tavuk</h4>
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md leading-tight">Üç Renkli<br/>Tortellini</h4>
                   </div>
                 </div>
-                <div className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
-                  <img src={encodeURI("/salaasnargilefoto.jpg")} alt="Nargile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-[#0a192f]/60 group-hover:bg-[#0a192f]/40 transition-colors flex flex-col justify-center items-center text-center p-8 lg:p-10 backdrop-blur-[2px]">
-                     <Wind size={64} className="text-cyan-400 mb-6 drop-shadow-lg" />
-                     <h4 className="text-white font-serif font-black text-3xl lg:text-4xl drop-shadow-md">Nargile Keyfi</h4>
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                  <img src={encodeURI("/chedarcitirmakarna.jpg")} alt="Cheddar Çıtır Makarna" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                     <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md leading-tight">Cheddar Çıtır<br/>Makarna</h4>
                   </div>
                 </div>
-                <div onClick={() => setShowDessertsModal(true)} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-pink-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border-4 border-pink-200 bg-white">
-                  <img src={encodeURI("/dubai cikolatalı.jpg")} alt="Özel Tatlılarımız" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div onClick={() => setShowDessertsModal(true)} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border-4 border-cyan-200 bg-white">
+                  <img src={encodeURI("/coollime.jpg")} alt="Serin İçeceklerimiz" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
-                     <span className="bg-pink-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg group-hover:bg-pink-600 group-hover:scale-105 transition-all">Tüm Tatlılarımız <ChevronRight size={16}/></span>
-                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Nefis Tatlı Çeşitleri</h4>
-                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Dubai Çikolatalı, Lotus Dome, Profiterol ve daha fazlasını hemen keşfedin.</p>
+                     <span className="bg-cyan-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg group-hover:bg-cyan-600 group-hover:scale-105 transition-all">Tüm İçeceklerimiz <ChevronRight size={16}/></span>
+                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Cool Lime & Daha Fazlası</h4>
+                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Ice Mocha, Caramel Macchiato ve ferahlatıcı yaz içeceklerimizle serinleyin.</p>
                   </div>
                 </div>
               </div>
@@ -785,14 +787,23 @@ export default function App() {
               </div>
               <div className="overflow-y-auto p-6 sm:p-10 lg:p-12 bg-slate-50 flex-1">
                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
-                   {DESSERTS.map((tatli) => (
+                   {SHOWCASE_ITEMS.filter(i => i.name.toLowerCase().includes("çikolata") || i.name.toLowerCase().includes("tatlı") || i.name.toLowerCase().includes("profiterol") || i.name.toLowerCase().includes("dome") || i.name.toLowerCase().includes("mocha") || i.name.toLowerCase().includes("brownie") || i.name.toLowerCase().includes("macchiato")).length > 0 ? SHOWCASE_ITEMS.filter(i => i.name.toLowerCase().includes("çikolata") || i.name.toLowerCase().includes("tatlı") || i.name.toLowerCase().includes("profiterol") || i.name.toLowerCase().includes("dome") || i.name.toLowerCase().includes("mocha") || i.name.toLowerCase().includes("brownie") || i.name.toLowerCase().includes("macchiato")).map((tatli) => (
                      <div key={tatli.id} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-2">
                        <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
                           <img src={encodeURI(tatli.image)} alt={tatli.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }} />
                        </div>
                        <div className="p-5 sm:p-6 text-center flex flex-col justify-center grow min-h-[80px] bg-white z-10"><h4 className="font-black text-[#0B3B2C] text-sm sm:text-base lg:text-lg leading-snug">{tatli.name}</h4></div>
                      </div>
-                   ))}
+                   )) : (
+                       DESSERTS.map((tatli) => (
+                         <div key={tatli.id} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-2">
+                           <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
+                              <img src={encodeURI(tatli.image)} alt={tatli.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }} />
+                           </div>
+                           <div className="p-5 sm:p-6 text-center flex flex-col justify-center grow min-h-[80px] bg-white z-10"><h4 className="font-black text-[#0B3B2C] text-sm sm:text-base lg:text-lg leading-snug">{tatli.name}</h4></div>
+                         </div>
+                       ))
+                   )}
                  </div>
               </div>
             </div>
