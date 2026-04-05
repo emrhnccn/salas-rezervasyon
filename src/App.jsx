@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  CalendarDays, Users, UtensilsCrossed, Armchair, Plus, Trash2, MoonStar, ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare
+  CalendarDays, Users, UtensilsCrossed, Armchair, Plus, Trash2, MoonStar, 
+  ChefHat, Search, Edit2, X, Check, Loader2, Clock, CheckCircle, Phone, 
+  Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, 
+  MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, 
+  ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
@@ -20,30 +24,58 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const TABLE_MAP = [
-  { id: 'B-3', top: '8%', left: '5%', width: '8%', height: '11%', type: 'v' }, { id: 'B-2', top: '8%', left: '17%', width: '8%', height: '11%', type: 'v' }, { id: 'B-1', top: '8%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-4', top: '23%', left: '5%', width: '8%', height: '11%', type: 'v' }, { id: 'B-5', top: '23%', left: '17%', width: '8%', height: '11%', type: 'v' }, { id: 'B-6', top: '23%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-9', top: '38%', left: '5%', width: '8%', height: '11%', type: 'v' }, { id: 'B-8', top: '38%', left: '17%', width: '8%', height: '11%', type: 'v' }, { id: 'B-7', top: '38%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' }, { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
-  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' }, { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' }, { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-20', top: '48%', left: '56%', width: '14%', height: '6%', type: 'h' }, { id: 'B-21', top: '61%', left: '56%', width: '14%', height: '6%', type: 'h' }, { id: 'B-22', top: '74%', left: '56%', width: '14%', height: '6%', type: 'h' }, { id: 'B-23', top: '87%', left: '56%', width: '14%', height: '6%', type: 'h' },
-  { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-3', top: '8%', left: '5%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-2', top: '8%', left: '17%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-1', top: '8%', left: '29%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-4', top: '23%', left: '5%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-5', top: '23%', left: '17%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-6', top: '23%', left: '29%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-9', top: '38%', left: '5%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-8', top: '38%', left: '17%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-7', top: '38%', left: '29%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' },
+  { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
+  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-20', top: '48%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-21', top: '61%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-22', top: '74%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-23', top: '87%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
 ];
 
 const MATCH_FIXTURE = [
-  { date: '2026-03-10', displayDate: '10 Mart 2026', team1: 'Galatasaray', team2: 'Liverpool' }, { date: '2026-03-13', displayDate: '13 Mart 2026', team1: 'F. Karagümrük', team2: 'Fenerbahçe' },
-  { date: '2026-03-14', displayDate: '14 Mart 2026', team1: 'Galatasaray', team2: 'Başakşehir' }, { date: '2026-03-15', displayDate: '15 Mart 2026', team1: 'Gençlerbirliği', team2: 'Beşiktaş' },
-  { date: '2026-03-17', displayDate: '17 Mart 2026', team1: 'Fenerbahçe', team2: 'Gaziantep FK' }, { date: '2026-03-18', displayDate: '18 Mart 2026', team1: 'Göztepe', team2: 'Galatasaray' },
-  { date: '2026-03-18', displayDate: '18 Mart 2026', team1: 'Liverpool', team2: 'Galatasaray' }, { date: '2026-03-19', displayDate: '19 Mart 2026', team1: 'Beşiktaş', team2: 'Kasımpaşa' },
-  { date: '2026-04-05', displayDate: '05 Nisan 2026', team1: 'Fenerbahçe', team2: 'Beşiktaş' }, { date: '2026-04-05', displayDate: '05 Nisan 2026', team1: 'Trabzonspor', team2: 'Galatasaray' },
-  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Kayserispor', team2: 'Fenerbahçe' }, { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Galatasaray', team2: 'Kocaelispor' },
-  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Beşiktaş', team2: 'Antalyaspor' }, { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Fenerbahçe', team2: 'Ç. Rizespor' },
-  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Gençlerbirliği', team2: 'Galatasaray' }, { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Samsunspor', team2: 'Beşiktaş' },
-  { date: '2026-04-26', displayDate: '26 Nisan 2026', team1: 'Galatasaray', team2: 'Fenerbahçe' }, { date: '2026-04-26', displayDate: '26 Nisan 2026', team1: 'Beşiktaş', team2: 'F. Karagümrük' },
-  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Fenerbahçe', team2: 'Başakşehir' }, { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Samsunspor', team2: 'Galatasaray' },
-  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Gaziantep FK', team2: 'Beşiktaş' }, { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Konyaspor', team2: 'Fenerbahçe' },
-  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Galatasaray', team2: 'Antalyaspor' }, { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Beşiktaş', team2: 'Trabzonspor' },
-  { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Fenerbahçe', team2: 'Eyüpspor' }, { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Kasımpaşa', team2: 'Galatasaray' },
+  { date: '2026-03-10', displayDate: '10 Mart 2026', team1: 'Galatasaray', team2: 'Liverpool' },
+  { date: '2026-03-13', displayDate: '13 Mart 2026', team1: 'F. Karagümrük', team2: 'Fenerbahçe' },
+  { date: '2026-03-14', displayDate: '14 Mart 2026', team1: 'Galatasaray', team2: 'Başakşehir' },
+  { date: '2026-03-15', displayDate: '15 Mart 2026', team1: 'Gençlerbirliği', team2: 'Beşiktaş' },
+  { date: '2026-03-17', displayDate: '17 Mart 2026', team1: 'Fenerbahçe', team2: 'Gaziantep FK' },
+  { date: '2026-03-18', displayDate: '18 Mart 2026', team1: 'Göztepe', team2: 'Galatasaray' },
+  { date: '2026-03-18', displayDate: '18 Mart 2026', team1: 'Liverpool', team2: 'Galatasaray' },
+  { date: '2026-03-19', displayDate: '19 Mart 2026', team1: 'Beşiktaş', team2: 'Kasımpaşa' },
+  { date: '2026-04-05', displayDate: '05 Nisan 2026', team1: 'Fenerbahçe', team2: 'Beşiktaş' },
+  { date: '2026-04-05', displayDate: '05 Nisan 2026', team1: 'Trabzonspor', team2: 'Galatasaray' },
+  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Kayserispor', team2: 'Fenerbahçe' },
+  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Galatasaray', team2: 'Kocaelispor' },
+  { date: '2026-04-12', displayDate: '12 Nisan 2026', team1: 'Beşiktaş', team2: 'Antalyaspor' },
+  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Fenerbahçe', team2: 'Ç. Rizespor' },
+  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Gençlerbirliği', team2: 'Galatasaray' },
+  { date: '2026-04-19', displayDate: '19 Nisan 2026', team1: 'Samsunspor', team2: 'Beşiktaş' },
+  { date: '2026-04-26', displayDate: '26 Nisan 2026', team1: 'Galatasaray', team2: 'Fenerbahçe' },
+  { date: '2026-04-26', displayDate: '26 Nisan 2026', team1: 'Beşiktaş', team2: 'F. Karagümrük' },
+  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Fenerbahçe', team2: 'Başakşehir' },
+  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Samsunspor', team2: 'Galatasaray' },
+  { date: '2026-05-03', displayDate: '03 Mayıs 2026', team1: 'Gaziantep FK', team2: 'Beşiktaş' },
+  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Konyaspor', team2: 'Fenerbahçe' },
+  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Galatasaray', team2: 'Antalyaspor' },
+  { date: '2026-05-10', displayDate: '10 Mayıs 2026', team1: 'Beşiktaş', team2: 'Trabzonspor' },
+  { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Fenerbahçe', team2: 'Eyüpspor' },
+  { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Kasımpaşa', team2: 'Galatasaray' },
   { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Ç. Rizespor', team2: 'Beşiktaş' }
 ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -62,6 +94,30 @@ const MENU_GALLERY = [
   { id: '11', name: 'Caramel Macchiato', image: '/caramelmachiato.jpg' },
 ];
 
+const MENU_CATEGORIES = [
+  { id: 'kahvalti', name: 'KAHVALTI', icon: <Coffee size={24} />, items: ['Serpme Kahvaltı', 'Kahvaltı Tabağı', 'Menemen', 'Sahanda Sucuklu Yumurta', 'Muhlama', 'Pankek'] },
+  { id: 'tostlar', name: 'TOSTLAR', icon: <UtensilsCrossed size={24} />, items: ['Kaşarlı Tost', 'Sucuklu Tost', 'Karışık Tost', 'Ayvalık Tostu', 'Bazlama Tost'] },
+  { id: 'wrap', name: 'WRAP QUESADILLA', icon: <UtensilsCrossed size={24} />, items: ['Etli Wrap', 'Tavuklu Wrap', 'Köfteli Wrap', 'Tavuklu Quesadilla', 'Etli Quesadilla'] },
+  { id: 'pizza', name: 'PİZZA', icon: <UtensilsCrossed size={24} />, items: ['Margherita', 'Karışık Pizza', 'Sucuklu Pizza', 'Ton Balıklı Pizza', 'Meksika Ateşi'] },
+  { id: 'tavuk', name: 'TAVUK LEZZETLERİ', icon: <ChefHat size={24} />, items: ['Cafe de Paris Soslu Tavuk', 'Köri Soslu Tavuk', 'Meksika Soslu Tavuk', 'Barbekü Soslu Tavuk', 'Kekikli Tavuk', 'Tavuk Şinitzel', 'Izgara Tavuk Göğüs'] },
+  { id: 'et', name: 'ET LEZZETLERİ', icon: <ChefHat size={24} />, items: ['Dana Lokum', 'Çoban Kavurma', 'Sac Kavurma', 'Et Sote', 'Izgara Antrikot'] },
+  { id: 'kofte', name: 'KÖFTE LEZZETLERİ', icon: <ChefHat size={24} />, items: ['Izgara Köfte', 'Kaşarlı Köfte', 'Hünkar Beğendili Köfte', 'Kiremitte Köfte'] },
+  { id: 'burger', name: 'HAMBURGER', icon: <UtensilsCrossed size={24} />, items: ['Klasik Burger', 'Cheeseburger', 'Mantarlı Burger', 'Meksika Burger', 'Tavuk Burger'] },
+  { id: 'makarna', name: 'MAKARNA ÇEŞİTLERİ', icon: <UtensilsCrossed size={24} />, items: ['Penne Arabiata', 'Fettuccine Alfredo', 'Spagetti Bolognese', 'Mantı', 'Noodle'] },
+  { id: 'salata', name: 'SALATA ÇEŞİTLERİ', icon: <UtensilsCrossed size={24} />, items: ['Sezar Salata', 'Ton Balıklı Salata', 'Izgara Tavuklu Salata', 'Akdeniz Salata', 'Hellim Peynirli Salata'] },
+  { id: 'tatli', name: 'SALAŞ TATLI', icon: <Star size={24} />, items: ['San Sebastian', 'Dubai Çikolatalı', 'Lotus Dome', 'Profiterol', 'Tiramisu', 'Brownie', 'Cheesecake Çeşitleri', 'Sütlaç', 'Magnolia'] },
+  { id: 'cay', name: 'ÇAYLAR', icon: <Coffee size={24} />, items: ['Bardak Çay', 'Fincan Çay', 'Bitki Çayları', 'Yeşil Çay', 'Kış Çayı', 'Ada Çayı'] },
+  { id: 'turk_kahvesi', name: 'TÜRK KAHVESİ', icon: <Coffee size={24} />, items: ['Klasik Türk Kahvesi', 'Damla Sakızlı Türk Kahvesi', 'Sütlü Türk Kahvesi', 'Dibek Kahvesi', 'Menengiç Kahvesi'] },
+  { id: 'sicak_kahve', name: 'SICAK KAHVELER', icon: <Coffee size={24} />, items: ['Espresso', 'Americano', 'Latte', 'Cappuccino', 'Mocha', 'Macchiato', 'Filtre Kahve'] },
+  { id: 'sicak_diger', name: 'SICAK ÇİKOLATA - SAHLEP', icon: <Coffee size={24} />, items: ['Sıcak Çikolata', 'Beyaz Sıcak Çikolata', 'Sahlep', 'Damla Sakızlı Sahlep'] },
+  { id: 'soguk_kahve', name: 'SOĞUK KAHVELER', icon: <Coffee size={24} />, items: ['Ice Latte', 'Ice Americano', 'Ice Mocha', 'Frappe', 'Cold Brew'] },
+  { id: 'kokteyl', name: 'KOKTEYLLER', icon: <Coffee size={24} />, items: ['Mojito', 'Pina Colada', 'Blue Lagoon', 'Sex on the Beach', 'Margarita'] },
+  { id: 'soguk_icecek', name: 'SOĞUK İÇECEKLER', icon: <Coffee size={24} />, items: ['Kola', 'Fanta', 'Sprite', 'Ayran', 'Şalgam', 'Limonata', 'Meyve Suyu', 'Su', 'Soda', 'Churchill'] },
+  { id: 'vitamin', name: 'VİTAMİN BAR', icon: <Coffee size={24} />, items: ['Taze Sıkma Portakal Suyu', 'Nar Suyu', 'Havuç Suyu', 'Elma Suyu', 'Atom (Karışık Meyve Suyu)', 'Detox Suları'] },
+  { id: 'eglence', name: 'EĞLENCE MENÜSÜ', icon: <Star size={24} />, items: ['Çerez Tabağı', 'Meyve Tabağı', 'Cips', 'Patlamış Mısır', 'Sigara Böreği', 'Sosis Tabağı', 'Patates Kızartması'] },
+  { id: 'nargile', name: 'NARGİLE ÇEŞİTLERİ', icon: <Wind size={24} />, items: ['Elma', 'Nane', 'Kavun', 'Karpuz', 'Şeftali', 'Üzüm', 'Çilek', 'Cappuccino', 'Çikolata', 'Sakız', 'Gül', 'Özel Karışım (Spesiyal)'] },
+];
+
 const GLOBAL_CSS = `
 #root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; text-align: left !important; }
 body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; }
@@ -76,6 +132,8 @@ body, html { margin: 0 !important; padding: 0 !important; width: 100% !important
 .delay-400 { animation-delay: 400ms; }
 .shine-effect { position: relative; overflow: hidden; }
 .shine-effect::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); animation: shine 3s infinite; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
 export default function App() {
@@ -160,13 +218,18 @@ export default function App() {
       const now = new Date();
       const [hours, minutes] = iftarTime.split(':');
       const iftarDate = new Date();
-      iftarDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      iftarDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
       let diff = iftarDate - now;
 
       if (diff < 0) {
-        setCountdown("İFTAR VAKTİ!"); setIsIftarTime(true); setIsPrepTime(false); clearInterval(interval); return;
+        setCountdown("İFTAR VAKTİ!"); 
+        setIsIftarTime(true); 
+        setIsPrepTime(false); 
+        clearInterval(interval); 
+        return;
       }
-      if (diff <= 600000 && diff > 0) setIsPrepTime(true); else setIsPrepTime(false);
+      if (diff <= 600000 && diff > 0) setIsPrepTime(true); 
+      else setIsPrepTime(false);
 
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / 1000 / 60) % 60);
@@ -207,14 +270,21 @@ export default function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (loginUser === 'salaas' && loginPass === 'Salaas.2026') {
-      setIsAuthenticated(true); setShowLoginModal(false); setLoginError('');
-    } else { setLoginError('Kullanıcı adı veya şifre hatalı!'); }
+      setIsAuthenticated(true); 
+      setShowLoginModal(false); 
+      setLoginError('');
+    } else { 
+      setLoginError('Kullanıcı adı veya şifre hatalı!'); 
+    }
   };
 
   const handleRequestChange = (e) => {
     const { name, value } = e.target;
     setRequestError('');
-    setRequestData(prev => ({ ...prev, [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value)) : value }));
+    setRequestData(prev => ({ 
+      ...prev, 
+      [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value, 10)) : value 
+    }));
   };
 
   const submitRequest = async (e) => {
@@ -223,24 +293,48 @@ export default function App() {
     if (!requestData.name?.trim() || !requestData.phone?.trim()) return;
 
     if ((requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') && (!requestData.notes || !requestData.notes.trim())) {
-      setRequestError("Doğum günü ve organizasyonlar için detaylı açıklama giriniz."); return;
+      setRequestError("Doğum günü ve organizasyonlar için detaylı açıklama giriniz."); 
+      return;
     }
 
     try {
       const submissionData = {
-        ...requestData, phone: requestData.phone.trim(), peopleCount: parseInt(requestData.peopleCount) || 1, status: 'pending', createdAt: new Date().toISOString(), createdBy: user.uid
+        ...requestData, 
+        phone: requestData.phone.trim(), 
+        peopleCount: parseInt(requestData.peopleCount, 10) || 1, 
+        status: 'pending', 
+        createdAt: new Date().toISOString(), 
+        createdBy: user.uid
       };
       await addDoc(collection(db, 'reservationRequests'), submissionData);
       setRequestSuccess(true);
-      setTimeout(() => { setShowRequestModal(false); setRequestSuccess(false); setRequestData(initialRequestState); setRequestError(''); }, 3000);
-    } catch (err) { setRequestError("Hata oluştu."); }
+      setTimeout(() => { 
+        setShowRequestModal(false); 
+        setRequestSuccess(false); 
+        setRequestData(initialRequestState); 
+        setRequestError(''); 
+      }, 3000);
+    } catch (err) { 
+      setRequestError("Hata oluştu."); 
+    }
   };
 
   const handleApproveRequest = async (req, sendWhatsapp = false) => {
     if (!user) return;
     try {
       const targetCollection = req.type === 'mac' ? 'matchReservations' : 'reservations';
-      const newRes = { type: req.type || 'yemek', name: req.name, phone: req.phone, notes: req.notes || '', peopleCount: req.peopleCount, date: req.date, table: '', isArrived: false, createdAt: new Date().toISOString(), createdBy: user.uid };
+      const newRes = { 
+        type: req.type || 'yemek', 
+        name: req.name, 
+        phone: req.phone, 
+        notes: req.notes || '', 
+        peopleCount: req.peopleCount, 
+        date: req.date, 
+        table: '', 
+        isArrived: false, 
+        createdAt: new Date().toISOString(), 
+        createdBy: user.uid 
+      };
       await addDoc(collection(db, targetCollection), newRes);
       await deleteDoc(doc(db, 'reservationRequests', req.id));
       if (sendWhatsapp) sendWhatsApp(newRes, req.type, true);
@@ -254,54 +348,107 @@ export default function App() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setErrorMsg(''); setFormData(prev => ({ ...prev, [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value)) : value }));
+    setErrorMsg(''); 
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value, 10)) : value 
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
     if (!formData.name?.trim()) { setErrorMsg("İsim alanını doldurun."); return; }
-    const cleanData = { ...formData, phone: formData.phone?.trim() || '', notes: formData.notes?.trim() || '', peopleCount: parseInt(formData.peopleCount) || 1 };
+    const cleanData = { 
+      ...formData, 
+      phone: formData.phone?.trim() || '', 
+      notes: formData.notes?.trim() || '', 
+      peopleCount: parseInt(formData.peopleCount, 10) || 1 
+    };
     try {
-      if (isEditing) { await updateDoc(doc(db, 'reservations', isEditing), { ...cleanData, updatedAt: new Date().toISOString() }); setIsEditing(null); } 
-      else { await addDoc(collection(db, 'reservations'), { ...cleanData, createdAt: new Date().toISOString(), createdBy: user.uid, isArrived: false }); }
-      setFormData({ ...initialFormState, date: cleanData.date }); setShowTableMap(false);
+      if (isEditing) { 
+        await updateDoc(doc(db, 'reservations', isEditing), { ...cleanData, updatedAt: new Date().toISOString() }); 
+        setIsEditing(null); 
+      } else { 
+        await addDoc(collection(db, 'reservations'), { ...cleanData, createdAt: new Date().toISOString(), createdBy: user.uid, isArrived: false }); 
+      }
+      setFormData({ ...initialFormState, date: cleanData.date }); 
+      setShowTableMap(false);
     } catch (err) { setErrorMsg("Kayıt hatası."); }
   };
 
-  const handleEditClick = (res) => { setFormData({ ...res, phone: res.phone || '', notes: res.notes || '' }); setIsEditing(res.id); setSelectedFilterDate(res.date); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  const cancelEdit = () => { setIsEditing(null); setFormData({ ...initialFormState, date: selectedFilterDate }); setErrorMsg(''); };
+  const handleEditClick = (res) => { 
+    setFormData({ ...res, phone: res.phone || '', notes: res.notes || '' }); 
+    setIsEditing(res.id); 
+    setSelectedFilterDate(res.date); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
+  
+  const cancelEdit = () => { 
+    setIsEditing(null); 
+    setFormData({ ...initialFormState, date: selectedFilterDate }); 
+    setErrorMsg(''); 
+  };
 
   const handleMatchChange = (e) => {
     const { name, value } = e.target;
-    setMatchErrorMsg(''); setMatchFormData(prev => ({ ...prev, [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value)) : value }));
+    setMatchErrorMsg(''); 
+    setMatchFormData(prev => ({ 
+      ...prev, 
+      [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value, 10)) : value 
+    }));
   };
 
   const handleMatchSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
     if (!matchFormData.name?.trim()) { setMatchErrorMsg("İsim alanını doldurun."); return; }
-    const cleanData = { ...matchFormData, phone: matchFormData.phone?.trim() || '', notes: matchFormData.notes?.trim() || '', peopleCount: parseInt(matchFormData.peopleCount) || 1 };
+    const cleanData = { 
+      ...matchFormData, 
+      phone: matchFormData.phone?.trim() || '', 
+      notes: matchFormData.notes?.trim() || '', 
+      peopleCount: parseInt(matchFormData.peopleCount, 10) || 1 
+    };
     try {
-      if (isMatchEditing) { await updateDoc(doc(db, 'matchReservations', isMatchEditing), { ...cleanData, updatedAt: new Date().toISOString() }); setIsMatchEditing(null); } 
-      else { await addDoc(collection(db, 'matchReservations'), { ...cleanData, createdAt: new Date().toISOString(), createdBy: user.uid, isArrived: false }); }
+      if (isMatchEditing) { 
+        await updateDoc(doc(db, 'matchReservations', isMatchEditing), { ...cleanData, updatedAt: new Date().toISOString() }); 
+        setIsMatchEditing(null); 
+      } else { 
+        await addDoc(collection(db, 'matchReservations'), { ...cleanData, createdAt: new Date().toISOString(), createdBy: user.uid, isArrived: false }); 
+      }
       setMatchFormData({ ...initialMatchFormState, date: cleanData.date });
     } catch (err) { setMatchErrorMsg("Kayıt hatası."); }
   };
 
-  const handleMatchEditClick = (res) => { setMatchFormData({ ...res, phone: res.phone || '', notes: res.notes || '' }); setIsMatchEditing(res.id); setSelectedMatchDate(res.date); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  const cancelMatchEdit = () => { setIsMatchEditing(null); setMatchFormData({ ...initialMatchFormState, date: selectedMatchDate }); setMatchErrorMsg(''); };
+  const handleMatchEditClick = (res) => { 
+    setMatchFormData({ ...res, phone: res.phone || '', notes: res.notes || '' }); 
+    setIsMatchEditing(res.id); 
+    setSelectedMatchDate(res.date); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
+  
+  const cancelMatchEdit = () => { 
+    setIsMatchEditing(null); 
+    setMatchFormData({ ...initialMatchFormState, date: selectedMatchDate }); 
+    setMatchErrorMsg(''); 
+  };
 
   const handleToggleArrived = async (id, currentStatus, collectionName) => {
-    if (!user) return; await updateDoc(doc(db, collectionName, id), { isArrived: !currentStatus });
+    if (!user) return; 
+    await updateDoc(doc(db, collectionName, id), { isArrived: !currentStatus });
   };
 
   const executeDelete = async (id, collectionName) => {
     if (!user) return;
     try {
       await deleteDoc(doc(db, collectionName, id));
-      if (collectionName === 'reservations') { setDeleteConfirmId(null); if (isEditing === id) cancelEdit(); } 
-      else { setMatchDeleteConfirmId(null); if (isMatchEditing === id) cancelMatchEdit(); }
+      if (collectionName === 'reservations') { 
+        setDeleteConfirmId(null); 
+        if (isEditing === id) cancelEdit(); 
+      } else { 
+        setMatchDeleteConfirmId(null); 
+        if (isMatchEditing === id) cancelMatchEdit(); 
+      }
     } catch (err) {}
   };
 
@@ -310,11 +457,15 @@ export default function App() {
     let cleanPhone = res.phone.replace(/\D/g, '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
+    
     const eventName = typeLabels[res.type] ? typeLabels[res.type].toLowerCase() : 'rezervasyon';
     const masaMetni = res.table ? `${res.table} nolu masanız için ` : '';
     const nameStr = res.name || 'Misafirimiz';
     let message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihindeki ${masaMetni}${res.peopleCount} kişilik ${eventName} rezervasyonunuz alınmıştır. Bizi tercih ettiğiniz için teşekkür ederiz.`;
-    if (isApproval) message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihi için oluşturduğunuz ${res.peopleCount} kişilik ${eventName} rezervasyon talebiniz ONAYLANMIŞTIR. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+    
+    if (isApproval) {
+      message = `Sayın ${nameStr},\nSalaaş Cafe'ye ${res.date} tarihi için oluşturduğunuz ${res.peopleCount} kişilik ${eventName} rezervasyon talebiniz ONAYLANMIŞTIR. Bizi tercih ettiğiniz için teşekkür ederiz.`;
+    }
     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -334,11 +485,16 @@ export default function App() {
     const term = searchTerm.toLowerCase();
     return res.name?.toLowerCase().includes(term) || res.table?.toLowerCase().includes(term) || (res.phone && res.phone.includes(term));
   });
+  
   const sortedReservations = [...searchedReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
     return a.isArrived ? 1 : -1; 
   });
-  const dailySummary = filteredReservations.reduce((acc, res) => { acc.totalPeople += (parseInt(res.peopleCount) || 0); return acc; }, { totalPeople: 0 });
+  
+  const dailySummary = filteredReservations.reduce((acc, res) => { 
+    acc.totalPeople += (parseInt(res.peopleCount, 10) || 0); 
+    return acc; 
+  }, { totalPeople: 0 });
 
   const filteredMatchReservations = matchReservations.filter(res => res.date === selectedMatchDate);
   const searchedMatchReservations = filteredMatchReservations.filter(res => {
@@ -346,11 +502,13 @@ export default function App() {
     const term = matchSearchTerm.toLowerCase();
     return res.name?.toLowerCase().includes(term) || (res.table && res.table.toLowerCase().includes(term)) || (res.phone && res.phone.includes(term));
   });
+  
   const sortedMatchReservations = [...searchedMatchReservations].sort((a, b) => {
     if (a.isArrived === b.isArrived) return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); 
     return a.isArrived ? 1 : -1; 
   });
-  const totalMatchPeople = filteredMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount) || 0), 0);
+  
+  const totalMatchPeople = filteredMatchReservations.reduce((acc, res) => acc + (parseInt(res.peopleCount, 10) || 0), 0);
 
   const getTableStatus = (tableName) => {
     const res = filteredReservations.find(r => r.table?.trim().toUpperCase() === tableName.toUpperCase());
@@ -361,17 +519,32 @@ export default function App() {
 
   const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople * 100) / 300)); 
   
-  const handlePrintSingle = (id) => { setPrintSingleId(id); setTimeout(() => { window.print(); }, 150); };
+  const handlePrintSingle = (id) => { 
+    setPrintSingleId(id); 
+    setTimeout(() => { window.print(); }, 150); 
+  };
   
   const handleScroll = (id) => {
     const element = document.getElementById(id);
-    if(element) { const y = element.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({top: y, behavior: 'smooth'}); }
+    if(element) { 
+      const y = element.getBoundingClientRect().top + window.scrollY - 80; 
+      window.scrollTo({top: y, behavior: 'smooth'}); 
+    }
   };
 
   const sendBulkWhatsApp = (reservationsList, type) => {
-    if (!reservationsList || reservationsList.length === 0) { setBulkMessage("Gönderilecek kayıt yok."); setTimeout(() => setBulkMessage(''), 5000); return; }
+    if (!reservationsList || reservationsList.length === 0) { 
+      setBulkMessage("Gönderilecek kayıt yok."); 
+      setTimeout(() => setBulkMessage(''), 5000); 
+      return; 
+    }
+    
     const validReservations = reservationsList.filter(res => res.phone && res.phone.trim().length >= 10);
-    if (validReservations.length === 0) { setBulkMessage("Geçerli telefon numarası yok."); setTimeout(() => setBulkMessage(''), 5000); return; }
+    if (validReservations.length === 0) { 
+      setBulkMessage("Geçerli telefon numarası yok."); 
+      setTimeout(() => setBulkMessage(''), 5000); 
+      return; 
+    }
 
     const eventName = type === 'mac' ? 'maç yayını' : 'rezervasyonunuzu';
     const dateStr = type === 'mac' ? selectedMatchDate : selectedFilterDate;
@@ -402,11 +575,13 @@ export default function App() {
     if (historyTypeFilter === 'all' || historyTypeFilter === 'mac') {
         allData = [...allData, ...matchReservations.map(r => ({ ...r, eventType: 'Maç' }))];
     }
-    if (historyDateFilter) allData = allData.filter(r => r.date === historyDateFilter);
+    if (historyDateFilter) {
+      allData = allData.filter(r => r.date === historyDateFilter);
+    }
     allData.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const totalPeople = allData.reduce((acc, curr) => acc + (parseInt(curr.peopleCount) || 0), 0);
-    const totalArrived = allData.filter(r => r.isArrived).reduce((acc, curr) => acc + (parseInt(curr.peopleCount) || 0), 0);
+    const totalPeople = allData.reduce((acc, curr) => acc + (parseInt(curr.peopleCount, 10) || 0), 0);
+    const totalArrived = allData.filter(r => r.isArrived).reduce((acc, curr) => acc + (parseInt(curr.peopleCount, 10) || 0), 0);
     const arrivalRate = totalPeople > 0 ? Math.round((totalArrived * 100) / totalPeople) : 0;
 
     return { list: allData, totalPeople, totalArrived, arrivalRate };
@@ -507,18 +682,25 @@ export default function App() {
     );
   };
 
+  const scrollToMenuCategory = (id) => {
+    const el = document.getElementById(`cat-${id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   // =======================================================================
   // DİJİTAL MENÜ (AYRI SAYFA - /menu)
   // =======================================================================
   if (showMenuPage) {
      return (
         <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full overflow-x-hidden">
-          <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
+          <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
           <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] pointer-events-none translate-x-1/3 translate-y-1/3"></div>
 
-          <header className="relative z-20 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0">
+          <header className="relative z-20 border-b border-white/10 bg-black/80 backdrop-blur-md">
              <div className="w-full mx-auto px-6 py-4 flex items-center justify-between">
                 <button onClick={() => { setShowMenuPage(false); window.history.pushState({}, '', '/'); }} className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors font-bold uppercase tracking-widest text-xs sm:text-sm">
                    <ArrowRight size={16} className="rotate-180" /> Ana Sayfa
@@ -528,27 +710,69 @@ export default function App() {
              </div>
           </header>
 
+          {/* Sticky Category Navigation */}
+          <div className="sticky top-0 z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl">
+             <div className="w-full mx-auto px-4 sm:px-8 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
+                {MENU_CATEGORIES.map(cat => (
+                    <button 
+                        key={cat.id} 
+                        onClick={() => scrollToMenuCategory(cat.id)} 
+                        className="whitespace-nowrap px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-orange-400 hover:border-orange-500 hover:bg-orange-500/10 transition-all uppercase text-xs font-bold tracking-widest"
+                    >
+                        {cat.name}
+                    </button>
+                ))}
+             </div>
+          </div>
+
           <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-20 relative z-10">
-             <div className="text-center mb-16 md:mb-24">
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-500 mb-6 drop-shadow-lg">Lezzet Serüveni</h1>
-                <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">Özenle hazırladığımız imza lezzetlerimizle eşsiz bir gastronomi deneyimi yaşayın.</p>
+             
+             {/* Öne Çıkanlar (Featured Gallery) */}
+             <div className="mb-24">
+                <div className="text-center mb-16">
+                   <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-500 mb-4 drop-shadow-lg">Öne Çıkanlar</h1>
+                   <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">En çok tercih edilen imza lezzetlerimiz.</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
+                   {MENU_GALLERY.map((item) => (
+                      <div key={item.id} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96">
+                         <img src={encodeURI(item.image)} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
+                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
+                            {item.tag && <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg"><Star size={14}/> {item.tag}</span>}
+                            <h3 className="text-xl sm:text-2xl font-serif font-black text-white tracking-wide drop-shadow-md">{item.name}</h3>
+                         </div>
+                      </div>
+                   ))}
+                </div>
              </div>
 
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
-                {MENU_GALLERY.map((item) => (
-                   <div key={item.id} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96">
-                      <img src={encodeURI(item.image)} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
-                         {item.tag && <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg"><Star size={14}/> {item.tag}</span>}
-                         <h3 className="text-xl sm:text-2xl font-serif font-black text-white tracking-wide drop-shadow-md">{item.name}</h3>
+             {/* Kategorize Edilmiş Menü Listesi */}
+             <div className="space-y-20">
+                {MENU_CATEGORIES.map(cat => (
+                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-24">
+                      <div className="flex items-center gap-4 mb-8">
+                         <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
+                            {React.cloneElement(cat.icon, { size: 20 })}
+                         </div>
+                         <h2 className="text-2xl sm:text-3xl font-serif font-black text-white tracking-wide">{cat.name}</h2>
+                         <div className="h-[1px] flex-1 bg-gradient-to-r from-orange-500/50 to-transparent ml-4"></div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                         {cat.items.map((item, idx) => (
+                            <div key={idx} className="bg-[#111] border border-white/5 rounded-2xl p-5 flex items-center justify-between group hover:border-orange-500/30 hover:bg-[#161616] transition-all">
+                               <span className="text-slate-300 font-medium group-hover:text-white transition-colors">{item}</span>
+                               <div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0)] group-hover:shadow-[0_0_8px_rgba(249,115,22,0.8)] transition-all"></div>
+                            </div>
+                         ))}
                       </div>
                    </div>
                 ))}
              </div>
              
-             <div className="mt-20 text-center flex flex-col sm:flex-row items-center justify-center gap-6">
+             <div className="mt-24 text-center flex flex-col sm:flex-row items-center justify-center gap-6">
                 <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.4)] text-base lg:text-lg">
-                  Tüm Menüyü ve Fiyatları Gör <ArrowRight size={20} />
+                  Tüm Menüy ve Fiyatları Gör <ArrowRight size={20} />
                 </a>
              </div>
           </main>
@@ -566,7 +790,7 @@ export default function App() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
-        <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
+        <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
           <nav className={`w-full pointer-events-auto transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3 border-b border-slate-200' : 'bg-transparent py-5 sm:py-6'}`}>
             <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
@@ -810,11 +1034,11 @@ export default function App() {
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">{(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'Detaylı Açıklama (Zorunlu)' : 'Notunuz (İsteğe Bağlı)'}</label>
-                      <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows={3} required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'border-slate-200 focus:ring-purple-500/10 focus:border-purple-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} placeholder={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? "Lütfen organizasyonunuzun konsepti, pasta, vb. özel isteklerinizi detaylıca yazın." : "Örn: Mama sandalyesi istiyoruz vb."}></textarea>
+                      <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'border-slate-200 focus:ring-purple-500/10 focus:border-purple-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} placeholder={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? "Lütfen organizasyonunuzun konsepti, pasta, vb. özel isteklerinizi detaylıca yazın." : "Örn: Mama sandalyesi istiyoruz vb."}></textarea>
                     </div>
                     <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'mac' ? 'bg-blue-600 hover:bg-blue-700' : requestData.type === 'dogum_gunu' ? 'bg-purple-500 hover:bg-purple-600' : requestData.type === 'organizasyon' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-orange-500 hover:bg-orange-600'}`}>Talebi Gönder <ArrowRight size={24} /></button>
                   </form>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -938,7 +1162,14 @@ export default function App() {
               <div className="lg:col-span-4 xl:col-span-3 space-y-6 print:hidden w-full">
                 <div className={`bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl border overflow-hidden transition-colors w-full ${isEditing ? 'border-orange-400 shadow-orange-500/20' : 'border-slate-200/60'}`}>
                   <div className={`px-6 py-5 flex items-center justify-between ${isEditing ? 'bg-orange-50 border-b border-orange-100' : 'bg-gradient-to-r from-slate-50 to-white border-b border-slate-100'}`}>
-                    <div className="flex items-center gap-3"><div className={`p-2 rounded-xl ${isEditing ? 'bg-orange-100 text-orange-600' : 'bg-[#0B3B2C]/10 text-[#0B3B2C]'}`}><Edit2 size={20} /></div><h2 className={`text-lg lg:text-xl font-black tracking-wide ${isEditing ? 'text-orange-800' : 'text-[#0B3B2C]'}`}>{isEditing ? 'Kayıt Düzenle' : 'Yeni Rezervasyon'}</h2></div>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-xl ${isEditing ? 'bg-orange-100 text-orange-600' : 'bg-[#0B3B2C]/10 text-[#0B3B2C]'}`}>
+                        <Edit2 size={20} />
+                      </div>
+                      <h2 className={`text-lg lg:text-xl font-black tracking-wide ${isEditing ? 'text-orange-800' : 'text-[#0B3B2C]'}`}>
+                        {isEditing ? 'Kayıt Düzenle' : 'Yeni Rezervasyon'}
+                      </h2>
+                    </div>
                     {isEditing && <button onClick={cancelEdit} className="text-slate-400 p-1.5 hover:bg-white rounded-full shadow-sm border border-slate-200"><X size={18} /></button>}
                   </div>
                   
@@ -947,25 +1178,60 @@ export default function App() {
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rezervasyon Türü</label>
                       <select name="type" value={formData.type || 'yemek'} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 bg-slate-50/50 font-bold text-lg text-slate-700 outline-none">
-                         <option value="kahvalti">Kahvaltı</option><option value="yemek">Yemek</option><option value="dogum_gunu">Doğum Günü</option><option value="organizasyon">Organizasyon</option>
+                         <option value="kahvalti">Kahvaltı</option>
+                         <option value="yemek">Yemek</option>
+                         <option value="dogum_gunu">Doğum Günü</option>
+                         <option value="organizasyon">Organizasyon</option>
                       </select>
                     </div>
                     <div className="flex flex-col gap-4">
-                      <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">İsim</label><input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 bg-slate-50/50 font-bold text-lg" placeholder="Müşteri İsmi" /></div>
-                      <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefon</label><div className="relative"><Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 bg-slate-50/50 font-bold text-lg" placeholder="05XX..." /></div></div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">İsim</label>
+                        <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 bg-slate-50/50 font-bold text-lg" placeholder="Müşteri İsmi" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefon</label>
+                        <div className="relative">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                          <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 bg-slate-50/50 font-bold text-lg" placeholder="05XX..." />
+                        </div>
+                      </div>
                     </div>
                     <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 shadow-inner">
-                      <div className="flex items-center justify-between mb-4"><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Masa Seçimi</label><button type="button" onClick={() => setShowTableMap(!showTableMap)} className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-orange-200 transition-colors"><Map size={14} /> {showTableMap ? 'Krokiden Gizle' : 'Krokiden Seç'}</button></div>
+                      <div className="flex items-center justify-between mb-4">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Masa Seçimi</label>
+                        <button type="button" onClick={() => setShowTableMap(!showTableMap)} className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-orange-200 transition-colors">
+                          <Map size={14} /> {showTableMap ? 'Krokiden Gizle' : 'Krokiden Seç'}
+                        </button>
+                      </div>
                       <div className="flex gap-4">
-                        <div className="flex-[2]"><div className="relative"><Armchair className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="text" name="table" value={formData.table} onChange={handleChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-white font-black uppercase text-[#0B3B2C] shadow-sm text-lg" placeholder="Masa" /></div></div>
-                        <div className="flex-[1]"><div className="relative"><Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="number" inputMode="numeric" name="peopleCount" min="1" value={formData.peopleCount} onChange={handleChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-white font-black text-[#0B3B2C] shadow-sm text-lg" /></div></div>
+                        <div className="flex-[2]">
+                          <div className="relative">
+                            <Armchair className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <input type="text" name="table" value={formData.table} onChange={handleChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-white font-black uppercase text-[#0B3B2C] shadow-sm text-lg" placeholder="Masa" />
+                          </div>
+                        </div>
+                        <div className="flex-[1]">
+                          <div className="relative">
+                            <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <input type="number" inputMode="numeric" name="peopleCount" min="1" value={formData.peopleCount} onChange={handleChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-white font-black text-[#0B3B2C] shadow-sm text-lg" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col gap-4">
-                      <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><CalendarDays size={14} className="text-orange-500"/> Tarih</label><input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-slate-50/50 font-bold text-[#0B3B2C] text-lg" required /></div>
-                      <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Not / Açıklama</label><textarea name="notes" value={formData.notes} onChange={handleChange} rows={2} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-amber-500/10 bg-amber-50/50 placeholder:text-amber-400 font-medium text-lg resize-none" placeholder="Özel istekler..."></textarea></div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><CalendarDays size={14} className="text-orange-500"/> Tarih</label>
+                        <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 bg-slate-50/50 font-bold text-[#0B3B2C] text-lg" required />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Not / Açıklama</label>
+                        <textarea name="notes" value={formData.notes} onChange={handleChange} rows={2} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-amber-500/10 bg-amber-50/50 placeholder:text-amber-400 font-medium text-lg resize-none" placeholder="Özel istekler..."></textarea>
+                      </div>
                     </div>
-                    <button type="submit" className={`w-full font-black tracking-widest uppercase py-5 mt-6 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 text-white hover:scale-[1.02] active:scale-95 text-lg ${isEditing ? 'bg-gradient-to-r from-[#0B3B2C] to-emerald-900' : 'bg-gradient-to-r from-orange-500 to-orange-600'}`}>{isEditing ? <Check size={24} /> : <Plus size={24} />} {isEditing ? 'Kaydet' : 'Ekle'}</button>
+                    <button type="submit" className={`w-full font-black tracking-widest uppercase py-5 mt-6 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 text-white hover:scale-[1.02] active:scale-95 text-lg ${isEditing ? 'bg-gradient-to-r from-[#0B3B2C] to-emerald-900' : 'bg-gradient-to-r from-orange-500 to-orange-600'}`}>
+                      {isEditing ? <Check size={24} /> : <Plus size={24} />} {isEditing ? 'Kaydet' : 'Ekle'}
+                    </button>
                   </form>
                 </div>
               </div>
@@ -990,14 +1256,21 @@ export default function App() {
                        </div>
                     </div>
                   </div>
-                  <div className="pt-2 flex justify-end print:hidden relative z-10"><button onClick={() => sendBulkWhatsApp(filteredReservations, 'restoran')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105"><MessageCircle size={18} /> Tümüne Hatırlatma Gönder</button></div>
+                  <div className="pt-2 flex justify-end print:hidden relative z-10">
+                    <button onClick={() => sendBulkWhatsApp(filteredReservations, 'restoran')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105">
+                      <MessageCircle size={18} /> Tümüne Hatırlatma Gönder
+                    </button>
+                  </div>
                 </div>
 
                 <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-6 sm:p-8 lg:p-10 min-h-[500px] print:p-0 print:border-none print:shadow-none print:bg-white w-full">
                   <div className={`flex flex-col md:flex-row items-start md:items-center justify-between mb-10 pb-6 border-b border-slate-100 gap-5 ${printSingleId ? 'print:hidden' : 'print:border-b-2 print:border-black print:pb-2 print:mb-3'}`}>
                     <h2 className="text-2xl sm:text-3xl font-black flex items-center gap-3 text-[#0B3B2C]"><Armchair className="text-orange-500 print:hidden" size={32} /> Aktif Masalar</h2>
                     <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                      <div className="relative w-full sm:w-80 print:hidden"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} /><input type="text" placeholder="İsim, masa veya telefon ara..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-5 py-3 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 text-base font-medium shadow-sm outline-none bg-slate-50 transition-all" /></div>
+                      <div className="relative w-full sm:w-80 print:hidden">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                        <input type="text" placeholder="İsim, masa veya telefon ara..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-5 py-3 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 text-base font-medium shadow-sm outline-none bg-slate-50 transition-all" />
+                      </div>
                       <span className="bg-orange-100 text-orange-800 px-5 py-3 rounded-full text-sm font-black print:hidden shrink-0">{sortedReservations.length} Kayıt</span>
                       <button onClick={() => window.print()} className="w-full sm:w-auto bg-slate-800 text-white px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-700 transition-colors print:hidden shrink-0"><Printer size={18} /> YAZDIR</button>
                     </div>
@@ -1020,23 +1293,57 @@ export default function App() {
               <div className="lg:col-span-4 xl:col-span-3 space-y-6 print:hidden w-full">
                 <div className={`bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl border overflow-hidden transition-colors w-full ${isMatchEditing ? 'border-blue-400 shadow-blue-500/20' : 'border-slate-200/60'}`}>
                   <div className={`px-6 py-5 flex items-center justify-between ${isMatchEditing ? 'bg-blue-50 border-b border-blue-100' : 'bg-gradient-to-r from-slate-50 to-white border-b border-slate-100'}`}>
-                    <div className="flex items-center gap-3"><div className={`p-2 rounded-xl ${isMatchEditing ? 'bg-blue-100 text-blue-600' : 'bg-[#0a192f]/10 text-[#0a192f]'}`}><MonitorPlay size={20} /></div><h2 className={`text-lg lg:text-xl font-black tracking-wide ${isMatchEditing ? 'text-blue-800' : 'text-[#0a192f]'}`}>{isMatchEditing ? 'Rezervasyonu Düzenle' : 'Maç Rezervasyonu'}</h2></div>
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-xl ${isMatchEditing ? 'bg-blue-100 text-blue-600' : 'bg-[#0a192f]/10 text-[#0a192f]'}`}>
+                        <MonitorPlay size={20} />
+                      </div>
+                      <h2 className={`text-lg lg:text-xl font-black tracking-wide ${isMatchEditing ? 'text-blue-800' : 'text-[#0a192f]'}`}>
+                        {isMatchEditing ? 'Rezervasyonu Düzenle' : 'Maç Rezervasyonu'}
+                      </h2>
+                    </div>
                     {isMatchEditing && <button onClick={() => cancelMatchEdit()} className="text-slate-400 p-1.5 hover:bg-white rounded-full shadow-sm border border-slate-200"><X size={18} /></button>}
                   </div>
                   
                   <form onSubmit={handleMatchSubmit} className="p-6 lg:p-8 space-y-6">
                     {matchErrorMsg && <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-bold border border-red-100 flex items-center gap-2 shadow-sm"><X size={16} /> {matchErrorMsg}</div>}
                     <div className="flex flex-col gap-4">
-                      <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">İsim</label><input type="text" name="name" value={matchFormData.name} onChange={handleMatchChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-slate-50/50 font-bold text-lg" placeholder="Müşteri İsmi" /></div>
-                      <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefon</label><div className="relative"><Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="tel" name="phone" value={matchFormData.phone} onChange={handleMatchChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-slate-50/50 font-bold text-lg" placeholder="05XX..." /></div></div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">İsim</label>
+                        <input type="text" name="name" value={matchFormData.name} onChange={handleMatchChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-slate-50/50 font-bold text-lg" placeholder="Müşteri İsmi" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Telefon</label>
+                        <div className="relative">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                          <input type="tel" name="phone" value={matchFormData.phone} onChange={handleMatchChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-slate-50/50 font-bold text-lg" placeholder="05XX..." />
+                        </div>
+                      </div>
                     </div>
                     <div className="flex gap-4">
-                      <div className="flex-[2]"><div className="relative"><Armchair className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="text" name="table" value={matchFormData.table} onChange={handleMatchChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-black uppercase text-[#0a192f] text-lg" placeholder="Masa Kodu" /></div></div>
-                      <div className="flex-[1]"><div className="relative"><Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} /><input type="number" inputMode="numeric" name="peopleCount" min="1" value={matchFormData.peopleCount} onChange={handleMatchChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-black text-[#0a192f] text-lg" /></div></div>
+                      <div className="flex-[2]">
+                        <div className="relative">
+                          <Armchair className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                          <input type="text" name="table" value={matchFormData.table} onChange={handleMatchChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-black uppercase text-[#0a192f] text-lg" placeholder="Masa Kodu" />
+                        </div>
+                      </div>
+                      <div className="flex-[1]">
+                        <div className="relative">
+                          <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                          <input type="number" inputMode="numeric" name="peopleCount" min="1" value={matchFormData.peopleCount} onChange={handleMatchChange} className="w-full pl-11 pr-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-black text-[#0a192f] text-lg" />
+                        </div>
+                      </div>
                     </div>
-                    <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><CalendarDays size={14} className="text-blue-500"/> Maç Tarihi</label><input type="date" name="date" value={matchFormData.date} onChange={handleMatchChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-bold text-[#0a192f] text-lg" required /></div>
-                    <div><label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Özel Not (Opsiyonel)</label><textarea name="notes" value={matchFormData.notes} onChange={handleMatchChange} rows={2} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-medium text-lg resize-none" placeholder="Örn: Forma ile gelecek..."></textarea></div>
-                    <button type="submit" className={`w-full font-black tracking-widest uppercase py-5 mt-4 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 text-white hover:scale-[1.02] active:scale-95 text-lg ${isMatchEditing ? 'bg-gradient-to-r from-[#0a192f] to-blue-900' : 'bg-gradient-to-r from-blue-500 to-cyan-600'}`}>{isMatchEditing ? <Check size={24} /> : <Plus size={24} />} {isMatchEditing ? 'Güncelle' : 'Ekle'}</button>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><CalendarDays size={14} className="text-blue-500"/> Maç Tarihi</label>
+                      <input type="date" name="date" value={matchFormData.date} onChange={handleMatchChange} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-bold text-[#0a192f] text-lg" required />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1"><MessageSquareText size={14}/> Özel Not (Opsiyonel)</label>
+                      <textarea name="notes" value={matchFormData.notes} onChange={handleMatchChange} rows={2} className="w-full px-5 py-3.5 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 bg-slate-50/50 font-medium text-lg resize-none" placeholder="Örn: Forma ile gelecek..."></textarea>
+                    </div>
+                    <button type="submit" className={`w-full font-black tracking-widest uppercase py-5 mt-4 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-3 text-white hover:scale-[1.02] active:scale-95 text-lg ${isMatchEditing ? 'bg-gradient-to-r from-[#0a192f] to-blue-900' : 'bg-gradient-to-r from-blue-500 to-cyan-600'}`}>
+                      {isMatchEditing ? <Check size={24} /> : <Plus size={24} />} {isMatchEditing ? 'Güncelle' : 'Ekle'}
+                    </button>
                   </form>
                 </div>
               </div>
@@ -1051,14 +1358,21 @@ export default function App() {
                       <p className="text-4xl sm:text-5xl font-black text-white mt-1 print:text-black">Toplam: <span className="text-cyan-400 print:text-black">{totalMatchPeople}</span> Seyirci</p>
                     </div>
                   </div>
-                  <div className="mt-2 pt-4 border-t border-blue-800/50 flex justify-end print:hidden"><button onClick={() => sendBulkWhatsApp(filteredMatchReservations, 'mac')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105"><MessageCircle size={18} /> Tümüne Hatırlatma Gönder</button></div>
+                  <div className="mt-2 pt-4 border-t border-blue-800/50 flex justify-end print:hidden">
+                    <button onClick={() => sendBulkWhatsApp(filteredMatchReservations, 'mac')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105">
+                      <MessageCircle size={18} /> Tümüne Hatırlatma Gönder
+                    </button>
+                  </div>
                 </div>
 
                 <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-6 sm:p-8 lg:p-10 min-h-[500px] print:p-0 print:border-none print:shadow-none print:bg-white w-full">
                   <div className={`flex flex-col md:flex-row items-start md:items-center justify-between mb-10 pb-6 border-b border-slate-100 gap-5 ${printSingleId ? 'print:hidden' : 'print:border-b-2 print:border-black print:pb-2 print:mb-3'}`}>
                     <h2 className="text-2xl sm:text-3xl font-black flex items-center gap-3 text-[#0a192f]"><MonitorPlay className="text-blue-500 print:hidden" size={32} /> Maç Rezervasyonları</h2>
                     <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                      <div className="relative w-full sm:w-80 print:hidden"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} /><input type="text" placeholder="İsim, masa veya telefon ara..." value={matchSearchTerm} onChange={(e) => setMatchSearchTerm(e.target.value)} className="w-full pl-12 pr-5 py-3 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-base font-medium shadow-sm outline-none bg-slate-50 transition-all" /></div>
+                      <div className="relative w-full sm:w-80 print:hidden">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                        <input type="text" placeholder="İsim, masa veya telefon ara..." value={matchSearchTerm} onChange={(e) => setMatchSearchTerm(e.target.value)} className="w-full pl-12 pr-5 py-3 rounded-xl border-2 border-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-base font-medium shadow-sm outline-none bg-slate-50 transition-all" />
+                      </div>
                       <span className="bg-blue-100 text-blue-800 px-5 py-3 rounded-full text-sm font-black print:hidden shrink-0">{sortedMatchReservations.length} Kayıt</span>
                       <button onClick={() => window.print()} className="w-full sm:w-auto bg-[#0a192f] text-white px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-blue-900 transition-colors print:hidden shrink-0"><Printer size={18} /> YAZDIR</button>
                     </div>
@@ -1088,8 +1402,14 @@ export default function App() {
                     <div><h2 className="text-2xl lg:text-3xl font-black">Sistem Geçmişi & İstatistikler</h2><p className="text-sm font-medium text-purple-200 mt-1">Geçmişe dönük tüm rezervasyon ve katılım verileri</p></div>
                   </div>
                   <div className="flex gap-4 w-full sm:w-auto z-10">
-                     <div className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 text-center flex-1"><span className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-1">Toplam Rezerve</span><span className="text-3xl font-black">{historyStats.totalPeople}</span></div>
-                     <div className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 text-center flex-1"><span className="block text-xs font-bold text-emerald-300 uppercase tracking-wider mb-1">Gelen Misafir</span><span className="text-3xl font-black text-emerald-400">{historyStats.totalArrived} <span className="text-sm text-purple-200 font-medium">(%{historyStats.arrivalRate})</span></span></div>
+                     <div className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 text-center flex-1">
+                        <span className="block text-xs font-bold text-purple-200 uppercase tracking-wider mb-1">Toplam Rezerve</span>
+                        <span className="text-3xl font-black">{historyStats.totalPeople}</span>
+                     </div>
+                     <div className="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 text-center flex-1">
+                        <span className="block text-xs font-bold text-emerald-300 uppercase tracking-wider mb-1">Gelen Misafir</span>
+                        <span className="text-3xl font-black text-emerald-400">{historyStats.totalArrived} <span className="text-sm text-purple-200 font-medium">(%{historyStats.arrivalRate})</span></span>
+                     </div>
                   </div>
                </div>
 
@@ -1098,7 +1418,9 @@ export default function App() {
                      <h3 className="text-xl sm:text-2xl font-black text-slate-800">Geçmiş Kayıtlar</h3>
                      <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                         <select value={historyTypeFilter} onChange={(e) => setHistoryTypeFilter(e.target.value)} className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-slate-700 outline-none focus:border-purple-500">
-                           <option value="all">Tümü (Restoran + Maç)</option><option value="restoran">Sadece Restoran</option><option value="mac">Sadece Maç</option>
+                           <option value="all">Tümü (Restoran + Maç)</option>
+                           <option value="restoran">Sadece Restoran</option>
+                           <option value="mac">Sadece Maç</option>
                         </select>
                         <input type="date" value={historyDateFilter} onChange={(e) => setHistoryDateFilter(e.target.value)} className="px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-slate-700 outline-none focus:border-purple-500 cursor-pointer" />
                         {historyDateFilter && (<button onClick={() => setHistoryDateFilter('')} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-3 rounded-xl font-bold transition-colors">Tarihi Sıfırla</button>)}
@@ -1106,7 +1428,11 @@ export default function App() {
                   </div>
 
                   {historyStats.list.length === 0 ? (
-                     <div className="bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 p-24 text-center text-slate-400 w-full"><History size={56} className="opacity-50 text-purple-400 mx-auto mb-5" /><p className="font-black text-2xl text-slate-600">Kayıt Bulunamadı</p><p className="font-medium text-lg mt-3">Seçilen kriterlere uygun geçmiş veri bulunmuyor.</p></div>
+                     <div className="bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 p-24 text-center text-slate-400 w-full">
+                       <History size={56} className="opacity-50 text-purple-400 mx-auto mb-5" />
+                       <p className="font-black text-2xl text-slate-600">Kayıt Bulunamadı</p>
+                       <p className="font-medium text-lg mt-3">Seçilen kriterlere uygun geçmiş veri bulunmuyor.</p>
+                     </div>
                   ) : (
                      <div className="overflow-x-auto w-full">
                         <table className="w-full text-left border-collapse">
@@ -1129,7 +1455,11 @@ export default function App() {
                                     <td className="py-4 px-4 text-slate-500 font-medium">{res.phone}</td>
                                     <td className="py-4 px-4 text-center font-black text-slate-700">{res.peopleCount}</td>
                                     <td className="py-4 px-4 text-center">
-                                       {res.isArrived ? (<span className="inline-flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg text-xs font-bold"><CheckCircle2 size={14}/> Geldi</span>) : (<span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-3 py-1 rounded-lg text-xs font-bold"><X size={14}/> Gelmedi</span>)}
+                                       {res.isArrived ? (
+                                        <span className="inline-flex items-center gap-1 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg text-xs font-bold"><CheckCircle2 size={14}/> Geldi</span>
+                                        ) : (
+                                        <span className="inline-flex items-center gap-1 text-slate-400 bg-slate-100 px-3 py-1 rounded-lg text-xs font-bold"><X size={14}/> Gelmedi</span>
+                                       )}
                                     </td>
                                  </tr>
                               ))}
