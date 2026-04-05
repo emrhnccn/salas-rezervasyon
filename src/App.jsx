@@ -788,6 +788,13 @@ export default function App() {
   // 1. MÜŞTERİ / ZİYARETÇİ EKRANI (PREMIUM LANDING PAGE)
   // =======================================================================
   if (!isAuthenticated) {
+    const getSubmitBtnClass = () => {
+    if (requestData.type === 'mac') return 'bg-blue-600 hover:bg-blue-700';
+    if (requestData.type === 'dogum_gunu') return 'bg-purple-500 hover:bg-purple-600';
+    if (requestData.type === 'organizasyon') return 'bg-emerald-500 hover:bg-emerald-600';
+    return 'bg-orange-500 hover:bg-orange-600';
+  };
+
     return (
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
