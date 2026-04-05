@@ -119,6 +119,7 @@ export default function App() {
   const [showDessertsModal, setShowDessertsModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
+  const [showMenuPage, setShowMenuPage] = useState(false); // YENİ: Menü sayfası kontrolü
   
   const initialRequestState = { type: 'yemek', name: '', phone: '', peopleCount: 2, date: getToday(), notes: '', menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0 };
   const [requestData, setRequestData] = useState(initialRequestState);
@@ -157,6 +158,12 @@ export default function App() {
     document.title = "Salaaş Cafe Restaurant";
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
+    
+    // YENİ: URL kontrolü ile menü sayfasına yönlendirme
+    if (window.location.pathname === '/menu') {
+        setShowMenuPage(true);
+    }
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -227,7 +234,7 @@ export default function App() {
   const handleRequestChange = (e) => {
     const { name, value } = e.target;
     setRequestError('');
-    setRequestData(prev => ({ ...prev, [name]: name.includes('Count') || name.includes('menu') ? (value === '' ? '' : parseInt(value)) : value }));
+    setRequestData(prev => ({ ...prev, [name]: name.includes('Count') ? (value === '' ? '' : parseInt(value)) : value }));
   };
 
   const submitRequest = async (e) => {
@@ -376,6 +383,8 @@ export default function App() {
 
   const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople * 100) / 300)); 
   const handlePrintSingle = (id) => { setPrintSingleId(id); setTimeout(() => { window.print(); }, 150); };
+  
+  // YENİ: Sadece id'ye kaydıran fonksiyon (Eski haline döndü)
   const handleScroll = (id) => {
     const element = document.getElementById(id);
     if(element) { const y = element.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({top: y, behavior: 'smooth'}); }
@@ -472,6 +481,75 @@ export default function App() {
     );
   };
 
+
+  // =======================================================================
+  // YENİ: DİJİTAL MENÜ (AYRI SAYFA - /menu)
+  // =======================================================================
+  if (showMenuPage) {
+     return (
+        <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full overflow-x-hidden">
+          <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] pointer-events-none translate-x-1/3 translate-y-1/3"></div>
+
+          {/* Menü Sayfası Header */}
+          <header className="relative z-20 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0">
+             <div className="w-full mx-auto px-6 py-4 flex items-center justify-between">
+                <button onClick={() => { setShowMenuPage(false); window.history.pushState({}, '', '/'); }} className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors font-bold uppercase tracking-widest text-xs sm:text-sm">
+                   <ArrowRight size={16} className="rotate-180" /> Ana Sayfa
+                </button>
+                <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-10 sm:h-12 object-contain filter drop-shadow-md brightness-200" />
+                <div className="w-20"></div> {/* Spacer */}
+             </div>
+          </header>
+
+          <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-20 relative z-10">
+             <div className="text-center mb-16 md:mb-24">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-500 mb-6 drop-shadow-lg">Lezzet Serüveni</h1>
+                <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">Özenle hazırladığımız tariflerimiz ve imza lezzetlerimizle eşsiz bir gastronomi deneyimi yaşayın.</p>
+                
+                <div className="mt-10 flex justify-center">
+                   <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white px-8 py-4 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.3)] text-sm sm:text-base border border-orange-400">
+                     Fiyatlı Hızlı Sipariş Menüsü <ArrowRight size={18} />
+                   </a>
+                </div>
+             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+                {MENU_CATEGORIES.map((category) => (
+                   <div key={category.id} className="bg-[#111]/80 backdrop-blur-sm border border-white/5 rounded-3xl p-8 hover:bg-[#161616] hover:border-orange-500/30 transition-all duration-500 group relative overflow-hidden shadow-2xl">
+                      <div className="absolute top-0 right-0 p-6 opacity-5 text-white group-hover:text-orange-500 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                         {category.icon}
+                      </div>
+                      
+                      <div className="flex items-center gap-4 mb-8 relative z-10">
+                         <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(249,115,22,0.3)] shrink-0">
+                            {React.cloneElement(category.icon, { size: 20 })}
+                         </div>
+                         <h2 className="text-2xl font-serif font-black text-white tracking-wide border-b border-white/10 pb-2 w-full">{category.name}</h2>
+                      </div>
+
+                      <ul className="space-y-4 relative z-10">
+                         {category.items.map((item, idx) => (
+                            <li key={idx} className="flex items-start gap-3">
+                               <span className="mt-2 w-1.5 h-1.5 bg-orange-500 rounded-full shrink-0 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
+                               <span className="text-slate-300 font-medium text-base leading-snug group-hover:text-white transition-colors">{item}</span>
+                            </li>
+                         ))}
+                      </ul>
+                   </div>
+                ))}
+             </div>
+          </main>
+          
+          <footer className="w-full bg-black py-10 border-t border-white/10 text-center relative z-20 mt-12">
+             <p className="text-slate-500 font-medium text-sm">© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
+          </footer>
+        </div>
+     );
+  }
+
   // =======================================================================
   // 1. MÜŞTERİ / ZİYARETÇİ EKRANI (PREMIUM LANDING PAGE)
   // =======================================================================
@@ -494,7 +572,7 @@ export default function App() {
                 <button onClick={() => setShowRequestModal(true)} className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}>
                   <CalendarDays size={16} /> Rezervasyon Talebi
                 </button>
-                <button onClick={() => handleScroll('dijital-menu')} className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2">
+                <button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2">
                   <MenuSquare size={16} /> Detaylı Menü
                 </button>
                 <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap hidden md:block">
@@ -552,7 +630,7 @@ export default function App() {
                   <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Vitrinimiz</h2>
                   <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C]">Bunu Denediniz mi?</h3>
                 </div>
-                <button onClick={() => handleScroll('dijital-menu')} className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
+                <button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
                   Tüm Menüyü Gör <div className="bg-orange-100 p-2 lg:p-3 rounded-full group-hover:bg-orange-200 transition-colors"><ChevronRight size={18} className="text-orange-600"/></div>
                 </button>
               </div>
@@ -603,53 +681,6 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </section>
-
-          <section id="dijital-menu" className="w-full py-24 md:py-36 bg-[#0a0a0a] relative overflow-hidden">
-             <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
-             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
-             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-yellow-600/10 rounded-full blur-[150px] pointer-events-none translate-y-1/2 -translate-x-1/3"></div>
-
-             <div className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 relative z-10">
-               <div className="text-center mb-16 md:mb-24">
-                  <h2 className="text-sm lg:text-base font-black tracking-[0.4em] text-orange-500 uppercase mb-4 flex items-center justify-center gap-3">
-                     <span className="w-8 h-[1px] bg-orange-500 hidden sm:block"></span> Menü <span className="w-8 h-[1px] bg-orange-500 hidden sm:block"></span>
-                  </h2>
-                  <h3 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-white mb-6">Salaaş Lezzetleri</h3>
-                  <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">Özenle hazırladığımız tariflerimiz ve imza lezzetlerimizle eşsiz bir gastronomi deneyimi yaşayın.</p>
-               </div>
-
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
-                  {MENU_CATEGORIES.map((category) => (
-                     <div key={category.id} className="bg-[#111] border border-white/5 rounded-3xl p-8 hover:bg-[#151515] hover:border-orange-500/30 transition-all duration-500 group relative overflow-hidden shadow-2xl">
-                        <div className="absolute top-0 right-0 p-6 opacity-5 text-white group-hover:text-orange-500 group-hover:scale-110 transition-all duration-700 pointer-events-none">
-                           {category.icon}
-                        </div>
-                        <div className="flex items-center gap-4 mb-8">
-                           <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(249,115,22,0.3)]">
-                              {React.cloneElement(category.icon, { size: 20 })}
-                           </div>
-                           <h4 className="text-2xl font-serif font-black text-white tracking-wide">{category.name}</h4>
-                        </div>
-                        <ul className="space-y-4">
-                           {category.items.map((item, idx) => (
-                              <li key={idx} className="flex items-start gap-3">
-                                 <span className="mt-1.5 w-1.5 h-1.5 bg-orange-500 rounded-full shrink-0 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
-                                 <span className="text-slate-300 font-medium text-base leading-snug group-hover:text-slate-100 transition-colors">{item}</span>
-                              </li>
-                           ))}
-                        </ul>
-                     </div>
-                  ))}
-               </div>
-
-               <div className="mt-20 text-center flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.4)] text-base lg:text-lg">
-                    Fiyatlı Dijital Menüye Git <ArrowRight size={20} />
-                  </a>
-                  <p className="text-slate-500 font-medium">veya siparişinizi masadan QR okutarak verin.</p>
-               </div>
-             </div>
           </section>
 
           <section className="w-full py-28 md:py-36 bg-emerald-950 text-white relative overflow-hidden">
@@ -709,7 +740,7 @@ export default function App() {
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">Hızlı Bağlantılar</h4>
               <ul className="space-y-5 text-base lg:text-lg font-medium mb-10 text-slate-300">
-                <li><a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Dijital Menü</a></li>
+                <li><button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Dijital Menü</button></li>
               </ul>
               <button onClick={() => setShowLoginModal(true)} className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 lg:px-8 lg:py-4 rounded-2xl text-sm lg:text-base font-black uppercase tracking-widest flex items-center gap-3 transition-all border border-slate-700 hover:border-slate-600 shadow-lg hover:shadow-xl hover:-translate-y-1">
                 <Lock size={18} /> Personel Girişi
@@ -852,7 +883,7 @@ export default function App() {
         )}
         
         {/* WHATSAPP FLOATING BUTTON */}
-        <a href="https://wa.me/905360170208?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white">
+        <a href="https://wa.me/905392356004?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white">
           <span className="text-xl">💬</span><span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
         </a>
       </div>
@@ -992,6 +1023,15 @@ export default function App() {
                         <p className="text-3xl sm:text-4xl font-black text-white mt-1 print:text-black">Toplam: <span className="text-orange-400 print:text-black">{dailySummary.totalPeople}</span> Kişi</p>
                       </div>
                     </div>
+                    <div className="w-full sm:w-1/3 pt-2 print:hidden">
+                       <div className="flex justify-between items-end mb-2 px-1">
+                         <span className="text-xs font-bold text-emerald-200 uppercase">Kapasite: 300</span>
+                         <span className={`text-xs font-black ${occupancyRate >= 90 ? 'text-red-400' : 'text-emerald-300'}`}>DOLULUK: %{occupancyRate}</span>
+                       </div>
+                       <div className="w-full bg-emerald-950/60 rounded-full h-3 shadow-inner overflow-hidden">
+                         <div className={`h-3 rounded-full transition-all duration-1000 ${occupancyRate >= 90 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${occupancyRate}%` }}></div>
+                       </div>
+                    </div>
                   </div>
                   <div className="pt-2 flex justify-end print:hidden relative z-10"><button onClick={() => sendBulkWhatsApp(filteredReservations, 'restoran')} className="bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 shadow-lg transition-transform hover:scale-105"><MessageCircle size={18} /> Tümüne Hatırlatma Gönder</button></div>
                 </div>
@@ -1068,7 +1108,7 @@ export default function App() {
                   </div>
                   
                   {sortedMatchReservations.length === 0 ? (
-                    <div className="bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 p-24 text-center text-slate-400 print:hidden w-full"><Search size={56} className="opacity-50 text-blue-400 mx-auto mb-5" /><p className="font-black text-2xl">Kayıt bulunamadı.</p></div>
+                    <div className="bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 p-24 text-center text-slate-400 print:hidden w-full"><Search size={56} className="opacity-50 text-blue-400 mx-auto mb-5" /><p className="font-black text-2xl">Bu maça ait kayıt bulunamadı.</p></div>
                   ) : (
                     <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-8 w-full ${printSingleId ? 'print:grid-cols-1 print:gap-0' : 'print:grid-cols-2 print:gap-4'}`}>
                       {sortedMatchReservations.map((res) => renderReservationCard(res, 'mac'))}
