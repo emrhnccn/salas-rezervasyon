@@ -1048,7 +1048,7 @@ export default function App() {
   requestData.type === 'mac' ? 'bg-blue-600 hover:bg-blue-700'
   : requestData.type === 'dogum_gunu' ? 'bg-purple-500 hover:bg-purple-600'
   : requestData.type === 'organizasyon' ? 'bg-emerald-500 hover:bg-emerald-600'
-  : 'bg-orange-500 hover:bg-orange-600'
+  <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${getSubmitBtnClass()}`}>Talebi Gönder <ArrowRight size={24} /></button>
 ].join(' ')}>Talebi Gönder <ArrowRight size={24} /></button>
                   </form>
                 </div>
