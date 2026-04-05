@@ -1036,7 +1036,13 @@ export default function App() {
                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">{(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'Detaylı Açıklama (Zorunlu)' : 'Notunuz (İsteğe Bağlı)'}</label>
                       <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'border-slate-200 focus:ring-purple-500/10 focus:border-purple-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} placeholder={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? "Lütfen organizasyonunuzun konsepti, pasta, vb. özel isteklerinizi detaylıca yazın." : "Örn: Mama sandalyesi istiyoruz vb."}></textarea>
                     </div>
-                    <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'mac' ? 'bg-blue-600 hover:bg-blue-700' : requestData.type === 'dogum_gunu' ? 'bg-purple-500 hover:bg-purple-600' : requestData.type === 'organizasyon' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-orange-500 hover:bg-orange-600'}`}>Talebi Gönder <ArrowRight size={24} /></button>
+                   <button type="submit" className={[
+  'w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg',
+  requestData.type === 'mac' ? 'bg-blue-600 hover:bg-blue-700'
+  : requestData.type === 'dogum_gunu' ? 'bg-purple-500 hover:bg-purple-600'
+  : requestData.type === 'organizasyon' ? 'bg-emerald-500 hover:bg-emerald-600'
+  : 'bg-orange-500 hover:bg-orange-600'
+].join(' ')}>Talebi Gönder <ArrowRight size={24} /></button>
                   </form>
                 </div>
               </div>
