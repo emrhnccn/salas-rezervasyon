@@ -47,42 +47,19 @@ const MATCH_FIXTURE = [
   { date: '2026-05-17', displayDate: '17 Mayıs 2026', team1: 'Ç. Rizespor', team2: 'Beşiktaş' }
 ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-// GÜNCELLENMİŞ YENİ GÖRSELLER (Öne Çıkanlar Galerisi İçin)
-const SHOWCASE_ITEMS = [
-  { id: 1, name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg' },
-  { id: 2, name: 'Köz Patlıcanlı Tavuk', image: '/közpatlıcanlıtavukbnfile.jpg' },
-  { id: 3, name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg' },
-  { id: 4, name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg' },
-  { id: 5, name: 'Cheddar Çıtır Makarna', image: '/chedarcitirmakarna.jpg' },
-  { id: 6, name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg' },
-  { id: 7, name: 'Cool Lime', image: '/coollime.jpg' },
-  { id: 8, name: 'Ice Mocha', image: '/icemocha.jpg' },
-  { id: 9, name: 'Caramel Macchiato', image: '/caramelmachiato.jpg' },
-  { id: 10, name: 'Kahvaltı Tabağı', image: '/kahvaltitabagi.jpg' }
-];
-
-const MENU_CATEGORIES = [
-  { id: 'kahvalti', name: 'Kahvaltı', icon: <Coffee size={24} />, items: ['Serpme Kahvaltı', 'Kahvaltı Tabağı', 'Menemen', 'Sahanda Sucuklu Yumurta', 'Muhlama', 'Pankek'] },
-  { id: 'tostlar', name: 'Tostlar', icon: <UtensilsCrossed size={24} />, items: ['Kaşarlı Tost', 'Sucuklu Tost', 'Karışık Tost', 'Ayvalık Tostu', 'Bazlama Tost'] },
-  { id: 'wrap', name: 'Wrap & Quesadilla', icon: <UtensilsCrossed size={24} />, items: ['Etli Wrap', 'Tavuklu Wrap', 'Köfteli Wrap', 'Tavuklu Quesadilla', 'Etli Quesadilla'] },
-  { id: 'pizza', name: 'Pizza', icon: <UtensilsCrossed size={24} />, items: ['Margherita', 'Karışık Pizza', 'Sucuklu Pizza', 'Ton Balıklı Pizza', 'Meksika Ateşi'] },
-  { id: 'tavuk', name: 'Tavuk Lezzetleri', icon: <ChefHat size={24} />, items: ['Cafe de Paris Soslu Tavuk', 'Köri Soslu Tavuk', 'Meksika Soslu Tavuk', 'Barbekü Soslu Tavuk', 'Kekikli Tavuk', 'Tavuk Şinitzel', 'Izgara Tavuk Göğüs'] },
-  { id: 'et', name: 'Et Lezzetleri', icon: <ChefHat size={24} />, items: ['Dana Lokum', 'Çoban Kavurma', 'Sac Kavurma', 'Et Sote', 'Izgara Antrikot'] },
-  { id: 'kofte', name: 'Köfte Lezzetleri', icon: <ChefHat size={24} />, items: ['Izgara Köfte', 'Kaşarlı Köfte', 'Hünkar Beğendili Köfte', 'Kiremitte Köfte'] },
-  { id: 'burger', name: 'Hamburger', icon: <UtensilsCrossed size={24} />, items: ['Klasik Burger', 'Cheeseburger', 'Mantarlı Burger', 'Meksika Burger', 'Tavuk Burger'] },
-  { id: 'makarna', name: 'Makarna Çeşitleri', icon: <UtensilsCrossed size={24} />, items: ['Penne Arabiata', 'Fettuccine Alfredo', 'Spagetti Bolognese', 'Mantı', 'Noodle'] },
-  { id: 'salata', name: 'Salata Çeşitleri', icon: <UtensilsCrossed size={24} />, items: ['Sezar Salata', 'Ton Balıklı Salata', 'Izgara Tavuklu Salata', 'Akdeniz Salata', 'Hellim Peynirli Salata'] },
-  { id: 'tatli', name: 'Salaaş Tatlı', icon: <Star size={24} />, items: ['San Sebastian', 'Dubai Çikolatalı', 'Lotus Dome', 'Profiterol', 'Tiramisu', 'Brownie', 'Cheesecake Çeşitleri', 'Sütlaç', 'Magnolia'] },
-  { id: 'cay', name: 'Çaylar', icon: <Coffee size={24} />, items: ['Bardak Çay', 'Fincan Çay', 'Bitki Çayları', 'Yeşil Çay', 'Kış Çayı', 'Ada Çayı'] },
-  { id: 'turk_kahvesi', name: 'Türk Kahvesi', icon: <Coffee size={24} />, items: ['Klasik Türk Kahvesi', 'Damla Sakızlı Türk Kahvesi', 'Sütlü Türk Kahvesi', 'Dibek Kahvesi', 'Menengiç Kahvesi'] },
-  { id: 'sicak_kahve', name: 'Sıcak Kahveler', icon: <Coffee size={24} />, items: ['Espresso', 'Americano', 'Latte', 'Cappuccino', 'Mocha', 'Macchiato', 'Filtre Kahve'] },
-  { id: 'sicak_diger', name: 'Sıcak Çikolata & Sahlep', icon: <Coffee size={24} />, items: ['Sıcak Çikolata', 'Beyaz Sıcak Çikolata', 'Sahlep', 'Damla Sakızlı Sahlep'] },
-  { id: 'soguk_kahve', name: 'Soğuk Kahveler', icon: <Coffee size={24} />, items: ['Ice Latte', 'Ice Americano', 'Ice Mocha', 'Frappe', 'Cold Brew'] },
-  { id: 'kokteyl', name: 'Kokteyller', icon: <Coffee size={24} />, items: ['Mojito', 'Pina Colada', 'Blue Lagoon', 'Sex on the Beach', 'Margarita'] },
-  { id: 'soguk_icecek', name: 'Soğuk İçecekler', icon: <Coffee size={24} />, items: ['Kola', 'Fanta', 'Sprite', 'Ayran', 'Şalgam', 'Limonata', 'Meyve Suyu', 'Su', 'Soda', 'Churchill'] },
-  { id: 'vitamin', name: 'Vitamin Bar', icon: <Coffee size={24} />, items: ['Taze Sıkma Portakal Suyu', 'Nar Suyu', 'Havuç Suyu', 'Elma Suyu', 'Atom (Karışık Meyve Suyu)', 'Detox Suları'] },
-  { id: 'eglence', name: 'Eğlence Menüsü', icon: <Star size={24} />, items: ['Çerez Tabağı', 'Meyve Tabağı', 'Cips', 'Patlamış Mısır', 'Sigara Böreği', 'Sosis Tabağı', 'Patates Kızartması'] },
-  { id: 'nargile', name: 'Nargile Çeşitleri', icon: <Wind size={24} />, items: ['Elma', 'Nane', 'Kavun', 'Karpuz', 'Şeftali', 'Üzüm', 'Çilek', 'Cappuccino', 'Çikolata', 'Sakız', 'Gül', 'Özel Karışım (Spesiyal)'] },
+// GÜNCELLENMİŞ YENİ GÖRSELLER - DİJİTAL MENÜ (GÖRSEL GALERİ) İÇİN YAPI
+const MENU_GALLERY = [
+  { id: '1', name: 'Salaaş Köy Kahvaltısı', image: '/salaskoy.jpg', tag: 'İmza Lezzet' },
+  { id: '2', name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg' },
+  { id: '3', name: 'Kahvaltı Tabağı', image: '/kahvaltitabagi.jpg' },
+  { id: '4', name: 'Köz Patlıcanlı Tavuk', image: '/közpatlıcanlıtavukbnfile.jpg', tag: 'Şefin Tavsiyesi' },
+  { id: '5', name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg' },
+  { id: '6', name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg' },
+  { id: '7', name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg' },
+  { id: '8', name: 'Cheddar Çıtır Makarna', image: '/chedarcitirmakarna.jpg' },
+  { id: '9', name: 'Cool Lime', image: '/coollime.jpg', tag: 'Ferahlatıcı' },
+  { id: '10', name: 'Ice Mocha', image: '/icemocha.jpg' },
+  { id: '11', name: 'Caramel Macchiato', image: '/caramelmachiato.jpg' },
 ];
 
 const GLOBAL_CSS = `
@@ -121,12 +98,11 @@ export default function App() {
   const [activePage, setActivePage] = useState('restoran');
   const [visitorDate, setVisitorDate] = useState(getToday());
   const [showFixtureModal, setShowFixtureModal] = useState(false);
-  const [showDessertsModal, setShowDessertsModal] = useState(false); // Yeni menü için galeriyi açacak state
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
   const [showMenuPage, setShowMenuPage] = useState(false); 
   
-  const initialRequestState = { type: 'yemek', name: '', phone: '', peopleCount: 2, date: getToday(), notes: '', menuTavuk: 0, menuHunkar: 0, menuKarisik: 0, menuCocuk: 0 };
+  const initialRequestState = { type: 'yemek', name: '', phone: '', peopleCount: 2, date: getToday(), notes: '' };
   const [requestData, setRequestData] = useState(initialRequestState);
   const [requestError, setRequestError] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -254,7 +230,6 @@ export default function App() {
       const submissionData = {
         ...requestData, phone: requestData.phone.trim(), peopleCount: parseInt(requestData.peopleCount) || 1, status: 'pending', createdAt: new Date().toISOString(), createdBy: user.uid
       };
-      if(requestData.type === 'mac') { submissionData.menuTavuk = 0; submissionData.menuHunkar = 0; submissionData.menuKarisik = 0; submissionData.menuCocuk = 0; }
       await addDoc(collection(db, 'reservationRequests'), submissionData);
       setRequestSuccess(true);
       setTimeout(() => { setShowRequestModal(false); setRequestSuccess(false); setRequestData(initialRequestState); setRequestError(''); }, 3000);
@@ -266,7 +241,6 @@ export default function App() {
     try {
       const targetCollection = req.type === 'mac' ? 'matchReservations' : 'reservations';
       const newRes = { type: req.type || 'yemek', name: req.name, phone: req.phone, notes: req.notes || '', peopleCount: req.peopleCount, date: req.date, table: '', isArrived: false, createdAt: new Date().toISOString(), createdBy: user.uid };
-      if (req.type === 'iftar') { newRes.menuTavuk = req.menuTavuk || 0; newRes.menuHunkar = req.menuHunkar || 0; newRes.menuKarisik = req.menuKarisik || 0; newRes.menuCocuk = req.menuCocuk || 0; }
       await addDoc(collection(db, targetCollection), newRes);
       await deleteDoc(doc(db, 'reservationRequests', req.id));
       if (sendWhatsapp) sendWhatsApp(newRes, req.type, true);
@@ -333,7 +307,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(new RegExp('\\D', 'g'), '');
+    let cleanPhone = res.phone.replace(/\D/g, '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
     const eventName = typeLabels[res.type] ? typeLabels[res.type].toLowerCase() : 'rezervasyon';
@@ -386,6 +360,7 @@ export default function App() {
   };
 
   const occupancyRate = Math.min(100, Math.round((dailySummary.totalPeople * 100) / 300)); 
+  
   const handlePrintSingle = (id) => { setPrintSingleId(id); setTimeout(() => { window.print(); }, 150); };
   
   const handleScroll = (id) => {
@@ -403,7 +378,7 @@ export default function App() {
 
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(new RegExp('\\D', 'g'), '');
+        let cleanPhone = res.phone.replace(/\D/g, '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
@@ -443,106 +418,138 @@ export default function App() {
     const isPrinting = printSingleId === res.id;
     const isEdit = (type === 'restoran' ? isEditing : isMatchEditing) === res.id;
     const dateStr = type === 'restoran' ? selectedFilterDate : selectedMatchDate;
-    const theme = type === 'restoran' ? { border: 'border-orange-400 bg-orange-50/30', hover: 'hover:border-orange-200', text: 'text-orange-400', bg: 'bg-orange-50 text-orange-800', grad: 'from-orange-400 to-orange-500' } : { border: 'border-blue-400 bg-blue-50/30', hover: 'hover:border-blue-200', text: 'text-blue-400', bg: 'bg-blue-50 text-blue-800', grad: 'from-blue-400 to-blue-600' };
+    
+    let themeBorder = 'border-orange-400 bg-orange-50/30';
+    let themeHover = 'hover:border-orange-200';
+    let themeText = 'text-orange-400';
+    let themeBg = 'bg-orange-50 text-orange-800';
+    let themeGrad = 'from-orange-400 to-orange-500';
+
+    if (type === 'mac') {
+      themeBorder = 'border-blue-400 bg-blue-50/30';
+      themeHover = 'hover:border-blue-200';
+      themeText = 'text-blue-400';
+      themeBg = 'bg-blue-50 text-blue-800';
+      themeGrad = 'from-blue-400 to-blue-600';
+    }
 
     return (
-       <div key={res.id} className={`p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 relative group print:border-black print:border-dashed print:p-4 print:mb-2 w-full flex flex-col ${printSingleId && !isPrinting ? 'hidden print:hidden' : ''} ${isEdit ? theme.border + ' scale-[1.02] shadow-xl' : isArrived ? 'border-emerald-500 bg-emerald-50/50 opacity-80' : 'border-slate-100 bg-white ' + theme.hover + ' hover:shadow-lg'}`}>
-         {isPrinting && <div className="hidden print:block text-center font-bold text-[14px] uppercase mb-4 border-b border-black">Salaaş Cafe {type === 'mac' ? 'MAÇ' : ''}<br/>{dateStr}</div>}
-         <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase tracking-widest text-white shadow-sm ${res.type === 'mac' ? 'bg-blue-600' : res.type === 'dogum_gunu' ? 'bg-purple-500' : res.type === 'organizasyon' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
-           {typeLabels[res.type] || 'REZERVASYON'}
-         </div>
-         {deleteConfirmId === res.id && (
-            <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center p-6 border border-red-200 rounded-3xl print:hidden backdrop-blur-sm">
-              <p className="font-black text-slate-800 mb-5 text-xl">Silinsin mi?</p>
-              <div className="flex gap-4"><button onClick={() => executeDelete(res.id, type === 'mac' ? 'matchReservations' : 'reservations')} className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl text-base font-bold shadow-md transition-colors">Evet, Sil</button><button onClick={() => setDeleteConfirmId(null)} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-8 py-3 rounded-xl text-base font-bold transition-colors">İptal</button></div>
+      <div key={res.id} className={`p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 relative group print:border-black print:border-dashed print:p-4 print:mb-2 w-full flex flex-col ${printSingleId && !isPrinting ? 'hidden print:hidden' : ''} ${isEdit ? themeBorder + ' scale-[1.02] shadow-xl' : isArrived ? 'border-emerald-500 bg-emerald-50/50 opacity-80' : 'border-slate-100 bg-white ' + themeHover + ' hover:shadow-lg'}`}>
+        
+        {isPrinting && (
+          <div className="hidden print:block text-center font-bold text-[14px] uppercase mb-4 border-b border-black">
+            Salaaş Cafe {type === 'mac' ? 'MAÇ' : ''}<br/>{dateStr}
+          </div>
+        )}
+        
+        <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl font-black text-[10px] uppercase tracking-widest text-white shadow-sm ${res.type === 'mac' ? 'bg-blue-600' : res.type === 'dogum_gunu' ? 'bg-purple-500' : res.type === 'organizasyon' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
+          {typeLabels[res.type] || 'REZERVASYON'}
+        </div>
+
+        {deleteConfirmId === res.id && (
+          <div className="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center p-6 border border-red-200 rounded-3xl print:hidden backdrop-blur-sm">
+            <p className="font-black text-slate-800 mb-5 text-xl">Silinsin mi?</p>
+            <div className="flex gap-4">
+              <button onClick={() => executeDelete(res.id, type === 'mac' ? 'matchReservations' : 'reservations')} className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl text-base font-bold shadow-md transition-colors">Evet, Sil</button>
+              <button onClick={() => setDeleteConfirmId(null)} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-8 py-3 rounded-xl text-base font-bold transition-colors">İptal</button>
             </div>
-         )}
-         <div className="flex items-center gap-4 mb-4 mt-2">
-            <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full flex items-center justify-center font-black text-base shadow-inner print:hidden ${isArrived ? 'bg-emerald-100 text-emerald-700' : 'bg-gradient-to-br ' + theme.grad + ' text-white'}`}>{getInitials(res.name)}</div>
-            <h3 className={`text-2xl font-black truncate print:text-black ${isArrived ? 'line-through text-emerald-900' : 'text-[#0B3B2C]'}`}>{res.name || 'İsimsiz'}</h3>
-         </div>
-         {res.phone && (
-           <div className="flex items-center gap-3 mt-2">
-             <p className="text-base font-semibold flex items-center gap-2 text-slate-500 print:text-black"><Phone size={16} className={`print:hidden ${theme.text}`} /> {res.phone}</p>
-             <button onClick={() => sendWhatsApp(res, type)} className="print:hidden bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white p-2 rounded-full transition-colors"><MessageCircle size={18} /></button>
-           </div>
-         )}
-         <div className="flex items-center gap-3 mt-4">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-base font-black print:p-0 print:text-black ${isArrived ? 'bg-emerald-100 text-emerald-800' : theme.bg}`}><Users size={18} className="print:hidden" /> {res.peopleCount} Kişi</div>
-            {res.table && <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-base font-black bg-slate-100 text-slate-700 print:p-0"><Armchair size={18} className="print:hidden" /> {res.table}</div>}
-         </div>
-         {res.notes && <div className="mt-4 text-sm sm:text-base font-bold text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200 print:border-black print:bg-white">Not: {res.notes}</div>}
-         <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 border-t border-slate-200 print:hidden">
-           <button onClick={() => handleToggleArrived(res.id, isArrived, type === 'mac' ? 'matchReservations' : 'reservations')} className={`px-6 py-3 rounded-xl flex items-center gap-3 text-sm font-black transition-colors ${isArrived ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}><CheckCircle size={20} /> {isArrived ? "MASADA" : "GELMEDİ"}</button>
-           <div className="flex gap-3">
-             <button onClick={() => handlePrintSingle(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-[#0B3B2C] hover:bg-slate-200 rounded-xl border border-slate-200 transition-colors"><Printer size={20} /></button>
-             <button onClick={() => type === 'mac' ? handleMatchEditClick(res) : handleEditClick(res)} className={`p-3 text-slate-500 bg-slate-50 hover:${theme.text} rounded-xl border border-slate-200 transition-colors`}><Edit2 size={20} /></button>
-             <button onClick={() => setDeleteConfirmId(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-red-600 hover:bg-red-100 rounded-xl border border-slate-200 transition-colors"><Trash2 size={20} /></button>
-           </div>
-         </div>
-       </div>
+          </div>
+        )}
+
+        <div className="flex items-center gap-4 mb-4 mt-2">
+          <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full flex items-center justify-center font-black text-base shadow-inner print:hidden ${isArrived ? 'bg-emerald-100 text-emerald-700' : 'bg-gradient-to-br ' + themeGrad + ' text-white'}`}>
+            {getInitials(res.name)}
+          </div>
+          <h3 className={`text-2xl font-black truncate print:text-black ${isArrived ? 'line-through text-emerald-900' : 'text-[#0B3B2C]'}`}>
+            {res.name || 'İsimsiz'}
+          </h3>
+        </div>
+
+        {res.phone && (
+          <div className="flex items-center gap-3 mt-2">
+            <p className="text-base font-semibold flex items-center gap-2 text-slate-500 print:text-black">
+              <Phone size={16} className={`print:hidden ${themeText}`} /> {res.phone}
+            </p>
+            <button onClick={() => sendWhatsApp(res, type)} className="print:hidden bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white p-2 rounded-full transition-colors">
+              <MessageCircle size={18} />
+            </button>
+          </div>
+        )}
+
+        <div className="flex items-center gap-3 mt-4">
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-base font-black print:p-0 print:text-black ${isArrived ? 'bg-emerald-100 text-emerald-800' : themeBg}`}>
+            <Users size={18} className="print:hidden" /> {res.peopleCount} Kişi
+          </div>
+          {res.table && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-base font-black bg-slate-100 text-slate-700 print:p-0">
+              <Armchair size={18} className="print:hidden" /> {res.table}
+            </div>
+          )}
+        </div>
+
+        {res.notes && (
+          <div className="mt-4 text-sm sm:text-base font-bold text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200 print:border-black print:bg-white">
+            Not: {res.notes}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 border-t border-slate-200 print:hidden">
+          <button onClick={() => handleToggleArrived(res.id, isArrived, type === 'mac' ? 'matchReservations' : 'reservations')} className={`px-6 py-3 rounded-xl flex items-center gap-3 text-sm font-black transition-colors ${isArrived ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}>
+            <CheckCircle size={20} /> {isArrived ? "MASADA" : "GELMEDİ"}
+          </button>
+          <div className="flex gap-3">
+            <button onClick={() => handlePrintSingle(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-[#0B3B2C] hover:bg-slate-200 rounded-xl border border-slate-200 transition-colors"><Printer size={20} /></button>
+            <button onClick={() => type === 'mac' ? handleMatchEditClick(res) : handleEditClick(res)} className={`p-3 text-slate-500 bg-slate-50 hover:${themeText} rounded-xl border border-slate-200 transition-colors`}><Edit2 size={20} /></button>
+            <button onClick={() => setDeleteConfirmId(res.id)} className="p-3 text-slate-500 bg-slate-50 hover:text-red-600 hover:bg-red-100 rounded-xl border border-slate-200 transition-colors"><Trash2 size={20} /></button>
+          </div>
+        </div>
+      </div>
     );
   };
 
-
   // =======================================================================
-  // YENİ: DİJİTAL MENÜ (AYRI SAYFA - /menu)
+  // DİJİTAL MENÜ (AYRI SAYFA - /menu)
   // =======================================================================
   if (showMenuPage) {
      return (
         <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full overflow-x-hidden">
-          <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+          <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
           <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] pointer-events-none translate-x-1/3 translate-y-1/3"></div>
 
-          {/* Menü Sayfası Header */}
           <header className="relative z-20 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0">
              <div className="w-full mx-auto px-6 py-4 flex items-center justify-between">
                 <button onClick={() => { setShowMenuPage(false); window.history.pushState({}, '', '/'); }} className="flex items-center gap-2 text-slate-400 hover:text-orange-500 transition-colors font-bold uppercase tracking-widest text-xs sm:text-sm">
                    <ArrowRight size={16} className="rotate-180" /> Ana Sayfa
                 </button>
                 <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-10 sm:h-12 object-contain filter drop-shadow-md brightness-200" />
-                <div className="w-20"></div> {/* Spacer */}
+                <div className="w-20"></div>
              </div>
           </header>
 
           <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-20 relative z-10">
              <div className="text-center mb-16 md:mb-24">
                 <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-500 mb-6 drop-shadow-lg">Lezzet Serüveni</h1>
-                <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">Özenle hazırladığımız tariflerimiz ve imza lezzetlerimizle eşsiz bir gastronomi deneyimi yaşayın.</p>
-                
-                <div className="mt-10 flex justify-center">
-                   <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white px-8 py-4 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.3)] text-sm sm:text-base border border-orange-400">
-                     Fiyatlı Hızlı Sipariş Menüsü <ArrowRight size={18} />
-                   </a>
-                </div>
+                <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">Özenle hazırladığımız imza lezzetlerimizle eşsiz bir gastronomi deneyimi yaşayın.</p>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
-                {MENU_CATEGORIES.map((category) => (
-                   <div key={category.id} className="bg-[#111]/80 backdrop-blur-sm border border-white/5 rounded-3xl p-8 hover:bg-[#161616] hover:border-orange-500/30 transition-all duration-500 group relative overflow-hidden shadow-2xl">
-                      <div className="absolute top-0 right-0 p-6 opacity-5 text-white group-hover:text-orange-500 group-hover:scale-110 transition-all duration-700 pointer-events-none">
-                         {category.icon}
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
+                {MENU_GALLERY.map((item) => (
+                   <div key={item.id} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96">
+                      <img src={encodeURI(item.image)} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
+                         {item.tag && <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg"><Star size={14}/> {item.tag}</span>}
+                         <h3 className="text-xl sm:text-2xl font-serif font-black text-white tracking-wide drop-shadow-md">{item.name}</h3>
                       </div>
-                      
-                      <div className="flex items-center gap-4 mb-8 relative z-10">
-                         <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(249,115,22,0.3)] shrink-0">
-                            {React.cloneElement(category.icon, { size: 20 })}
-                         </div>
-                         <h2 className="text-2xl font-serif font-black text-white tracking-wide border-b border-white/10 pb-2 w-full">{category.name}</h2>
-                      </div>
-
-                      <ul className="space-y-4 relative z-10">
-                         {category.items.map((item, idx) => (
-                            <li key={idx} className="flex items-start gap-3">
-                               <span className="mt-2 w-1.5 h-1.5 bg-orange-500 rounded-full shrink-0 shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
-                               <span className="text-slate-300 font-medium text-base leading-snug group-hover:text-white transition-colors">{item}</span>
-                            </li>
-                         ))}
-                      </ul>
                    </div>
                 ))}
+             </div>
+             
+             <div className="mt-20 text-center flex flex-col sm:flex-row items-center justify-center gap-6">
+                <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest transition-transform hover:scale-105 shadow-[0_0_30px_rgba(249,115,22,0.4)] text-base lg:text-lg">
+                  Tüm Menüyü ve Fiyatları Gör <ArrowRight size={20} />
+                </a>
              </div>
           </main>
           
@@ -559,7 +566,7 @@ export default function App() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
-        <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+        <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
         <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
           <nav className={`w-full pointer-events-auto transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3 border-b border-slate-200' : 'bg-transparent py-5 sm:py-6'}`}>
             <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
@@ -575,7 +582,7 @@ export default function App() {
                 <button onClick={() => setShowRequestModal(true)} className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}>
                   <CalendarDays size={16} /> Rezervasyon Talebi
                 </button>
-                <button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2">
+                <button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2">
                   <MenuSquare size={16} /> Detaylı Menü
                 </button>
                 <a href="https://m.1menu.com.tr/salaascafe/" target="_blank" rel="noreferrer" className="shine-effect bg-orange-500 text-white px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-orange-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap hidden md:block">
@@ -633,47 +640,47 @@ export default function App() {
                   <h2 className="text-sm lg:text-base font-black tracking-[0.3em] text-orange-500 uppercase mb-2">Vitrinimiz</h2>
                   <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-[#0B3B2C]">Bunu Denediniz mi?</h3>
                 </div>
-                <button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
+                <button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="flex items-center gap-2 text-sm lg:text-base font-bold text-slate-500 hover:text-orange-600 transition-all uppercase tracking-widest group">
                   Tüm Menüyü Gör <div className="bg-orange-100 p-2 lg:p-3 rounded-full group-hover:bg-orange-200 transition-colors"><ChevronRight size={18} className="text-orange-600"/></div>
                 </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 xl:gap-10">
-                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
-                  <img src={encodeURI("/patronkahvaltisi.jpg")} alt="Patron Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                  <img src={encodeURI("/salaskoy.jpg")} alt="Salaaş Köy Kahvaltısı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <span className="bg-orange-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg"><Star size={16}/> İmza Lezzet</span>
-                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Patron Kahvaltısı</h4>
-                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Güne harika başlamak için Salaaş Cafe'ye özel enfes içeriklerle donatılmış patronlara layık sofra.</p>
+                     <h4 className="text-white font-serif font-black text-4xl lg:text-5xl drop-shadow-md mb-3">Salaaş Köy Kahvaltısı</h4>
+                     <p className="text-slate-200 text-base lg:text-lg font-medium max-w-xl opacity-90 hidden sm:block">Güne harika başlamak için yöresel peynirler, sıcaklar ve taze demlenmiş çay eşliğinde devasa bir sofra.</p>
                   </div>
                 </div>
-                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
                   <img src={encodeURI("/közpatlıcanlıtavukbnfile.jpg")} alt="Köz Patlıcanlı Tavuk" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Köz Patlıcanlı Tavuk</h4>
-                     <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Özel soslu nefis deneyim.</p>
+                     <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Şefin tavsiyesi, özel soslu.</p>
                   </div>
                 </div>
-                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
                   <img src={encodeURI("/etlibowltabagi.jpg")} alt="Etli Bowl Tabağı" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md">Etli Bowl Tabağı</h4>
                      <p className="text-slate-300 text-sm lg:text-base mt-2 font-medium">Doyurucu ve sağlıklı.</p>
                   </div>
                 </div>
-                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
                   <img src={encodeURI("/ucrenklitortellini.jpg")} alt="Üç Renkli Tortellini" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md leading-tight">Üç Renkli<br/>Tortellini</h4>
                   </div>
                 </div>
-                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group h-80 md:h-[450px] cursor-pointer border border-slate-100 bg-white">
                   <img src={encodeURI("/chedarcitirmakarna.jpg")} alt="Cheddar Çıtır Makarna" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <h4 className="text-white font-serif font-black text-2xl lg:text-3xl drop-shadow-md leading-tight">Cheddar Çıtır<br/>Makarna</h4>
                   </div>
                 </div>
-                <div onClick={() => setShowDessertsModal(true)} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border-4 border-cyan-200 bg-white">
+                <div onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border-4 border-cyan-200 bg-white">
                   <img src={encodeURI("/coollime.jpg")} alt="Serin İçeceklerimiz" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
                      <span className="bg-cyan-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg group-hover:bg-cyan-600 group-hover:scale-105 transition-all">Tüm İçeceklerimiz <ChevronRight size={16}/></span>
@@ -742,7 +749,7 @@ export default function App() {
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <h4 className="text-white font-black uppercase tracking-widest mb-8 text-lg lg:text-xl">Hızlı Bağlantılar</h4>
               <ul className="space-y-5 text-base lg:text-lg font-medium mb-10 text-slate-300">
-                <li><button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); }} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Dijital Menü</button></li>
+                <li><button onClick={() => { setShowMenuPage(true); window.history.pushState({}, '', '/menu'); window.scrollTo(0,0); }} className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"><ChevronRight size={18} className="text-orange-500"/> Dijital Menü</button></li>
               </ul>
               <button onClick={() => setShowLoginModal(true)} className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 lg:px-8 lg:py-4 rounded-2xl text-sm lg:text-base font-black uppercase tracking-widest flex items-center gap-3 transition-all border border-slate-700 hover:border-slate-600 shadow-lg hover:shadow-xl hover:-translate-y-1">
                 <Lock size={18} /> Personel Girişi
@@ -753,62 +760,6 @@ export default function App() {
             <p>© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
           </div>
         </footer>
-
-        {showFixtureModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh] animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-[#0a192f] p-6 lg:p-8 flex items-center justify-between text-white shrink-0">
-                <h3 className="font-black tracking-wide flex items-center gap-3 text-lg lg:text-xl"><MonitorPlay size={24} className="text-cyan-400"/> Dev Ekran Maç Fikstürü</h3>
-                <button onClick={() => setShowFixtureModal(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
-              </div>
-              <div className="overflow-y-auto p-4 lg:p-6 bg-slate-50">
-                <div className="space-y-4">
-                   {MATCH_FIXTURE.map((match, idx) => (
-                     <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors">
-                        <div>
-                           <p className="text-sm font-bold text-slate-400 flex items-center gap-2 mb-2"><CalendarDays size={16}/> {match.displayDate}</p>
-                           <p className="font-black text-[#0a192f] text-base lg:text-lg">{match.team1} <span className="text-slate-300 font-normal mx-2">vs</span> {match.team2}</p>
-                        </div>
-                        <button onClick={() => { setRequestData({...requestData, type: 'mac', date: match.date}); setShowFixtureModal(false); setShowRequestModal(true); }} className="bg-blue-50 text-blue-600 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-colors">Seç</button>
-                     </div>
-                   ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showDessertsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[1400px] overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-4 duration-300">
-              <div className="bg-[#0B3B2C] p-5 sm:p-8 flex items-center justify-between text-white shrink-0">
-                <h3 className="font-black tracking-wide flex items-center gap-3 text-xl sm:text-3xl"><Coffee size={32} className="text-pink-400"/> Tatlı Menümüz</h3>
-                <button onClick={() => setShowDessertsModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={32}/></button>
-              </div>
-              <div className="overflow-y-auto p-6 sm:p-10 lg:p-12 bg-slate-50 flex-1">
-                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
-                   {SHOWCASE_ITEMS.filter(i => i.name.toLowerCase().includes("çikolata") || i.name.toLowerCase().includes("tatlı") || i.name.toLowerCase().includes("profiterol") || i.name.toLowerCase().includes("dome") || i.name.toLowerCase().includes("mocha") || i.name.toLowerCase().includes("brownie") || i.name.toLowerCase().includes("macchiato")).length > 0 ? SHOWCASE_ITEMS.filter(i => i.name.toLowerCase().includes("çikolata") || i.name.toLowerCase().includes("tatlı") || i.name.toLowerCase().includes("profiterol") || i.name.toLowerCase().includes("dome") || i.name.toLowerCase().includes("mocha") || i.name.toLowerCase().includes("brownie") || i.name.toLowerCase().includes("macchiato")).map((tatli) => (
-                     <div key={tatli.id} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-2">
-                       <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
-                          <img src={encodeURI(tatli.image)} alt={tatli.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }} />
-                       </div>
-                       <div className="p-5 sm:p-6 text-center flex flex-col justify-center grow min-h-[80px] bg-white z-10"><h4 className="font-black text-[#0B3B2C] text-sm sm:text-base lg:text-lg leading-snug">{tatli.name}</h4></div>
-                     </div>
-                   )) : (
-                       DESSERTS.map((tatli) => (
-                         <div key={tatli.id} className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full group hover:shadow-xl transition-all hover:-translate-y-2">
-                           <div className="w-full aspect-[4/3] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-100">
-                              <img src={encodeURI(tatli.image)} alt={tatli.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80'; }} />
-                           </div>
-                           <div className="p-5 sm:p-6 text-center flex flex-col justify-center grow min-h-[80px] bg-white z-10"><h4 className="font-black text-[#0B3B2C] text-sm sm:text-base lg:text-lg leading-snug">{tatli.name}</h4></div>
-                         </div>
-                       ))
-                   )}
-                 </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {showRequestModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -859,7 +810,7 @@ export default function App() {
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">{(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'Detaylı Açıklama (Zorunlu)' : 'Notunuz (İsteğe Bağlı)'}</label>
-                      <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'border-slate-200 focus:ring-purple-500/10 focus:border-purple-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} placeholder={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? "Lütfen organizasyonunuzun konsepti, pasta, vb. özel isteklerinizi detaylıca yazın." : "Örn: Mama sandalyesi istiyoruz vb."}></textarea>
+                      <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows={3} required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className={`w-full bg-white px-5 py-4 rounded-2xl border-2 focus:ring-4 outline-none font-medium text-slate-800 transition-all resize-none text-base ${(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'border-slate-200 focus:ring-purple-500/10 focus:border-purple-500' : 'border-slate-200 focus:ring-orange-500/10 focus:border-orange-500'}`} placeholder={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? "Lütfen organizasyonunuzun konsepti, pasta, vb. özel isteklerinizi detaylıca yazın." : "Örn: Mama sandalyesi istiyoruz vb."}></textarea>
                     </div>
                     <button type="submit" className={`w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg ${requestData.type === 'mac' ? 'bg-blue-600 hover:bg-blue-700' : requestData.type === 'dogum_gunu' ? 'bg-purple-500 hover:bg-purple-600' : requestData.type === 'organizasyon' ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-orange-500 hover:bg-orange-600'}`}>Talebi Gönder <ArrowRight size={24} /></button>
                   </form>
@@ -893,8 +844,7 @@ export default function App() {
           </div>
         )}
         
-        {/* WHATSAPP FLOATING BUTTON */}
-        <a href="https://wa.me/905392356004?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white">
+        <a href="https://wa.me/905360170208?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum." target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white">
           <span className="text-xl">💬</span><span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
         </a>
       </div>
@@ -907,7 +857,6 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activePage === 'restoran' ? 'bg-slate-50' : activePage === 'mac' ? 'bg-[#f0f4f8]' : activePage === 'gecmis' ? 'bg-slate-100' : 'bg-slate-100'}`}>
       
-      {/* BULK MESSAGE UI */}
       {bulkMessage && (
         <div className="fixed top-24 right-4 sm:right-10 z-[100] bg-slate-800 text-white p-4 sm:p-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-sm border border-slate-700 animate-in slide-in-from-right-8 duration-300">
           <CheckCircle size={24} className="text-emerald-400 shrink-0" />
@@ -916,12 +865,9 @@ export default function App() {
         </div>
       )}
 
-      {/* CSS KEYFRAMES FOR CUSTOM ANIMATIONS & VITE RESET */}
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
 
-      {/* RESTORAN DESEN */}
       {activePage === 'restoran' && <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03] print:hidden w-full h-full" style={{ backgroundImage: 'radial-gradient(#f97316 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>}
-      {/* MAÇ DESENİ */}
       {activePage === 'mac' && <div className="fixed top-20 right-10 z-0 pointer-events-none opacity-[0.03] text-blue-900 rotate-12 print:hidden"><MonitorPlay size={400} strokeWidth={1} /></div>}
 
       <div className={`hidden ${!printSingleId ? 'print:block' : ''} text-center mb-4 border-b-2 border-black pb-2 relative z-10 w-full`}>
