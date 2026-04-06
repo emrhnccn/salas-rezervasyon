@@ -41,12 +41,6 @@ const TABLE_MAP = [
   { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
 ];
 
-const MATCH_FIXTURE = [
-  { date: '2026-03-10', displayDate: '10 Mart 2026', team1: 'Galatasaray', team2: 'Liverpool' },
-  { date: '2026-03-13', displayDate: '13 Mart 2026', team1: 'F. Karagümrük', team2: 'Fenerbahçe' },
-  { date: '2026-03-14', displayDate: '14 Mart 2026', team1: 'Galatasaray', team2: 'Başakşehir' },
-].sort((a, b) => new Date(a.date) - new Date(b.date));
-
 const BASE_CATEGORIES = [
   { id: 'kahvalti', name: 'KAHVALTI', Icon: Coffee }, { id: 'tostlar', name: 'TOSTLAR', Icon: UtensilsCrossed },
   { id: 'wrap', name: 'WRAP & QUESADILLA', Icon: UtensilsCrossed }, { id: 'pizza', name: 'PİZZA', Icon: UtensilsCrossed },
@@ -543,7 +537,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
+    let cleanPhone = res.phone.replace(/[^0-9]/g, '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
     
@@ -576,7 +570,7 @@ export default function App() {
     
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
+        let cleanPhone = res.phone.replace(/[^0-9]/g, '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
@@ -899,13 +893,15 @@ export default function App() {
             <button onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition-colors">
               <X size={20} />
             </button>
-            <div className="w-full h-56 sm:h-64 bg-slate-800 relative">
+            
+            <div className="w-full bg-[#1a1a1a] relative flex justify-center items-center border-b border-white/10">
               {selectedMenuItem.image ? (
-                 <img src={selectedMenuItem.image} alt={selectedMenuItem.name} className="w-full h-full object-cover" onError={(e)=>{e.currentTarget.style.display='none'}} />
+                 <img src={selectedMenuItem.image} alt={selectedMenuItem.name} className="w-full h-auto max-h-[45vh] object-contain" />
               ) : (
-                 <div className="w-full h-full flex items-center justify-center text-slate-500"><ImageIcon size={48} /></div>
+                 <div className="w-full h-48 flex items-center justify-center text-slate-500"><ImageIcon size={48} /></div>
               )}
             </div>
+            
             <div className="p-6 sm:p-8 flex flex-col gap-4">
                <div className="flex justify-between items-start gap-4">
                   <h3 className="text-2xl font-serif font-black text-white leading-tight">{selectedMenuItem.name}</h3>
@@ -1028,7 +1024,7 @@ export default function App() {
                     onClick={() => setSelectedMenuItem(item)} 
                     className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white"
                   >
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
                        <span className="bg-orange-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg">
                          <Star size={16}/> {item.tag || 'Öne Çıkan'}
@@ -1101,7 +1097,7 @@ export default function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
                    {activeGallery.map((item, idx) => (
                       <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96 cursor-pointer">
-                         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
                             {item.tag && <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg"><Star size={14}/> {item.tag}</span>}
                             <h3 className="text-xl sm:text-2xl font-serif font-black text-white tracking-wide drop-shadow-md">{item.name}</h3>
@@ -1137,8 +1133,8 @@ export default function App() {
                                        })}
                                      </div>
                                    )}
-                                   <div className="relative w-full h-36 sm:h-40 overflow-hidden shrink-0">
-                                      <img src={itemObj.image} alt={itemObj.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                   <div className="relative w-full h-40 sm:h-48 bg-[#0a0a0a] flex items-center justify-center overflow-hidden shrink-0">
+                                      <img src={itemObj.image} alt={itemObj.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-2" />
                                    </div>
                                    <div className="p-5 flex flex-col justify-between bg-[#111] grow">
                                       <div>
@@ -1385,7 +1381,7 @@ export default function App() {
                       </span>
                     </div>
                     {menuItemData.image && (
-                       <img src={menuItemData.image} alt="Preview" className="mt-3 h-20 w-32 rounded-lg object-cover border border-slate-200 shadow-sm" />
+                       <img src={menuItemData.image} alt="Preview" className="mt-3 h-32 w-auto max-w-full rounded-lg object-contain border border-slate-200 shadow-sm bg-[#0a0a0a]" />
                     )}
                   </div>
                   <div>
@@ -1411,7 +1407,7 @@ export default function App() {
                      {menuItems.filter(m => !menuSearchTerm || m.name.toLowerCase().includes(menuSearchTerm.toLowerCase()) || m.category.toLowerCase().includes(menuSearchTerm.toLowerCase())).sort((a,b) => (a.order||999) - (b.order||999) || a.name.localeCompare(b.name)).map((item) => (
                        <div key={item.id} className={`border p-4 rounded-2xl flex flex-col bg-white ${isMenuEditing===item.id ? 'border-[#8b5cf6] shadow-md scale-[1.02] transition-all' : 'border-slate-200 hover:border-slate-300 hover:shadow-md transition-all'}`}>
                           <div className="flex gap-3 items-start mb-3 relative">
-                            {item.image ? <img src={item.image} className="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>}
+                            {item.image ? <img src={item.image} className="w-16 h-16 rounded-xl object-contain bg-[#0a0a0a] shrink-0" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>}
                             <div>
                               <h3 className="font-bold text-slate-800 leading-tight line-clamp-2">{item.name}</h3>
                               <span className="text-[10px] font-black uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded mt-1 inline-block">{BASE_CATEGORIES.find(c=>c.id===item.category)?.name || item.category}</span>
