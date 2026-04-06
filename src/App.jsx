@@ -69,11 +69,11 @@ const BADGE_OPTIONS = [
 ];
 
 const DEFAULT_MENU_GALLERY = [
-  { id: '1', name: 'Salaaş Köy Kahvaltısı', image: '/salaskoy.jpg', tag: 'İmza Lezzet' },
-  { id: '2', name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg', tag: 'Özel' },
-  { id: '3', name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg', tag: 'Şefin Tavsiyesi' },
-  { id: '4', name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg', tag: 'Sağlıklı' },
-  { id: '5', name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg', tag: 'Yeni' },
+  { id: '1', name: 'Salaaş Köy Kahvaltısı', image: '/salaskoy.jpg', tag: 'İmza Lezzet', isFeatured: true },
+  { id: '2', name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg', tag: 'Özel', isFeatured: true },
+  { id: '3', name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg', tag: 'Şefin Tavsiyesi', isFeatured: true },
+  { id: '4', name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg', tag: 'Sağlıklı', isFeatured: true },
+  { id: '5', name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg', tag: 'Yeni', isFeatured: true },
 ];
 
 const DEFAULT_MENU_ITEMS = [
@@ -1028,7 +1028,7 @@ export default function App() {
                     onClick={() => setSelectedMenuItem(item)} 
                     className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white"
                   >
-                    <img src={encodeURI(item.image)} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent flex flex-col justify-end p-8 lg:p-10">
                        <span className="bg-orange-500 text-white text-xs lg:text-sm font-black uppercase tracking-widest px-4 py-1.5 lg:px-5 lg:py-2 rounded-full w-max mb-4 lg:mb-6 flex items-center gap-1.5 shadow-lg">
                          <Star size={16}/> {item.tag || 'Öne Çıkan'}
@@ -1101,7 +1101,7 @@ export default function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
                    {activeGallery.map((item, idx) => (
                       <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96 cursor-pointer">
-                         <img src={encodeURI(item.image)} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                         <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
                             {item.tag && <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg"><Star size={14}/> {item.tag}</span>}
                             <h3 className="text-xl sm:text-2xl font-serif font-black text-white tracking-wide drop-shadow-md">{item.name}</h3>
@@ -1138,14 +1138,14 @@ export default function App() {
                                      </div>
                                    )}
                                    <div className="relative w-full h-36 sm:h-40 overflow-hidden shrink-0">
-                                      <img src={encodeURI(itemObj.image)} alt={itemObj.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                      <img src={itemObj.image} alt={itemObj.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                    </div>
                                    <div className="p-5 flex flex-col justify-between bg-[#111] grow">
                                       <div>
                                         <div className="flex justify-between items-start gap-4 mb-2"><span className="text-white font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemObj.price} TL</span>}</div>
                                         {itemObj.description && <p className="text-slate-400 text-xs line-clamp-2 mb-3">{itemObj.description}</p>}
                                       </div>
-                                      <div className="w-full flex justify-end mt-auto"><div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 transition-all"></div></div>
+                                      <div className="w-full flex justify-end mt-auto"><div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0)] group-hover:shadow-[0_0_8px_rgba(249,115,22,0.8)] transition-all"></div></div>
                                    </div>
                                 </div>
                              );
@@ -1246,7 +1246,7 @@ export default function App() {
                      {req.notes && <div className="bg-amber-50 p-3 rounded-xl mb-4 text-xs font-bold text-amber-800">"{req.notes}"</div>}
                      <div className="mt-auto flex flex-col gap-2">
                         <button onClick={() => handleApproveRequest(req, true)} className="bg-[#25D366] text-white py-2.5 rounded-xl text-xs font-black uppercase flex items-center justify-center gap-2"><MessageCircle size={16}/> Onayla & WA</button>
-                        <div className="flex gap-2"><button onClick={() => handleApproveRequest(req, false)} className="flex-1 bg-emerald-500 text-white py-2 rounded-xl text-[10px] font-black uppercase"><Check size={14} className="inline mr-1"/> Onayla</button><button onClick={() => handleRejectRequest(req.id)} className="bg-slate-200 hover:bg-red-500 text-slate-600 hover:text-white px-3 rounded-xl transition-colors"><Trash2 size={14}/></button></div>
+                        <div className="flex gap-2"><button onClick={() => handleApproveRequest(req, false)} className="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-colors shadow-sm flex items-center justify-center gap-2 border border-emerald-200"><Check size={14} className="inline mr-1"/> Onayla</button><button onClick={() => handleRejectRequest(req.id)} className="bg-slate-200 hover:bg-red-500 text-slate-600 hover:text-white px-3 rounded-xl transition-colors"><Trash2 size={14}/></button></div>
                      </div>
                    </div>
                  ))}
@@ -1339,13 +1339,13 @@ export default function App() {
                   {menuErrorMsg && <div className="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-xl flex items-center gap-2"><X size={16}/> {menuErrorMsg}</div>}
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Kategori</label>
-                    <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold outline-none focus:border-orange-500 bg-slate-50 text-slate-700">
+                    <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold outline-none focus:ring-2 focus:ring-[#8b5cf6] bg-slate-50 text-slate-700">
                       {BASE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Adı *</label>
-                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-orange-500 bg-slate-50" required placeholder="Örn: Karışık Tost" />
+                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" required placeholder="Örn: Karışık Tost" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Ürün Başlık İkonu: (Maksimum 2 adet)</label>
@@ -1411,7 +1411,7 @@ export default function App() {
                      {menuItems.filter(m => !menuSearchTerm || m.name.toLowerCase().includes(menuSearchTerm.toLowerCase()) || m.category.toLowerCase().includes(menuSearchTerm.toLowerCase())).sort((a,b) => (a.order||999) - (b.order||999) || a.name.localeCompare(b.name)).map((item) => (
                        <div key={item.id} className={`border p-4 rounded-2xl flex flex-col bg-white ${isMenuEditing===item.id ? 'border-[#8b5cf6] shadow-md scale-[1.02] transition-all' : 'border-slate-200 hover:border-slate-300 hover:shadow-md transition-all'}`}>
                           <div className="flex gap-3 items-start mb-3 relative">
-                            {item.image ? <img src={encodeURI(item.image)} className="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>}
+                            {item.image ? <img src={item.image} className="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>}
                             <div>
                               <h3 className="font-bold text-slate-800 leading-tight line-clamp-2">{item.name}</h3>
                               <span className="text-[10px] font-black uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded mt-1 inline-block">{BASE_CATEGORIES.find(c=>c.id===item.category)?.name || item.category}</span>
