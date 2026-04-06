@@ -11,7 +11,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 
-// --- FIREBASE AYARLARI ---
 const firebaseConfig = {
   apiKey: "AIzaSyD6RgXBBISFM21oJKRYRhwwCnR38NBbl9k",
   authDomain: "salaas-cafe-9c6dc.firebaseapp.com",
@@ -25,7 +24,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- SABİTLER VE VERİLER ---
 const WHATSAPP_NO = "905360170208";
 
 const TABLE_MAP = [
@@ -51,31 +49,29 @@ const TABLE_MAP = [
   { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
   { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
   { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
-  { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
+  { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }
 ];
 
 const BASE_CATEGORIES = [
-  { id: 'kahvalti', name: 'KAHVALTI', Icon: Coffee }, 
-  { id: 'tostlar', name: 'TOSTLAR', Icon: UtensilsCrossed },
-  { id: 'wrap', name: 'WRAP & QUESADILLA', Icon: UtensilsCrossed }, 
-  { id: 'pizza', name: 'PİZZA', Icon: UtensilsCrossed },
-  { id: 'burger', name: 'HAMBURGER', Icon: UtensilsCrossed }, 
-  { id: 'kofte', name: 'KÖFTE LEZZETLERİ', Icon: ChefHat },
-  { id: 'tavuk', name: 'TAVUK LEZZETLERİ', Icon: ChefHat }, 
-  { id: 'et', name: 'ET LEZZETLERİ', Icon: ChefHat },
-  { id: 'makarna', name: 'MAKARNA ÇEŞİTLERİ', Icon: UtensilsCrossed }, 
-  { id: 'salata', name: 'SALATA ÇEŞİTLERİ', Icon: UtensilsCrossed },
-  { id: 'tatli', name: 'SALAŞ TATLI', Icon: Star }, 
-  { id: 'cay', name: 'ÇAYLAR', Icon: Coffee },
-  { id: 'turk_kahvesi', name: 'TÜRK KAHVESİ', Icon: Coffee }, 
-  { id: 'sicak_kahve', name: 'SICAK KAHVELER', Icon: Coffee },
-  { id: 'sicak_diger', name: 'SICAK ÇİKOLATA', Icon: Coffee }, 
-  { id: 'soguk_kahve', name: 'SOĞUK KAHVELER', Icon: Coffee },
-  { id: 'kokteyl', name: 'KOKTEYLLER', Icon: Coffee }, 
-  { id: 'soguk_icecek', name: 'SOĞUK İÇECEKLER', Icon: Coffee },
-  { id: 'vitamin', name: 'VİTAMİN BAR', Icon: Coffee },
-  { id: 'eglence', name: 'EĞLENCE MENÜSÜ', Icon: Star },
+  { id: 'kahvalti', name: 'KAHVALTI', Icon: Coffee }, { id: 'tostlar', name: 'TOSTLAR', Icon: UtensilsCrossed },
+  { id: 'wrap', name: 'WRAP & QUESADILLA', Icon: UtensilsCrossed }, { id: 'pizza', name: 'PİZZA', Icon: UtensilsCrossed },
+  { id: 'burger', name: 'HAMBURGER', Icon: UtensilsCrossed }, { id: 'kofte', name: 'KÖFTE LEZZETLERİ', Icon: ChefHat },
+  { id: 'tavuk', name: 'TAVUK LEZZETLERİ', Icon: ChefHat }, { id: 'et', name: 'ET LEZZETLERİ', Icon: ChefHat },
+  { id: 'makarna', name: 'MAKARNA ÇEŞİTLERİ', Icon: UtensilsCrossed }, { id: 'salata', name: 'SALATA ÇEŞİTLERİ', Icon: UtensilsCrossed },
+  { id: 'tatli', name: 'SALAŞ TATLI', Icon: Star }, { id: 'cay', name: 'ÇAYLAR', Icon: Coffee },
+  { id: 'turk_kahvesi', name: 'TÜRK KAHVESİ', Icon: Coffee }, { id: 'sicak_kahve', name: 'SICAK KAHVELER', Icon: Coffee },
+  { id: 'sicak_diger', name: 'SICAK ÇİKOLATA - SAHLEP', Icon: Coffee }, { id: 'soguk_kahve', name: 'SOĞUK KAHVELER', Icon: Coffee },
+  { id: 'kokteyl', name: 'KOKTEYLLER', Icon: Coffee }, { id: 'soguk_icecek', name: 'SOĞUK İÇECEKLER', Icon: Coffee },
+  { id: 'vitamin', name: 'VİTAMİN BAR', Icon: Coffee }, { id: 'eglence', name: 'EĞLENCE MENÜSÜ', Icon: Star },
   { id: 'nargile', name: 'NARGİLE ÇEŞİTLERİ', Icon: Wind }
+];
+
+const BADGE_OPTIONS = [
+  { id: 'iki_kisilik', label: 'İki Kişiliktir', icon: '👥' },
+  { id: 'yeni', label: 'Yeni Çıkan', icon: '🆕' },
+  { id: 'acili', label: 'Acılı', icon: '🌶️' },
+  { id: 'sefin_onerisi', label: 'Şefin Önerisi', icon: '👨‍🍳' },
+  { id: 'populer', label: 'En Çok Tercih Edilen', icon: '🔥' }
 ];
 
 const DEFAULT_MENU_GALLERY = [
@@ -87,16 +83,16 @@ const DEFAULT_MENU_GALLERY = [
 ];
 
 const DEFAULT_MENU_ITEMS = [
-  { cat: 'kahvalti', items: [{n:'Salaaş Köy Kahvaltısı', i:'/salaskoy.jpg', f:true, t:'İmza Lezzet'}, {n:'Patron Kahvaltısı', i:'/patronkahvaltisi.jpg', f:true}, {n:'Kahvaltı Tabağı', i:'/kahvaltitabagi.jpg'}, {n:'Menemen'}, {n:'Pankek'}] },
-  { cat: 'burger', items: [{n:'Mantarlı Fırın Burger', i:'/mantarlıfırınburger.jpg'}, {n:'Klasik Burger'}, {n:'Cheeseburger'}] },
-  { cat: 'kofte', items: [{n:'Hünkar Köfte', i:'/hunkarkofte.jpg'}, {n:'Izgara Köfte'}, {n:'Kaşarlı Köfte'}] },
-  { cat: 'tavuk', items: [{n:'Cafe de Paris Soslu Tavuk', i:'/cafedeparis.jpg'}, {n:'Ispanak Yatağında Tavuk', i:'/ıspanakyatagındatavuk.jpg', f:true}, {n:'Köz Patlıcanlı Tavuk', i:'/közpatlıcanlıtavukbnfile.jpg'}] },
-  { cat: 'et', items: [{n:'Etli Bowl Tabağı', i:'/etlibowltabagi.jpg', f:true}, {n:'Dana Lokum'}, {n:'Çoban Kavurma'}] },
-  { cat: 'makarna', items: [{n:'Üç Renkli Tortellini', i:'/ucrenklitortellini.jpg', f:true}, {n:'Cheddar Çıtır Makarna', i:'/chedarcitirmakarna.jpg'}, {n:'Penne Arabiata'}] },
-  { cat: 'tatli', items: [{n:'Dubai Çikolatalı', i:'/dubai cikolatalı.jpg'}, {n:'Lotus Dome', i:'/lotus dome.jpg'}, {n:'Profiterol', i:'/profiterol.jpg'}] },
-  { cat: 'kokteyl', items: [{n:'Cool Lime', i:'/coollime.jpg'}, {n:'Mojito'}, {n:'Pina Colada'}] },
-  { cat: 'soguk_kahve', items: [{n:'Ice Mocha', i:'/icemocha.jpg'}, {n:'Ice Latte'}] },
-  { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg'}, {n:'Espresso'}] }
+  { cat: 'kahvalti', items: [{n:'Salaaş Köy Kahvaltısı', i:'/salaskoy.jpg', f:true, t:'İmza Lezzet', o:1}, {n:'Patron Kahvaltısı', i:'/patronkahvaltisi.jpg', f:true, o:2}, {n:'Kahvaltı Tabağı', i:'/kahvaltitabagi.jpg', o:3}, {n:'Menemen', o:4}, {n:'Pankek', o:5}] },
+  { cat: 'burger', items: [{n:'Mantarlı Fırın Burger', i:'/mantarlıfırınburger.jpg', o:1}, {n:'Klasik Burger', o:2}, {n:'Cheeseburger', o:3}] },
+  { cat: 'kofte', items: [{n:'Hünkar Köfte', i:'/hunkarkofte.jpg', o:1}, {n:'Izgara Köfte', o:2}, {n:'Kaşarlı Köfte', o:3}] },
+  { cat: 'tavuk', items: [{n:'Cafe de Paris Soslu Tavuk', i:'/cafedeparis.jpg', o:1}, {n:'Ispanak Yatağında Tavuk', i:'/ıspanakyatagındatavuk.jpg', f:true, o:2}, {n:'Köz Patlıcanlı Tavuk', i:'/közpatlıcanlıtavukbnfile.jpg', o:3}] },
+  { cat: 'et', items: [{n:'Etli Bowl Tabağı', i:'/etlibowltabagi.jpg', f:true, o:1}, {n:'Dana Lokum', o:2}, {n:'Çoban Kavurma', o:3}] },
+  { cat: 'makarna', items: [{n:'Üç Renkli Tortellini', i:'/ucrenklitortellini.jpg', f:true, o:1}, {n:'Cheddar Çıtır Makarna', i:'/chedarcitirmakarna.jpg', o:2}, {n:'Penne Arabiata', o:3}] },
+  { cat: 'tatli', items: [{n:'Dubai Çikolatalı', i:'/dubai cikolatalı.jpg', o:1}, {n:'Lotus Dome', i:'/lotus dome.jpg', o:2}, {n:'Profiterol', i:'/profiterol.jpg', o:3}] },
+  { cat: 'kokteyl', items: [{n:'Cool Lime', i:'/coollime.jpg', o:1}, {n:'Mojito', o:2}, {n:'Pina Colada', o:3}] },
+  { cat: 'soguk_kahve', items: [{n:'Ice Mocha', i:'/icemocha.jpg', o:1}, {n:'Ice Latte', o:2}] },
+  { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg', o:1}, {n:'Espresso', o:2}] }
 ];
 
 const GLOBAL_CSS = `
@@ -119,16 +115,10 @@ export default function App() {
     return formatter.format(new Date());
   };
 
-  const typeLabels = { 
-    kahvalti: 'Kahvaltı', 
-    yemek: 'Yemek', 
-    dogum_gunu: 'Doğum Günü', 
-    organizasyon: 'Organizasyon', 
-    mac: 'Maç Yayını' 
-  };
+  const typeLabels = { kahvalti: 'Kahvaltı', yemek: 'Yemek', dogum_gunu: 'Doğum Günü', organizasyon: 'Organizasyon', mac: 'Maç Yayını' };
 
-  // --- TEMEL STATE YÖNETİMİ ---
-  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'menu', 'admin'
+  // --- STATE ---
+  const [currentView, setCurrentView] = useState('landing');
   const [activeAdminTab, setActiveAdminTab] = useState('restoran');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -142,19 +132,16 @@ export default function App() {
   const [bulkMessage, setBulkMessage] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   
-  // Rezervasyon Form State
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
   const [requestData, setRequestData] = useState({ type: 'yemek', name: '', phone: '', peopleCount: 2, date: getToday(), notes: '' });
   const [requestError, setRequestError] = useState('');
 
-  // Veritabanı State
   const [reservations, setReservations] = useState([]);
   const [matchReservations, setMatchReservations] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
 
-  // Admin Restoran/Maç State
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [selectedMatchDate, setSelectedMatchDate] = useState(getToday());
   const [searchTerm, setSearchTerm] = useState('');
@@ -163,8 +150,11 @@ export default function App() {
   const [isEditing, setIsEditing] = useState(null);
   const [isMatchEditing, setIsMatchEditing] = useState(null);
   
-  const [formData, setFormData] = useState({ type: 'yemek', name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() });
-  const [matchFormData, setMatchFormData] = useState({ type: 'mac', name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() });
+  const initialFormState = { type: 'yemek', name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() };
+  const [formData, setFormData] = useState(initialFormState);
+  
+  const initialMatchFormState = { type: 'mac', name: '', phone: '', notes: '', peopleCount: 1, table: '', date: getToday() };
+  const [matchFormData, setMatchFormData] = useState(initialMatchFormState);
   
   const [errorMsg, setErrorMsg] = useState('');
   const [matchErrorMsg, setMatchErrorMsg] = useState('');
@@ -173,17 +163,19 @@ export default function App() {
   const [printSingleId, setPrintSingleId] = useState(null);
   const [showTableMap, setShowTableMap] = useState(false);
 
-  // Admin Geçmiş State
   const [historyDateFilter, setHistoryDateFilter] = useState(''); 
   const [historyTypeFilter, setHistoryTypeFilter] = useState('all'); 
 
-  // Admin Menü Yönetimi State
+  // --- MENÜ YÖNETİMİ STATE ---
   const [isMenuEditing, setIsMenuEditing] = useState(null);
   const [menuSearchTerm, setMenuSearchTerm] = useState('');
-  const initialMenuItemState = { category: 'kahvalti', name: '', price: '', description: '', image: '', isFeatured: false };
+  const initialMenuItemState = { category: 'kahvalti', name: '', price: '', description: '', image: '', isFeatured: false, order: 999, badges: [] };
   const [menuItemData, setMenuItemData] = useState(initialMenuItemState);
   const [menuErrorMsg, setMenuErrorMsg] = useState('');
   const [menuDeleteConfirmId, setMenuDeleteConfirmId] = useState(null);
+
+  // --- ZİYARETÇİ EKRANI MODAL ---
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
   // --- EFEKTLER ---
   useEffect(() => {
@@ -265,7 +257,7 @@ export default function App() {
   const scrollToMenuCategory = (id) => {
     const el = document.getElementById(`cat-${id}`);
     if (el) { 
-      const y = el.getBoundingClientRect().top + window.scrollY - 160; 
+      const y = el.getBoundingClientRect().top + window.scrollY - 130; 
       window.scrollTo({ top: y, behavior: 'smooth' }); 
     }
   };
@@ -425,7 +417,25 @@ export default function App() {
   const handleMenuChange = (e) => {
     const { name, value } = e.target;
     setMenuErrorMsg('');
-    setMenuItemData(prev => ({ ...prev, [name]: value }));
+    setMenuItemData(prev => ({ 
+      ...prev, 
+      [name]: name === 'order' ? (value === '' ? '' : parseInt(value, 10)) : value 
+    }));
+  };
+
+  const handleBadgeChange = (badgeId) => {
+    setMenuItemData(prev => {
+      const hasBadge = prev.badges.includes(badgeId);
+      if (hasBadge) {
+        return { ...prev, badges: prev.badges.filter(b => b !== badgeId) };
+      } else {
+        if (prev.badges.length >= 2) {
+          alert("Maksimum 2 adet ikon seçebilirsiniz.");
+          return prev;
+        }
+        return { ...prev, badges: [...prev.badges, badgeId] };
+      }
+    });
   };
 
   const handleMenuSubmit = async (e) => {
@@ -435,16 +445,22 @@ export default function App() {
       setMenuErrorMsg("Ürün adı zorunludur."); 
       return; 
     }
+    
+    const dataToSave = {
+      ...menuItemData,
+      order: menuItemData.order === '' ? 999 : menuItemData.order
+    };
+
     try {
       if (isMenuEditing) {
         await updateDoc(doc(db, 'menuItems', isMenuEditing), { 
-          ...menuItemData, 
+          ...dataToSave, 
           updatedAt: new Date().toISOString() 
         });
         setIsMenuEditing(null);
       } else {
         await addDoc(collection(db, 'menuItems'), { 
-          ...menuItemData, 
+          ...dataToSave, 
           createdAt: new Date().toISOString() 
         });
       }
@@ -468,7 +484,9 @@ export default function App() {
               description: '', 
               image: item.i || '', 
               isFeatured: item.f || false, 
-              tag: item.t || '', 
+              tag: item.t || '',
+              order: item.o || 999,
+              badges: [],
               createdAt: new Date().toISOString() 
             });
           }
@@ -506,7 +524,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(/[^0-9]/g, '');
+    let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
     
@@ -539,7 +557,7 @@ export default function App() {
     
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(/[^0-9]/g, '');
+        let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
@@ -563,19 +581,24 @@ export default function App() {
 
   // --- HESAPLAMALAR VE VİTRİN ---
   const activeMenuCategories = menuItems.length > 0 
-    ? BASE_CATEGORIES.map(cat => ({ ...cat, items: menuItems.filter(item => item.category === cat.id) })).filter(cat => cat.items.length > 0)
+    ? BASE_CATEGORIES.map(cat => ({ 
+        ...cat, 
+        items: menuItems
+                 .filter(item => item.category === cat.id)
+                 .sort((a,b) => (a.order || 999) - (b.order || 999) || a.name.localeCompare(b.name)) 
+      })).filter(cat => cat.items.length > 0)
     : BASE_CATEGORIES.map(cat => {
         const defaultCat = DEFAULT_MENU_ITEMS.find(c => c.cat === cat.id);
         return { 
           ...cat, 
           items: defaultCat ? defaultCat.items.map(i => ({
-            name: i.n, image: i.i || null, isFeatured: i.f || false, tag: i.t || null, price: null, description: null
-          })) : [] 
+            name: i.n, image: i.i || null, isFeatured: i.f || false, tag: i.t || null, price: null, description: null, order: i.o || 999, badges: []
+          })).sort((a,b) => a.order - b.order) : [] 
         };
       }).filter(cat => cat.items.length > 0);
 
   const activeGallery = menuItems.length > 0 
-    ? menuItems.filter(item => item.isFeatured) 
+    ? menuItems.filter(item => item.isFeatured).sort((a,b) => (a.order || 999) - (b.order || 999)) 
     : DEFAULT_MENU_GALLERY;
 
   const filteredReservations = reservations.filter(res => res.date === selectedFilterDate);
@@ -615,7 +638,7 @@ export default function App() {
     
     const totalPeople = allData.reduce((acc, curr) => acc + (parseInt(curr.peopleCount, 10) || 0), 0);
     const totalArrived = allData.filter(r => r.isArrived).reduce((acc, curr) => acc + (parseInt(curr.peopleCount, 10) || 0), 0);
-    const arrivalRate = totalPeople > 0 ? Math.round((totalArrived * 100) / totalPeople) : 0;
+    const arrivalRate = totalPeople > 0 ? Math.round((totalArrived * 100) / (totalPeople || 1)) : 0;
     
     return { list: allData, totalPeople, totalArrived, arrivalRate };
   };
@@ -624,7 +647,7 @@ export default function App() {
 
   // --- RENDER MODÜLLERİ (YARDIMCI COMPONENTLER) ---
   const renderNavbar = (isDark = false) => (
-    <div className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
+    <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none`}>
       <nav className={`w-full pointer-events-auto transition-all duration-500 ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md py-3 border-b border-white/10' : 'bg-transparent py-5 sm:py-6'}`}>
         <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
           <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 ${isScrolled || isDark ? 'h-10 sm:h-12' : 'h-12 sm:h-16'}`} onClick={handleNavToHome}>
@@ -849,6 +872,52 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {selectedMenuItem && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#111] rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative border border-white/10 animate-in zoom-in-95 duration-300">
+            <button onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition-colors">
+              <X size={20} />
+            </button>
+            <div className="w-full h-56 sm:h-64 bg-slate-800 relative">
+              {selectedMenuItem.image ? (
+                 <img src={selectedMenuItem.image} alt={selectedMenuItem.name} className="w-full h-full object-cover" onError={(e)=>{e.currentTarget.style.display='none'}} />
+              ) : (
+                 <div className="w-full h-full flex items-center justify-center text-slate-500"><ImageIcon size={48} /></div>
+              )}
+            </div>
+            <div className="p-6 sm:p-8 flex flex-col gap-4">
+               <div className="flex justify-between items-start gap-4">
+                  <h3 className="text-2xl font-serif font-black text-white leading-tight">{selectedMenuItem.name}</h3>
+                  {selectedMenuItem.price && <span className="text-xl font-black text-orange-500 whitespace-nowrap">{selectedMenuItem.price} TL</span>}
+               </div>
+               
+               {selectedMenuItem.badges && selectedMenuItem.badges.length > 0 && (
+                 <div className="flex flex-wrap gap-2">
+                   {selectedMenuItem.badges.map(b => {
+                     const badgeDef = BADGE_OPTIONS.find(opt => opt.id === b);
+                     return badgeDef ? (
+                       <span key={b} className="bg-white/10 text-slate-300 text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 border border-white/5">
+                         <span>{badgeDef.icon}</span> {badgeDef.label}
+                       </span>
+                     ) : null;
+                   })}
+                 </div>
+               )}
+               
+               {selectedMenuItem.description && (
+                 <p className="text-slate-400 text-sm leading-relaxed border-t border-white/10 pt-4 mt-2">
+                   {selectedMenuItem.description}
+                 </p>
+               )}
+               
+               <button onClick={() => setSelectedMenuItem(null)} className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-xl transition-colors uppercase tracking-widest text-sm">
+                 Kapat
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       <a href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum.`} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white">
         <span className="text-xl">💬</span>
@@ -941,7 +1010,7 @@ export default function App() {
                 {activeGallery.slice(0, 4).map((item) => (
                   <div 
                     key={item.id}
-                    onClick={handleNavToMenu} 
+                    onClick={() => { setSelectedMenuItem(item); }} 
                     className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white"
                   >
                     <img src={encodeURI(item.image)} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -1016,7 +1085,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
                    {activeGallery.map((item, idx) => (
-                      <div key={item.id || idx} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96">
+                      <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96 cursor-pointer">
                          <img src={encodeURI(item.image)} alt={item.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
                             {item.tag && <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg"><Star size={14}/> {item.tag}</span>}
@@ -1042,21 +1111,24 @@ export default function App() {
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                          {cat.items.map((itemObj, idx) => {
-                           const itemName = itemObj.name || itemObj;
-                           const itemImage = itemObj.image || null;
-                           const itemPrice = itemObj.price || null;
-                           const itemDesc = itemObj.description || null;
-
-                           if(itemImage) {
+                           if(itemObj.image) {
                              return (
-                                <div key={idx} className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-all duration-300 group shadow-lg flex flex-col h-full min-h-[220px]">
+                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-all duration-300 group shadow-lg flex flex-col h-full min-h-[220px] cursor-pointer relative">
+                                   {itemObj.badges && itemObj.badges.length > 0 && (
+                                     <div className="absolute top-2 left-2 z-10 flex gap-1">
+                                       {itemObj.badges.map(b => {
+                                          const def = BADGE_OPTIONS.find(o=>o.id===b);
+                                          return def ? <span key={b} className="bg-white/90 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">{def.icon}</span> : null;
+                                       })}
+                                     </div>
+                                   )}
                                    <div className="relative w-full h-36 sm:h-40 overflow-hidden shrink-0">
-                                      <img src={encodeURI(itemImage)} alt={itemName} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                      <img src={encodeURI(itemObj.image)} alt={itemObj.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                    </div>
                                    <div className="p-5 flex flex-col justify-between bg-[#111] grow">
                                       <div>
-                                        <div className="flex justify-between items-start gap-4 mb-2"><span className="text-white font-bold text-sm sm:text-base tracking-wide leading-snug">{itemName}</span>{itemPrice && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemPrice} TL</span>}</div>
-                                        {itemDesc && <p className="text-slate-400 text-xs line-clamp-2 mb-3">{itemDesc}</p>}
+                                        <div className="flex justify-between items-start gap-4 mb-2"><span className="text-white font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemObj.price} TL</span>}</div>
+                                        {itemObj.description && <p className="text-slate-400 text-xs line-clamp-2 mb-3">{itemObj.description}</p>}
                                       </div>
                                       <div className="w-full flex justify-end mt-auto"><div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 transition-all"></div></div>
                                    </div>
@@ -1064,12 +1136,20 @@ export default function App() {
                              );
                            } else {
                              return (
-                                <div key={idx} className="bg-[#111] border border-white/5 rounded-2xl p-5 flex flex-col justify-between group hover:border-orange-500/30 hover:bg-[#161616] transition-all h-full min-h-[90px]">
+                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className="bg-[#111] border border-white/5 rounded-2xl p-5 flex flex-col justify-between group hover:border-orange-500/30 hover:bg-[#161616] transition-all h-full min-h-[90px] cursor-pointer relative">
+                                   {itemObj.badges && itemObj.badges.length > 0 && (
+                                     <div className="flex gap-1 mb-2">
+                                       {itemObj.badges.map(b => {
+                                          const def = BADGE_OPTIONS.find(o=>o.id===b);
+                                          return def ? <span key={b} className="bg-white/10 text-slate-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-white/5">{def.icon}</span> : null;
+                                       })}
+                                     </div>
+                                   )}
                                    <div className="flex justify-between items-start gap-4">
-                                     <span className="text-slate-300 font-medium group-hover:text-white transition-colors leading-snug text-sm sm:text-base">{itemName}</span>
-                                     {itemPrice && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemPrice} TL</span>}
+                                     <span className="text-slate-300 font-medium group-hover:text-white transition-colors leading-snug text-sm sm:text-base">{itemObj.name}</span>
+                                     {itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemObj.price} TL</span>}
                                    </div>
-                                   {itemDesc && <p className="text-slate-500 text-xs mt-2 line-clamp-2">{itemDesc}</p>}
+                                   {itemObj.description && <p className="text-slate-500 text-xs mt-2 line-clamp-2">{itemObj.description}</p>}
                                 </div>
                              );
                            }
@@ -1229,50 +1309,98 @@ export default function App() {
               {menuItems.length === 0 && (
                 <div className="bg-orange-100 border border-orange-200 rounded-3xl p-6 text-center shadow-sm">
                   <p className="text-orange-800 font-bold mb-4 text-sm">Sisteminizde hiç menü öğesi yok.</p>
-                  <button onClick={importDefaultMenu} className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-black uppercase text-xs w-full">Varsayılan Menüyü Aktar</button>
+                  <button onClick={importDefaultMenu} className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-black uppercase text-xs w-full transition-colors">Varsayılan Menüyü Aktar</button>
                 </div>
               )}
-              <div className={`bg-white rounded-3xl shadow-xl border w-full ${isMenuEditing ? 'border-orange-400' : 'border-slate-200'}`}>
-                <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center"><h2 className="font-black text-lg">{isMenuEditing ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}</h2>{isMenuEditing && <button onClick={()=>{setIsMenuEditing(null); setMenuItemData(initialMenuItemState); setMenuErrorMsg('');}}><X size={18}/></button>}</div>
+              <div className={`bg-white rounded-3xl shadow-xl border w-full ${isMenuEditing ? 'border-[#8b5cf6]' : 'border-slate-200'}`}>
+                <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${isMenuEditing ? 'bg-[#8b5cf6]/10 text-[#8b5cf6]' : 'bg-slate-200 text-slate-600'}`}>{isMenuEditing ? <Edit2 size={20} /> : <Plus size={20} />}</div>
+                    <h2 className="font-black text-lg text-slate-800">{isMenuEditing ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}</h2>
+                  </div>
+                  {isMenuEditing && <button type="button" onClick={()=>{setIsMenuEditing(null); setMenuItemData(initialMenuItemState); setMenuErrorMsg('');}} className="text-slate-400 p-1.5 hover:bg-slate-100 rounded-full transition-colors"><X size={18}/></button>}
+                </div>
                 <form onSubmit={handleMenuSubmit} className="p-6 space-y-4">
-                  {menuErrorMsg && <div className="text-red-500 font-bold text-sm">{menuErrorMsg}</div>}
-                  <div><label className="block text-xs font-bold text-slate-500 mb-1">Kategori</label><select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold outline-none">{BASE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
-                  <div><label className="block text-xs font-bold text-slate-500 mb-1">Ürün Adı *</label><input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold" required /></div>
-                  <div><label className="block text-xs font-bold text-slate-500 mb-1">Fiyat (Opsiyonel)</label><input type="text" name="price" value={menuItemData.price} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold" /></div>
-                  <div><label className="block text-xs font-bold text-slate-500 mb-1">Açıklama</label><textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={2} className="w-full p-3 rounded-xl border-2 border-slate-200 font-medium resize-none"></textarea></div>
-                  <div><label className="block text-xs font-bold text-slate-500 mb-1">Görsel URL</label><input type="text" name="image" value={menuItemData.image} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-medium text-sm" placeholder="/resim.jpg" /></div>
-                  <label className="flex items-center gap-2 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200"><input type="checkbox" checked={menuItemData.isFeatured} onChange={(e)=>setMenuItemData({...menuItemData, isFeatured: e.target.checked})} className="w-5 h-5" /><span className="font-bold text-sm text-slate-700">Öne Çıkanlarda Göster</span></label>
-                  <button type="submit" className="w-full bg-orange-500 text-white font-black py-4 rounded-xl shadow-lg">{isMenuEditing ? 'GÜNCELLE' : 'ÜRÜNÜ EKLE'}</button>
+                  {menuErrorMsg && <div className="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-xl flex items-center gap-2"><X size={16}/> {menuErrorMsg}</div>}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Adı *</label>
+                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" required placeholder="Örn: Serpme Kahvaltı" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Ürün Başlık İkonu: (Maksimum 2 adet)</label>
+                    <div className="flex flex-wrap gap-4">
+                      {BADGE_OPTIONS.map(badge => (
+                        <label key={badge.id} className="flex items-center gap-2 cursor-pointer bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">
+                          <input type="checkbox" checked={menuItemData.badges.includes(badge.id)} onChange={() => handleBadgeChange(badge.id)} className="w-4 h-4 text-[#8b5cf6] rounded border-gray-300 focus:ring-[#8b5cf6]" />
+                          <span className="text-sm font-bold text-slate-700 flex items-center gap-1"><span>{badge.icon}</span> {badge.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Açıklama</label>
+                    <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={2} className="w-full p-3 rounded-xl border border-slate-300 font-medium resize-none focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Örn İçerik: Beyaz peynir, Taze kaşar..."></textarea>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Kategori</label>
+                    <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none text-slate-700">
+                      {BASE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Fiyat</label>
+                    <div className="relative">
+                      <DollarSign size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input type="text" name="price" value={menuItemData.price} onChange={handleMenuChange} className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Örn: 150" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Resim (URL)</label>
+                    <div className="relative">
+                      <ImageIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input type="text" name="image" value={menuItemData.image} onChange={handleMenuChange} className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 font-medium text-sm focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="/resim.jpg veya https://..." />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Sıra</label>
+                    <input type="number" name="order" value={menuItemData.order} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Varsayılan: 999" />
+                  </div>
+                  
+                  <button type="submit" className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-black py-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 uppercase tracking-widest mt-4">Gönder</button>
                 </form>
               </div>
             </div>
 
             <div className="lg:col-span-8 xl:col-span-9 w-full">
                <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-6 sm:p-8 min-h-[500px] w-full">
-                  <div className="flex flex-col md:flex-row items-center justify-between mb-8 pb-4 border-b border-slate-100 gap-4">
-                     <h2 className="text-2xl font-black text-slate-800">Menü Öğeleri</h2>
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-slate-100 gap-4">
+                     <h2 className="text-2xl font-black flex items-center gap-3 text-slate-800"><MenuSquare className="text-[#8b5cf6]" size={28} /> Sistemdeki Menü Öğeleri</h2>
                      <div className="flex items-center gap-3">
-                        <input type="text" placeholder="Ürün ara..." value={menuSearchTerm} onChange={(e) => setMenuSearchTerm(e.target.value)} className="p-2 border-2 border-slate-200 rounded-lg outline-none font-medium w-full md:w-48" />
+                        <input type="text" placeholder="Ürün ara..." value={menuSearchTerm} onChange={(e) => setMenuSearchTerm(e.target.value)} className="p-2 border border-slate-300 rounded-lg outline-none font-medium w-full md:w-48 focus:border-[#8b5cf6]" />
                         <span className="font-bold text-sm bg-slate-100 px-3 py-2 rounded-lg">{menuItems.length} Öğeler</span>
                      </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                     {menuItems.filter(m => !menuSearchTerm || m.name.toLowerCase().includes(menuSearchTerm.toLowerCase())).sort((a,b) => a.category.localeCompare(b.category)).map((item) => (
-                       <div key={item.id} className={`border-2 p-4 rounded-2xl flex flex-col bg-white ${isMenuEditing===item.id ? 'border-orange-400' : 'border-slate-100 hover:shadow-md'}`}>
-                          <div className="flex gap-3 items-start mb-3">
-                            {item.image ? <img src={encodeURI(item.image)} className="w-16 h-16 rounded-xl object-cover bg-slate-100" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300"><ImageIcon size={24}/></div>}
-                            <div><h3 className="font-bold text-slate-800 leading-tight">{item.name}</h3><span className="text-[10px] font-black uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded mt-1 inline-block">{BASE_CATEGORIES.find(c=>c.id===item.category)?.name || item.category}</span></div>
+                     {menuItems.filter(m => !menuSearchTerm || m.name.toLowerCase().includes(menuSearchTerm.toLowerCase())).sort((a,b) => (a.order||999) - (b.order||999) || a.name.localeCompare(b.name)).map((item) => (
+                       <div key={item.id} className={`border p-4 rounded-2xl flex flex-col bg-white ${isMenuEditing===item.id ? 'border-[#8b5cf6] shadow-md scale-[1.02] transition-all' : 'border-slate-200 hover:border-slate-300 hover:shadow-md transition-all'}`}>
+                          <div className="flex gap-3 items-start mb-3 relative">
+                            {item.image ? <img src={encodeURI(item.image)} className="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>}
+                            <div>
+                              <h3 className="font-bold text-slate-800 leading-tight line-clamp-2">{item.name}</h3>
+                              <span className="text-[10px] font-black uppercase bg-slate-100 text-slate-600 px-2 py-0.5 rounded mt-1 inline-block">{BASE_CATEGORIES.find(c=>c.id===item.category)?.name || item.category}</span>
+                            </div>
                           </div>
                           <div className="flex justify-between items-center mt-auto pt-3 border-t border-slate-100">
-                            <span className="font-black text-orange-500">{item.price ? `${item.price} TL` : '-'}</span>
-                            {item.isFeatured && <Star size={16} className="text-yellow-400 fill-yellow-400" />}
+                            <span className="font-black text-[#8b5cf6]">{item.price ? `${item.price} TL` : '-'}</span>
+                            <span className="text-xs font-bold text-slate-400">Sıra: {item.order || 999}</span>
                             <div className="flex gap-2">
-                              <button onClick={()=>{setMenuItemData({category: item.category, name: item.name, price: item.price||'', description: item.description||'', image: item.image||'', isFeatured: item.isFeatured||false}); setIsMenuEditing(item.id); window.scrollTo(0,0);}} className="p-1.5 bg-slate-100 hover:bg-orange-100 text-slate-600 rounded"><Edit2 size={16}/></button>
-                              <button onClick={()=>executeDelete(item.id, 'menuItems')} className="p-1.5 bg-slate-100 hover:bg-red-100 text-red-500 rounded"><Trash2 size={16}/></button>
+                              <button onClick={()=>{setMenuItemData({category: item.category, name: item.name, price: item.price||'', description: item.description||'', image: item.image||'', isFeatured: item.isFeatured||false, order: item.order||999, badges: item.badges||[]}); setIsMenuEditing(item.id); window.scrollTo(0,0);}} className="p-1.5 bg-slate-100 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] text-slate-600 rounded transition-colors"><Edit2 size={16}/></button>
+                              <button onClick={()=>{if(window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) executeDelete(item.id, 'menuItems');}} className="p-1.5 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded transition-colors"><Trash2 size={16}/></button>
                             </div>
                           </div>
                        </div>
                      ))}
+                     {menuItems.length === 0 && <div className="col-span-full py-12 text-center text-slate-400 font-medium">Veritabanında henüz bir menü öğesi yok.</div>}
                   </div>
                </div>
             </div>
