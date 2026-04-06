@@ -112,7 +112,7 @@ export default function App() {
   const typeLabels = { kahvalti: 'Kahvaltı', yemek: 'Yemek', dogum_gunu: 'Doğum Günü', organizasyon: 'Organizasyon', mac: 'Maç Yayını' };
 
   // --- STATE ---
-  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'menu', 'admin'
+  const [currentView, setCurrentView] = useState('landing');
   const [activeAdminTab, setActiveAdminTab] = useState('restoran');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -253,7 +253,8 @@ export default function App() {
   const scrollToMenuCategory = (id) => {
     const el = document.getElementById(`cat-${id}`);
     if (el) { 
-      el.scrollIntoView({ behavior: 'smooth' }); 
+      const y = el.getBoundingClientRect().top + window.scrollY - 130; 
+      window.scrollTo({ top: y, behavior: 'smooth' }); 
     }
   };
 
@@ -447,7 +448,11 @@ export default function App() {
       setMenuItemData(prev => ({ ...prev, image: downloadURL }));
     } catch (error) {
       console.error(error);
-      setMenuErrorMsg("Resim yüklenirken bir hata oluştu. Firebase Storage iznini kontrol edin.");
+      if (error.message && error.message.includes('CORS')) {
+         setMenuErrorMsg("CORS Hatası: Lütfen Vercel rehberindeki Firebase CORS ayarlarını yapın.");
+      } else {
+         setMenuErrorMsg("Resim yüklenirken hata oluştu: " + error.message);
+      }
     } finally {
       setUploadingImage(false);
     }
@@ -538,7 +543,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(/[^0-9]/g, '');
+    let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
     
@@ -571,7 +576,7 @@ export default function App() {
     
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(/[^0-9]/g, '');
+        let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
@@ -933,11 +938,6 @@ export default function App() {
           </div>
         </div>
       )}
-      
-      <a href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum.`} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white">
-        <span className="text-xl">💬</span>
-        <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
-      </a>
     </>
   );
 
@@ -1077,7 +1077,7 @@ export default function App() {
         
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
         
-        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl">
+        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl mt-[73px] sm:mt-[81px]">
            <div className="w-full mx-auto px-4 sm:px-8 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
               {activeMenuCategories.map(cat => (
                   <button 
@@ -1338,8 +1338,14 @@ export default function App() {
                 <form onSubmit={handleMenuSubmit} className="p-6 space-y-4">
                   {menuErrorMsg && <div className="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-xl flex items-center gap-2"><X size={16}/> {menuErrorMsg}</div>}
                   <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Kategori</label>
+                    <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold outline-none focus:border-orange-500 bg-slate-50 text-slate-700">
+                      {BASE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Adı *</label>
-                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" required placeholder="Örn: Serpme Kahvaltı" />
+                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold focus:border-orange-500 bg-slate-50" required placeholder="Örn: Karışık Tost" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Ürün Başlık İkonu: (Maksimum 2 adet)</label>
@@ -1354,13 +1360,10 @@ export default function App() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Açıklama</label>
-                    <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={2} className="w-full p-3 rounded-xl border border-slate-300 font-medium resize-none focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Örn İçerik: Beyaz peynir, Taze kaşar..."></textarea>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Kategori</label>
-                    <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none text-slate-700">
-                      {BASE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                    <div className="relative">
+                      <AlignLeft size={18} className="absolute left-4 top-4 text-slate-400" />
+                      <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={5} className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 font-medium resize-y min-h-[120px] focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Örn İçerik: Beyaz peynir, Taze kaşar..."></textarea>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Fiyat</label>
