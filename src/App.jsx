@@ -5,12 +5,14 @@ import {
   Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, 
   MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, 
   ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare,
-  Image as ImageIcon, AlignLeft, DollarSign
+  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
+// --- FIREBASE AYARLARI ---
 const firebaseConfig = {
   apiKey: "AIzaSyD6RgXBBISFM21oJKRYRhwwCnR38NBbl9k",
   authDomain: "salaas-cafe-9c6dc.firebaseapp.com",
@@ -23,34 +25,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
+// --- SABİTLER VE VERİLER ---
 const WHATSAPP_NO = "905360170208";
 
 const TABLE_MAP = [
-  { id: 'B-3', top: '8%', left: '5%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-2', top: '8%', left: '17%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-1', top: '8%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-4', top: '23%', left: '5%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-5', top: '23%', left: '17%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-6', top: '23%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-9', top: '38%', left: '5%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-8', top: '38%', left: '17%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-7', top: '38%', left: '29%', width: '8%', height: '11%', type: 'v' },
-  { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' },
-  { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
-  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
-  { id: 'B-20', top: '48%', left: '56%', width: '14%', height: '6%', type: 'h' },
-  { id: 'B-21', top: '61%', left: '56%', width: '14%', height: '6%', type: 'h' },
-  { id: 'B-22', top: '74%', left: '56%', width: '14%', height: '6%', type: 'h' },
-  { id: 'B-23', top: '87%', left: '56%', width: '14%', height: '6%', type: 'h' },
-  { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
-  { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
-  { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
-  { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }
+  { id: 'B-3', top: '8%', left: '5%', width: '8%', height: '11%', type: 'v' }, { id: 'B-2', top: '8%', left: '17%', width: '8%', height: '11%', type: 'v' }, { id: 'B-1', top: '8%', left: '29%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-4', top: '23%', left: '5%', width: '8%', height: '11%', type: 'v' }, { id: 'B-5', top: '23%', left: '17%', width: '8%', height: '11%', type: 'v' }, { id: 'B-6', top: '23%', left: '29%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-9', top: '38%', left: '5%', width: '8%', height: '11%', type: 'v' }, { id: 'B-8', top: '38%', left: '17%', width: '8%', height: '11%', type: 'v' }, { id: 'B-7', top: '38%', left: '29%', width: '8%', height: '11%', type: 'v' },
+  { id: 'B-10', top: '53%', left: '5%', width: '13%', height: '6%', type: 'h' }, { id: 'B-11', top: '53%', left: '21%', width: '13%', height: '6%', type: 'h' },
+  { id: 'B-12', top: '48%', left: '38%', width: '9%', height: '14%', type: 'lg-v' }, { id: 'B-24', top: '74%', left: '38%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-13', top: '8%', left: '76%', width: '9%', height: '14%', type: 'lg-v' }, { id: 'B-14', top: '26%', left: '76%', width: '9%', height: '14%', type: 'lg-v' },
+  { id: 'B-20', top: '48%', left: '56%', width: '14%', height: '6%', type: 'h' }, { id: 'B-21', top: '61%', left: '56%', width: '14%', height: '6%', type: 'h' }, { id: 'B-22', top: '74%', left: '56%', width: '14%', height: '6%', type: 'h' }, { id: 'B-23', top: '87%', left: '56%', width: '14%', height: '6%', type: 'h' },
+  { id: 'B-16', top: '46%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-17', top: '60%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-18', top: '74%', left: '80%', width: '9%', height: '12%', type: 'lg-v' }, { id: 'B-19', top: '88%', left: '80%', width: '9%', height: '12%', type: 'lg-v' },
 ];
+
+const MATCH_FIXTURE = [
+  { date: '2026-03-10', displayDate: '10 Mart 2026', team1: 'Galatasaray', team2: 'Liverpool' },
+  { date: '2026-03-13', displayDate: '13 Mart 2026', team1: 'F. Karagümrük', team2: 'Fenerbahçe' },
+  { date: '2026-03-14', displayDate: '14 Mart 2026', team1: 'Galatasaray', team2: 'Başakşehir' },
+].sort((a, b) => new Date(a.date) - new Date(b.date));
 
 const BASE_CATEGORIES = [
   { id: 'kahvalti', name: 'KAHVALTI', Icon: Coffee }, { id: 'tostlar', name: 'TOSTLAR', Icon: UtensilsCrossed },
@@ -60,9 +55,8 @@ const BASE_CATEGORIES = [
   { id: 'makarna', name: 'MAKARNA ÇEŞİTLERİ', Icon: UtensilsCrossed }, { id: 'salata', name: 'SALATA ÇEŞİTLERİ', Icon: UtensilsCrossed },
   { id: 'tatli', name: 'SALAŞ TATLI', Icon: Star }, { id: 'cay', name: 'ÇAYLAR', Icon: Coffee },
   { id: 'turk_kahvesi', name: 'TÜRK KAHVESİ', Icon: Coffee }, { id: 'sicak_kahve', name: 'SICAK KAHVELER', Icon: Coffee },
-  { id: 'sicak_diger', name: 'SICAK ÇİKOLATA - SAHLEP', Icon: Coffee }, { id: 'soguk_kahve', name: 'SOĞUK KAHVELER', Icon: Coffee },
+  { id: 'sicak_diger', name: 'SICAK ÇİKOLATA', Icon: Coffee }, { id: 'soguk_kahve', name: 'SOĞUK KAHVELER', Icon: Coffee },
   { id: 'kokteyl', name: 'KOKTEYLLER', Icon: Coffee }, { id: 'soguk_icecek', name: 'SOĞUK İÇECEKLER', Icon: Coffee },
-  { id: 'vitamin', name: 'VİTAMİN BAR', Icon: Coffee }, { id: 'eglence', name: 'EĞLENCE MENÜSÜ', Icon: Star },
   { id: 'nargile', name: 'NARGİLE ÇEŞİTLERİ', Icon: Wind }
 ];
 
@@ -75,21 +69,21 @@ const BADGE_OPTIONS = [
 ];
 
 const DEFAULT_MENU_GALLERY = [
-  { id: '1', name: 'Salaaş Köy Kahvaltısı', image: '/salaskoy.jpg', tag: 'İmza Lezzet', isFeatured: true },
-  { id: '2', name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg', tag: 'Özel', isFeatured: true },
-  { id: '3', name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg', tag: 'Şefin Tavsiyesi', isFeatured: true },
-  { id: '4', name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg', tag: 'Sağlıklı', isFeatured: true },
-  { id: '5', name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg', tag: 'Yeni', isFeatured: true },
+  { id: '1', name: 'Salaaş Köy Kahvaltısı', image: '/salaskoy.jpg', tag: 'İmza Lezzet' },
+  { id: '2', name: 'Patron Kahvaltısı', image: '/patronkahvaltisi.jpg', tag: 'Özel' },
+  { id: '3', name: 'Ispanak Yatağında Tavuk', image: '/ıspanakyatagındatavuk.jpg', tag: 'Şefin Tavsiyesi' },
+  { id: '4', name: 'Etli Bowl Tabağı', image: '/etlibowltabagi.jpg', tag: 'Sağlıklı' },
+  { id: '5', name: 'Üç Renkli Tortellini', image: '/ucrenklitortellini.jpg', tag: 'Yeni' },
 ];
 
 const DEFAULT_MENU_ITEMS = [
-  { cat: 'kahvalti', items: [{n:'Salaaş Köy Kahvaltısı', i:'/salaskoy.jpg', f:true, t:'İmza Lezzet', o:1}, {n:'Patron Kahvaltısı', i:'/patronkahvaltisi.jpg', f:true, o:2}, {n:'Kahvaltı Tabağı', i:'/kahvaltitabagi.jpg', o:3}, {n:'Menemen', o:4}, {n:'Pankek', o:5}] },
-  { cat: 'burger', items: [{n:'Mantarlı Fırın Burger', i:'/mantarlıfırınburger.jpg', o:1}, {n:'Klasik Burger', o:2}, {n:'Cheeseburger', o:3}] },
-  { cat: 'kofte', items: [{n:'Hünkar Köfte', i:'/hunkarkofte.jpg', o:1}, {n:'Izgara Köfte', o:2}, {n:'Kaşarlı Köfte', o:3}] },
+  { cat: 'kahvalti', items: [{n:'Salaaş Köy Kahvaltısı', i:'/salaskoy.jpg', f:true, b:['sefin_onerisi'], o:1}, {n:'Patron Kahvaltısı', i:'/patronkahvaltisi.jpg', f:true, b:['iki_kisilik'], o:2}, {n:'Kahvaltı Tabağı', i:'/kahvaltitabagi.jpg', o:3}, {n:'Menemen', o:4}, {n:'Pankek', o:5}] },
+  { cat: 'burger', items: [{n:'Mantarlı Fırın Burger', i:'/mantarlıfırınburger.jpg', b:['populer'], o:1}, {n:'Klasik Burger', o:2}, {n:'Cheeseburger', o:3}] },
+  { cat: 'kofte', items: [{n:'Hünkar Köfte', i:'/hunkarkofte.jpg', b:['sefin_onerisi'], o:1}, {n:'Izgara Köfte', o:2}, {n:'Kaşarlı Köfte', o:3}] },
   { cat: 'tavuk', items: [{n:'Cafe de Paris Soslu Tavuk', i:'/cafedeparis.jpg', o:1}, {n:'Ispanak Yatağında Tavuk', i:'/ıspanakyatagındatavuk.jpg', f:true, o:2}, {n:'Köz Patlıcanlı Tavuk', i:'/közpatlıcanlıtavukbnfile.jpg', o:3}] },
   { cat: 'et', items: [{n:'Etli Bowl Tabağı', i:'/etlibowltabagi.jpg', f:true, o:1}, {n:'Dana Lokum', o:2}, {n:'Çoban Kavurma', o:3}] },
   { cat: 'makarna', items: [{n:'Üç Renkli Tortellini', i:'/ucrenklitortellini.jpg', f:true, o:1}, {n:'Cheddar Çıtır Makarna', i:'/chedarcitirmakarna.jpg', o:2}, {n:'Penne Arabiata', o:3}] },
-  { cat: 'tatli', items: [{n:'Dubai Çikolatalı', i:'/dubai cikolatalı.jpg', o:1}, {n:'Lotus Dome', i:'/lotus dome.jpg', o:2}, {n:'Profiterol', i:'/profiterol.jpg', o:3}] },
+  { cat: 'tatli', items: [{n:'Dubai Çikolatalı', i:'/dubai cikolatalı.jpg', b:['yeni', 'populer'], o:1}, {n:'Lotus Dome', i:'/lotus dome.jpg', o:2}, {n:'Profiterol', i:'/profiterol.jpg', o:3}] },
   { cat: 'kokteyl', items: [{n:'Cool Lime', i:'/coollime.jpg', o:1}, {n:'Mojito', o:2}, {n:'Pina Colada', o:3}] },
   { cat: 'soguk_kahve', items: [{n:'Ice Mocha', i:'/icemocha.jpg', o:1}, {n:'Ice Latte', o:2}] },
   { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg', o:1}, {n:'Espresso', o:2}] }
@@ -118,7 +112,7 @@ export default function App() {
   const typeLabels = { kahvalti: 'Kahvaltı', yemek: 'Yemek', dogum_gunu: 'Doğum Günü', organizasyon: 'Organizasyon', mac: 'Maç Yayını' };
 
   // --- STATE ---
-  const [currentView, setCurrentView] = useState('landing');
+  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'menu', 'admin'
   const [activeAdminTab, setActiveAdminTab] = useState('restoran');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -169,7 +163,9 @@ export default function App() {
   // --- MENÜ YÖNETİMİ STATE ---
   const [isMenuEditing, setIsMenuEditing] = useState(null);
   const [menuSearchTerm, setMenuSearchTerm] = useState('');
-  const initialMenuItemState = { category: 'kahvalti', name: '', price: '', description: '', image: '', isFeatured: false, order: 999, badges: [] };
+  const [uploadingImage, setUploadingImage] = useState(false);
+  
+  const initialMenuItemState = { category: 'kahvalti', name: '', price: '', description: '', image: '', isFeatured: false, order: '', badges: [] };
   const [menuItemData, setMenuItemData] = useState(initialMenuItemState);
   const [menuErrorMsg, setMenuErrorMsg] = useState('');
   const [menuDeleteConfirmId, setMenuDeleteConfirmId] = useState(null);
@@ -257,8 +253,7 @@ export default function App() {
   const scrollToMenuCategory = (id) => {
     const el = document.getElementById(`cat-${id}`);
     if (el) { 
-      const y = el.getBoundingClientRect().top + window.scrollY - 130; 
-      window.scrollTo({ top: y, behavior: 'smooth' }); 
+      el.scrollIntoView({ behavior: 'smooth' }); 
     }
   };
 
@@ -414,6 +409,7 @@ export default function App() {
     }
   };
 
+  // --- MENÜ YÖNETİMİ FONKSİYONLARI ---
   const handleMenuChange = (e) => {
     const { name, value } = e.target;
     setMenuErrorMsg('');
@@ -436,6 +432,25 @@ export default function App() {
         return { ...prev, badges: [...prev.badges, badgeId] };
       }
     });
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setMenuErrorMsg('');
+    
+    try {
+      const storageRef = ref(storage, `menu_images/${Date.now()}_${file.name}`);
+      const uploadTask = await uploadBytesResumable(storageRef, file);
+      const downloadURL = await getDownloadURL(uploadTask.ref);
+      setMenuItemData(prev => ({ ...prev, image: downloadURL }));
+    } catch (error) {
+      console.error(error);
+      setMenuErrorMsg("Resim yüklenirken bir hata oluştu. Firebase Storage iznini kontrol edin.");
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleMenuSubmit = async (e) => {
@@ -467,7 +482,7 @@ export default function App() {
       setMenuItemData(initialMenuItemState); 
       setMenuErrorMsg('');
     } catch (err) { 
-      setMenuErrorMsg("Kayıt hatası."); 
+      setMenuErrorMsg("Menü kaydedilirken hata oluştu."); 
     }
   };
 
@@ -484,9 +499,8 @@ export default function App() {
               description: '', 
               image: item.i || '', 
               isFeatured: item.f || false, 
-              tag: item.t || '',
               order: item.o || 999,
-              badges: [],
+              badges: item.b || [],
               createdAt: new Date().toISOString() 
             });
           }
@@ -524,7 +538,7 @@ export default function App() {
 
   const sendWhatsApp = (res, type, isApproval = false) => {
     if (!res.phone) return;
-    let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
+    let cleanPhone = res.phone.replace(/[^0-9]/g, '');
     if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
     else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
     
@@ -557,7 +571,7 @@ export default function App() {
     
     let phoneListStr = "";
     validReservations.forEach(res => {
-        let cleanPhone = res.phone.replace(new RegExp('[^0-9]', 'g'), '');
+        let cleanPhone = res.phone.replace(/[^0-9]/g, '');
         if (cleanPhone.startsWith('0')) cleanPhone = '9' + cleanPhone;
         else if (cleanPhone.length === 10) cleanPhone = '90' + cleanPhone;
         phoneListStr += cleanPhone + ",";
@@ -873,6 +887,7 @@ export default function App() {
         </div>
       )}
 
+      {/* DETAYLI ÜRÜN MODALI */}
       {selectedMenuItem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-[#111] rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative border border-white/10 animate-in zoom-in-95 duration-300">
@@ -1010,7 +1025,7 @@ export default function App() {
                 {activeGallery.slice(0, 4).map((item) => (
                   <div 
                     key={item.id}
-                    onClick={() => { setSelectedMenuItem(item); }} 
+                    onClick={() => setSelectedMenuItem(item)} 
                     className="lg:col-span-2 sm:col-span-2 rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 hover:-translate-y-2 transition-all duration-500 relative group h-80 sm:h-96 md:h-[450px] cursor-pointer border border-slate-100 bg-white"
                   >
                     <img src={encodeURI(item.image)} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -1062,7 +1077,7 @@ export default function App() {
         
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
         
-        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl mt-[73px] sm:mt-[81px]">
+        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl">
            <div className="w-full mx-auto px-4 sm:px-8 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
               {activeMenuCategories.map(cat => (
                   <button 
@@ -1101,7 +1116,7 @@ export default function App() {
               {activeMenuCategories.map(cat => {
                  const CatIcon = cat.Icon || UtensilsCrossed;
                  return (
-                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-36">
+                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-44">
                       <div className="flex items-center gap-4 mb-8">
                          <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
                            <CatIcon size={20} />
@@ -1355,11 +1370,20 @@ export default function App() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Resim (URL)</label>
-                    <div className="relative">
-                      <ImageIcon size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input type="text" name="image" value={menuItemData.image} onChange={handleMenuChange} className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 font-medium text-sm focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="/resim.jpg veya https://..." />
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Resim (Upload)</label>
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center justify-center px-4 py-2.5 bg-slate-100 border border-slate-300 rounded-xl cursor-pointer hover:bg-slate-200 transition-colors text-sm font-bold text-slate-700">
+                        {uploadingImage ? <Loader2 className="animate-spin mr-2" size={18} /> : <UploadCloud className="mr-2" size={18} />}
+                        Dosya Seç
+                        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploadingImage} />
+                      </label>
+                      <span className="text-sm text-slate-500 font-medium truncate max-w-[150px]">
+                        {menuItemData.image ? "Görsel Yüklendi ✓" : "Dosya seçilmedi"}
+                      </span>
                     </div>
+                    {menuItemData.image && (
+                       <img src={menuItemData.image} alt="Preview" className="mt-3 h-20 w-32 rounded-lg object-cover border border-slate-200 shadow-sm" />
+                    )}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Sıra</label>
@@ -1381,7 +1405,7 @@ export default function App() {
                      </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                     {menuItems.filter(m => !menuSearchTerm || m.name.toLowerCase().includes(menuSearchTerm.toLowerCase())).sort((a,b) => (a.order||999) - (b.order||999) || a.name.localeCompare(b.name)).map((item) => (
+                     {menuItems.filter(m => !menuSearchTerm || m.name.toLowerCase().includes(menuSearchTerm.toLowerCase()) || m.category.toLowerCase().includes(menuSearchTerm.toLowerCase())).sort((a,b) => (a.order||999) - (b.order||999) || a.name.localeCompare(b.name)).map((item) => (
                        <div key={item.id} className={`border p-4 rounded-2xl flex flex-col bg-white ${isMenuEditing===item.id ? 'border-[#8b5cf6] shadow-md scale-[1.02] transition-all' : 'border-slate-200 hover:border-slate-300 hover:shadow-md transition-all'}`}>
                           <div className="flex gap-3 items-start mb-3 relative">
                             {item.image ? <img src={encodeURI(item.image)} className="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0" alt="" onError={(e)=>{e.currentTarget.style.display='none'}} /> : <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>}
