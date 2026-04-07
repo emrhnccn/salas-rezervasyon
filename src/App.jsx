@@ -92,7 +92,6 @@ const DEFAULT_MENU_ITEMS = [
   { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg', o:1}, {n:'Espresso', o:2}] }
 ];
 
-// Diğer özellikleri korurken overflow-x: hidden engeli kaldırıldı ki Sticky çalışsın.
 const GLOBAL_CSS = `
 #root { max-width: 100vw !important; overflow-x: clip !important; }
 body, html { margin: 0 !important; padding: 0 !important; width: 100vw !important; max-width: 100vw !important; overflow-x: clip !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
@@ -211,14 +210,12 @@ export default function App() {
   // --- DYNAMIC SCROLL & CATEGORY STATE ---
   const [activeCategory, setActiveCategory] = useState('');
 
-  // Sadece aktif kategori değiştiğinde veya menü yüklendiğinde ilk atamayı yap
   useEffect(() => {
     if (!activeCategory && activeMenuCategories.length > 0) {
       setActiveCategory(activeMenuCategories[0].id);
     }
   }, [activeMenuCategories, activeCategory]);
 
-  // Scroll Spy (Aşağı indikçe kategori barını otomatik güncelleme)
   useEffect(() => {
     if (currentView !== 'menu') return;
 
@@ -226,14 +223,13 @@ export default function App() {
     const handleScrollSpy = () => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-          const scrollPosition = window.scrollY + 160; // Yapışkan başlık payı
+          const scrollPosition = window.scrollY + 160; 
           
           for (let i = activeMenuCategories.length - 1; i >= 0; i--) {
             const cat = activeMenuCategories[i];
             const el = document.getElementById(`cat-${cat.id}`);
             if (el && el.offsetTop <= scrollPosition) {
               setActiveCategory(cat.id);
-              // Otomatik yatay kaydırma
               const btn = document.getElementById(`btn-${cat.id}`);
               if (btn && btn.parentNode) {
                 const container = btn.parentNode;
@@ -336,10 +332,10 @@ export default function App() {
   };
 
   const scrollToMenuCategory = (id) => {
-    setActiveCategory(id); // Tıklandığında anında aktif yap
+    setActiveCategory(id); 
     const el = document.getElementById(`cat-${id}`);
     if (el) { 
-      const y = el.getBoundingClientRect().top + window.scrollY - 140; // Yapışkan bara çarpmaması için ofset
+      const y = el.getBoundingClientRect().top + window.scrollY - 140; 
       window.scrollTo({ top: y, behavior: 'smooth' }); 
     }
   };
@@ -1255,26 +1251,21 @@ export default function App() {
       <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         
-        {/* Background Layer */}
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
-          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3"></div>
-        </div>
+        <div className="absolute inset-0 opacity-[0.03] z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-[45] bg-[#0a0a0a] border-b border-white/5 py-3 sm:py-4 shadow-2xl w-full">
-           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-2 sm:gap-3 hide-scrollbar items-center">
+        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
                     id={`btn-${cat.id}`}
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-[30px] border transition-all uppercase text-[11px] sm:text-xs font-black tracking-widest flex-shrink-0 ${
+                    className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all uppercase text-xs font-bold tracking-widest flex-shrink-0 ${
                       activeCategory === cat.id 
-                        ? 'border-orange-500 text-orange-500 bg-transparent shadow-[0_0_10px_rgba(249,115,22,0.1)]' 
-                        : 'border-white/10 bg-[#111] text-slate-300 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
+                        ? 'border-orange-500 bg-orange-500/10 text-orange-400' 
+                        : 'border-white/10 bg-white/5 text-slate-300 hover:text-orange-400 hover:border-orange-500 hover:bg-orange-500/10'
                     }`}
                   >
                       {cat.name}
