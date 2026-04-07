@@ -93,8 +93,8 @@ const DEFAULT_MENU_ITEMS = [
 ];
 
 const GLOBAL_CSS = `
-#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
+#root { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc !important; scroll-behavior: smooth; overflow-x: hidden; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -115,7 +115,7 @@ export default function App() {
   const typeLabels = { kahvalti: 'Kahvaltı', yemek: 'Yemek', dogum_gunu: 'Doğum Günü', organizasyon: 'Organizasyon', mac: 'Maç Yayını' };
 
   // --- STATE ---
-  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'menu', 'personnel', 'admin'
+  const [currentView, setCurrentView] = useState('landing');
   const [activeAdminTab, setActiveAdminTab] = useState('restoran');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -148,8 +148,11 @@ export default function App() {
   const [personnelData, setPersonnelData] = useState(initialPersonnelState);
   const [personnelErrorMsg, setPersonnelErrorMsg] = useState('');
   const [uploadingPersonnelImage, setUploadingPersonnelImage] = useState(false);
-  const [selectedPersonnel, setSelectedPersonnel] = useState(null); // Personel Modalı için
-  const [reviewData, setReviewData] = useState({ name: '', isAnonymous: false, rating: 5, comment: '' }); // Personel Yorum Formu için
+  const [selectedPersonnel, setSelectedPersonnel] = useState(null); 
+  const [reviewData, setReviewData] = useState({ name: '', isAnonymous: false, rating: 5, comment: '' }); 
+  
+  const [managingReviewsFor, setManagingReviewsFor] = useState(null);
+  const [replyTexts, setReplyTexts] = useState({});
 
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [selectedMatchDate, setSelectedMatchDate] = useState(getToday());
@@ -192,7 +195,7 @@ export default function App() {
 
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
-  // --- DERIVED STATE CALCULATIONS (MANDATORY BEFORE EFFECTS) ---
+  // --- DERIVED STATE CALCULATIONS ---
   const ALL_CATEGORIES = [...BASE_CATEGORIES];
   dbCategories.forEach(dbC => {
     if (!ALL_CATEGORIES.find(c => c.id === dbC.id)) {
@@ -217,7 +220,6 @@ export default function App() {
         };
       }).filter(cat => cat.items.length > 0);
 
-  // --- DYNAMIC SCROLL & CATEGORY STATE ---
   const [activeCategory, setActiveCategory] = useState('');
 
   useEffect(() => {
@@ -259,7 +261,6 @@ export default function App() {
     };
   }, [currentView, activeMenuCategories]);
 
-  // Sayfa başlığı scroll takibi
   useEffect(() => {
     document.title = "Salaaş Cafe Restaurant";
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -682,7 +683,7 @@ export default function App() {
     const dataToSave = {
       ...personnelData,
       order: personnelData.order === '' ? 999 : personnelData.order,
-      reviews: personnelData.reviews || [] // Keep existing reviews if editing
+      reviews: personnelData.reviews || [] 
     };
 
     try {
@@ -748,7 +749,46 @@ export default function App() {
     }
   };
 
-  // --- DRAG AND DROP SIFIRLAMA (HTML5) ---
+  const handleDeleteReview = async (personId, reviewId) => {
+    if (!window.confirm("Bu yorumu silmek istediğinize emin misiniz?")) return;
+    try {
+      const person = personnelList.find(p => p.id === personId);
+      const updatedReviews = person.reviews.filter(r => r.id !== reviewId);
+      await updateDoc(doc(db, 'personnel', personId), { reviews: updatedReviews });
+      
+      if (managingReviewsFor && managingReviewsFor.id === personId) {
+        setManagingReviewsFor(prev => ({ ...prev, reviews: updatedReviews }));
+      }
+      if (selectedPersonnel && selectedPersonnel.id === personId) {
+        setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Yorum silinirken hata oluştu.");
+    }
+  };
+
+  const handleReplyReview = async (personId, reviewId) => {
+    const replyText = replyTexts[reviewId];
+    if (!replyText?.trim()) return;
+    try {
+      const person = personnelList.find(p => p.id === personId);
+      const updatedReviews = person.reviews.map(r => r.id === reviewId ? { ...r, reply: replyText.trim() } : r);
+      await updateDoc(doc(db, 'personnel', personId), { reviews: updatedReviews });
+      
+      if (managingReviewsFor && managingReviewsFor.id === personId) {
+        setManagingReviewsFor(prev => ({ ...prev, reviews: updatedReviews }));
+      }
+      if (selectedPersonnel && selectedPersonnel.id === personId) {
+        setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
+      }
+      setReplyTexts(prev => ({ ...prev, [reviewId]: '' }));
+    } catch (err) {
+      console.error(err);
+      alert("Cevap gönderilirken hata oluştu.");
+    }
+  };
+
   const handleDragStart = (e, item) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = 'move';
@@ -943,7 +983,7 @@ export default function App() {
   const renderNavbar = (isDark = false) => (
     <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none h-[72px] sm:h-[80px]`}>
       <nav className={`w-full h-full pointer-events-auto transition-all duration-500 flex items-center ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md border-b border-white/10' : 'bg-transparent'}`}>
-        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
           <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 h-10 sm:h-12`} onClick={handleNavToHome}>
             <img src="/salaaslogobg.png" alt="Salaaş Logo" className={`h-full w-auto object-contain ${isDark ? 'filter drop-shadow-md brightness-200' : ''}`} />
           </div>
@@ -1236,35 +1276,36 @@ export default function App() {
       {selectedPersonnel && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
-            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white p-2 rounded-full transition-colors">
+            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-slate-900/50 hover:bg-slate-900 text-white p-2 rounded-full transition-colors backdrop-blur-md">
               <X size={20} />
             </button>
             
-            <div className="w-full h-48 sm:h-56 bg-slate-200 relative shrink-0">
+            <div className="w-full bg-slate-900 relative flex justify-center items-end shrink-0 border-b border-slate-800 overflow-hidden">
               {selectedPersonnel.image ? (
-                 <img src={selectedPersonnel.image} alt={selectedPersonnel.name} className="w-full h-full object-cover" />
+                 <img src={selectedPersonnel.image} alt={selectedPersonnel.name} className="w-full h-auto max-h-[40vh] object-contain p-4 pb-16" />
               ) : (
-                 <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100"><UserSquare size={64} /></div>
+                 <div className="w-full h-48 flex items-center justify-center text-slate-500 bg-slate-800"><UserSquare size={64} /></div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white w-full">
-                 <div className="flex justify-between items-end">
-                   <div>
-                     <h3 className="text-2xl font-black leading-tight">{selectedPersonnel.name} {selectedPersonnel.surname}</h3>
-                     {selectedPersonnel.nickname && <p className="text-orange-400 font-bold italic mt-0.5">"{selectedPersonnel.nickname}"</p>}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent pointer-events-none"></div>
+              
+              <div className="absolute bottom-0 left-0 p-5 sm:p-6 text-white w-full">
+                 <div className="flex justify-between items-end gap-3">
+                   <div className="flex-1">
+                     <h3 className="text-2xl sm:text-3xl font-black leading-tight drop-shadow-md">{selectedPersonnel.name} {selectedPersonnel.surname}</h3>
+                     {selectedPersonnel.nickname && <p className="text-orange-400 font-bold italic mt-1 drop-shadow-md">"{selectedPersonnel.nickname}"</p>}
                    </div>
-                   <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex flex-col items-center">
-                     <span className="flex items-center gap-1 text-yellow-400 font-black text-lg"><Star size={16} className="fill-yellow-400"/> {selectedPersonnel.reviews?.length > 0 ? (selectedPersonnel.reviews.reduce((a,c)=>a+c.rating,0)/selectedPersonnel.reviews.length).toFixed(1) : '5.0'}</span>
-                     <span className="text-[10px] text-slate-200 font-medium">{selectedPersonnel.reviews?.length || 0} Değerlendirme</span>
+                   <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex flex-col items-center shrink-0 shadow-lg">
+                     <span className="flex items-center gap-1 text-yellow-400 font-black text-lg sm:text-xl"><Star size={16} className="fill-yellow-400"/> {selectedPersonnel.reviews?.length > 0 ? (selectedPersonnel.reviews.reduce((a,c)=>a+c.rating,0)/selectedPersonnel.reviews.length).toFixed(1) : '5.0'}</span>
+                     <span className="text-[10px] text-slate-300 font-medium">{selectedPersonnel.reviews?.length || 0} Yorum</span>
                    </div>
                  </div>
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 sm:p-8 bg-slate-50 hide-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 sm:p-7 bg-slate-50 hide-scrollbar pb-6 sm:pb-8">
                {selectedPersonnel.skills && (
-                 <div className="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                   <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Yetenekler & Uzmanlık</h4>
+                 <div className="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
+                   <h4 className="text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Yetenekler & Uzmanlık</h4>
                    <p className="text-sm font-medium text-slate-700 leading-relaxed italic">"{selectedPersonnel.skills}"</p>
                  </div>
                )}
@@ -1281,12 +1322,20 @@ export default function App() {
                             <span className="font-bold text-sm text-slate-800">{rev.name}</span>
                             <div className="flex gap-0.5">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} size={12} className={i < rev.rating ? "fill-orange-400 text-orange-400" : "text-slate-200"} />
+                                <Star key={i} size={12} className={i < rev.rating ? "fill-orange-400 text-orange-400" : "fill-slate-200 text-slate-200"} />
                               ))}
                             </div>
                           </div>
                           <p className="text-sm text-slate-600 leading-relaxed">{rev.comment}</p>
                           <span className="text-[10px] font-bold text-slate-400 mt-2 block">{new Date(rev.date).toLocaleDateString('tr-TR')}</span>
+                          
+                          {rev.reply && (
+                            <div className="mt-3 bg-orange-50 p-3 rounded-lg border border-orange-100 relative ml-4">
+                              <div className="absolute -left-2 top-3 w-0 h-0 border-t-[6px] border-t-transparent border-r-[8px] border-r-orange-50 border-b-[6px] border-b-transparent"></div>
+                              <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1 mb-1"><MessageCircle size={12}/> Salaaş Cafe Yönetimi</span>
+                              <p className="text-sm text-slate-700 leading-relaxed">{rev.reply}</p>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -1295,17 +1344,17 @@ export default function App() {
                
                {/* Yorum Ekleme Formu */}
                <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-md">
-                 <h4 className="font-black text-slate-800 mb-4 text-lg">Puan Verin</h4>
+                 <h4 className="font-black text-slate-800 mb-4 text-lg text-center">Puan Verin</h4>
                  <form onSubmit={handleReviewSubmit} className="space-y-4">
                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <div className="flex gap-1.5">
+                      <div className="flex gap-1.5 mx-auto sm:mx-0">
                         {[1, 2, 3, 4, 5].map(star => (
                           <button key={star} type="button" onClick={() => setReviewData({...reviewData, rating: star})} className="hover:scale-110 transition-transform">
                             <Star size={28} className={reviewData.rating >= star ? "fill-orange-500 text-orange-500" : "fill-slate-200 text-slate-200"} />
                           </button>
                         ))}
                       </div>
-                      <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                      <label className="flex items-center justify-center gap-2 cursor-pointer text-sm font-bold text-slate-600 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
                         <input type="checkbox" checked={reviewData.isAnonymous} onChange={(e) => setReviewData({...reviewData, isAnonymous: e.target.checked, name: e.target.checked ? '' : reviewData.name})} className="w-4 h-4 text-emerald-500 rounded border-slate-300 focus:ring-emerald-500" />
                         Gizli İsim (Anonim)
                       </label>
@@ -1321,11 +1370,80 @@ export default function App() {
                      <textarea placeholder="Personelimiz hakkındaki görüşlerinizi yazın..." value={reviewData.comment} onChange={(e) => setReviewData({...reviewData, comment: e.target.value})} rows="3" className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm resize-none bg-white transition-colors" required></textarea>
                    </div>
                    
-                   <button type="submit" className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-black uppercase tracking-widest text-sm transition-transform hover:-translate-y-1 shadow-lg">Yorumu Gönder</button>
+                   <button type="submit" className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-black uppercase tracking-widest text-sm transition-transform hover:-translate-y-1 shadow-lg mt-2">Yorumu Gönder</button>
                  </form>
                </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* YÖNETİM PANELİ YORUM CEVAPLAMA MODALI */}
+      {managingReviewsFor && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
+                <div>
+                   <h3 className="font-black text-xl text-slate-800 flex items-center gap-2">
+                     <MessageSquareText className="text-blue-500" /> 
+                     Yorum Yönetimi
+                   </h3>
+                   <p className="text-sm font-medium text-slate-500 mt-1">{managingReviewsFor.name} {managingReviewsFor.surname}</p>
+                </div>
+                <button type="button" onClick={()=>setManagingReviewsFor(null)} className="p-2 bg-white hover:bg-slate-200 rounded-full transition-colors shadow-sm"><X size={18}/></button>
+              </div>
+              
+              <div className="overflow-y-auto flex-1 p-6 space-y-4 bg-white">
+                {(!managingReviewsFor.reviews || managingReviewsFor.reviews.length === 0) ? (
+                  <div className="text-center text-slate-400 py-12 flex flex-col items-center">
+                    <MessageCircle size={48} className="mb-4 opacity-30" />
+                    <p className="text-lg font-bold">Henüz yorum yapılmamış.</p>
+                  </div>
+                ) : (
+                  managingReviewsFor.reviews.sort((a,b) => new Date(b.date) - new Date(a.date)).map(rev => (
+                    <div key={rev.id} className="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <span className="font-bold text-sm text-slate-800 block">{rev.name}</span>
+                          <div className="flex gap-0.5 mt-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} size={12} className={i < rev.rating ? "fill-orange-400 text-orange-400" : "fill-slate-200 text-slate-200"} />
+                            ))}
+                          </div>
+                        </div>
+                        <button type="button" onClick={() => handleDeleteReview(managingReviewsFor.id, rev.id)} className="text-red-500 bg-red-50 hover:bg-red-500 hover:text-white p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold" title="Yorumu Sil"><Trash2 size={14}/> Sil</button>
+                      </div>
+                      <p className="text-sm text-slate-700 mb-2">{rev.comment}</p>
+                      <span className="text-[10px] font-bold text-slate-400">{new Date(rev.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                      
+                      {rev.reply ? (
+                        <div className="mt-4 bg-blue-50 p-3.5 rounded-xl border border-blue-100 relative">
+                          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-1">Cevabınız</span>
+                          <p className="text-sm text-slate-700">{rev.reply}</p>
+                        </div>
+                      ) : (
+                        <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                          <input 
+                            type="text" 
+                            placeholder="Müşteriye yanıt yazın..." 
+                            value={replyTexts[rev.id] || ''} 
+                            onChange={(e) => setReplyTexts({...replyTexts, [rev.id]: e.target.value})}
+                            className="flex-1 text-sm p-3 rounded-xl border border-slate-300 focus:border-blue-500 outline-none font-medium"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => handleReplyReview(managingReviewsFor.id, rev.id)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 shadow-md"
+                          >
+                            <MessageCircle size={14}/> Cevapla
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+           </div>
         </div>
       )}
 
@@ -1357,7 +1475,7 @@ export default function App() {
              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent w-full"></div>
            </div>
            
-           <div className="relative z-10 text-center px-4 sm:px-6 w-full mx-auto flex flex-col items-center justify-center h-full pb-10">
+           <div className="relative z-10 text-center px-4 sm:px-6 w-full flex flex-col items-center justify-center h-full pb-10">
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wide text-white font-serif mb-6 drop-shadow-2xl animate-fade-in-up delay-100 leading-tight">
                 Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
               </h1>
@@ -1393,7 +1511,7 @@ export default function App() {
         </header>
 
         <main className="w-full relative z-10 flex-1 flex flex-col">
-          <section id="hakkimizda" className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-20 md:py-32 text-center bg-white">
+          <section id="hakkimizda" className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-20 md:py-32 text-center bg-white">
             <div className="animate-float inline-block mb-6">
               <MoonStar size={56} className="text-orange-400 opacity-80" />
             </div>
@@ -1406,7 +1524,7 @@ export default function App() {
           </section>
 
           <section id="lezzetler" className="w-full py-20 md:py-32 border-y border-slate-200/50 bg-slate-50">
-            <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 xl:px-24">
+            <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24">
               
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
                 <div>
@@ -1448,7 +1566,7 @@ export default function App() {
              <div className="absolute inset-0 opacity-5 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
              <div className="absolute -right-20 -top-20 opacity-10 text-emerald-500 hidden md:block"><Star size={500}/></div>
              
-             <div className="w-full mx-auto px-4 sm:px-8 lg:px-16 text-center relative z-10">
+             <div className="w-full px-4 sm:px-8 lg:px-16 text-center relative z-10">
                <h2 className="text-base lg:text-lg font-black tracking-[0.4em] text-emerald-400 uppercase mb-6">Davet & Organizasyon</h2>
                <h3 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-10 drop-shadow-lg text-white">Özel Günleriniz İçin Yanınızdayız</h3>
                <p className="text-lg sm:text-xl lg:text-3xl text-emerald-100 font-light mb-16 max-w-4xl mx-auto leading-relaxed">
@@ -1485,23 +1603,27 @@ export default function App() {
   // --- SAYFA RENDER: DİJİTAL MENÜ ---
   if (currentView === 'menu') {
     return (
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative w-full">
+      <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         
-        {renderNavbar(false)}
+        {/* Background Layer */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3"></div>
+        </div>
+
+        {renderNavbar(true)}
         
-        {/* YAPISKAN KATEGORİ ÇUBUĞU (PREMIUM DARK) */}
-        <div className="fixed top-[72px] sm:top-[80px] left-0 z-[45] bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/5 py-3 sm:py-4 shadow-xl w-full">
-           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-2 sm:gap-3 hide-scrollbar items-center">
+        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+           <div className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
                     id={`btn-${cat.id}`}
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-[30px] border transition-all uppercase text-[11px] sm:text-xs font-black tracking-widest flex-shrink-0 ${
-                      activeCategory === cat.id 
-                        ? 'border-orange-500 text-orange-500 bg-transparent shadow-[0_0_10px_rgba(249,115,22,0.1)]' 
-                        : 'border-white/10 bg-[#111] text-slate-400 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
+                    className={`whitespace-nowrap px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border border-white/10 bg-[#161616] text-slate-300 hover:text-orange-500 hover:border-orange-500 transition-all uppercase text-[11px] sm:text-xs font-bold tracking-widest shadow-sm ${
+                      activeCategory === cat.id ? 'border-orange-500 text-orange-500 bg-transparent' : ''
                     }`}
                   >
                       {cat.name}
@@ -1510,18 +1632,18 @@ export default function App() {
            </div>
         </div>
 
-        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-40 md:pt-48 pb-12 md:pb-20 relative z-10">
+        <main className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-20 relative z-10">
            {activeGallery.length > 0 && (
              <div className="mb-24">
                 <div className="text-center mb-16">
                    <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-500 mb-4 drop-shadow-lg">Öne Çıkanlar</h1>
-                   <p className="text-slate-500 max-w-2xl mx-auto text-lg font-light">En çok tercih edilen imza lezzetlerimiz.</p>
+                   <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">En çok tercih edilen imza lezzetlerimiz.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
                    {activeGallery.map((item, idx) => (
-                      <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-white border border-slate-200 rounded-3xl overflow-hidden hover:border-orange-400 transition-all duration-300 group relative shadow-sm hover:shadow-lg h-80 md:h-96 cursor-pointer">
-                         <img src={item.image} alt={item.name} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${item.isSoldOut ? 'opacity-30 grayscale' : 'opacity-90 group-hover:opacity-100'}`} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-8 lg:p-10">
+                      <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96 cursor-pointer">
+                         <img src={item.image} alt={item.name} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${item.isSoldOut ? 'opacity-30 grayscale' : 'opacity-80 group-hover:opacity-100'}`} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
                             {item.isSoldOut ? (
                                <span className="bg-red-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg">TÜKENDİ</span>
                             ) : item.tag && (
@@ -1535,60 +1657,61 @@ export default function App() {
              </div>
            )}
 
-           <div className="space-y-24">
+           <div className="space-y-20">
               {activeMenuCategories.map(cat => {
                  const CatIcon = cat.Icon || UtensilsCrossed;
                  return (
-                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-[200px]">
+                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-44">
                       <div className="flex items-center gap-4 mb-8">
                          <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
                            <CatIcon size={20} />
                          </div>
-                         <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#0B3B2C] tracking-wide">{cat.name}</h2>
-                         <div className="h-[1px] flex-1 bg-gradient-to-r from-slate-200 to-transparent ml-4"></div>
+                         <h2 className="text-2xl sm:text-3xl font-serif font-black text-white tracking-wide">{cat.name}</h2>
+                         <div className="h-[1px] flex-1 bg-gradient-to-r from-orange-500/50 to-transparent ml-4"></div>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                          {cat.items.map((itemObj, idx) => {
                            if(itemObj.image) {
                              return (
-                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-white border border-slate-200 rounded-[24px] overflow-hidden hover:border-orange-400 transition-all duration-300 group shadow-sm hover:shadow-lg flex flex-col h-full min-h-[220px] cursor-pointer relative ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
+                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-all duration-300 group shadow-lg flex flex-col h-full min-h-[220px] cursor-pointer relative ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
                                    {itemObj.badges && itemObj.badges.length > 0 && (
-                                     <div className="absolute top-3 left-3 z-10 flex gap-1">
+                                     <div className="absolute top-2 left-2 z-10 flex gap-1">
                                        {itemObj.badges.map(b => {
                                           const def = BADGE_OPTIONS.find(o=>o.id===b);
-                                          return def ? <span key={b} className="bg-white/95 text-slate-800 text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100">{def.icon}</span> : null;
+                                          return def ? <span key={b} className="bg-white/90 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">{def.icon}</span> : null;
                                        })}
                                      </div>
                                    )}
-                                   {itemObj.isSoldOut && <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-md shadow-sm uppercase tracking-widest">Tükendi</div>}
-                                   <div className="relative w-full h-40 sm:h-48 bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 border-b border-slate-100">
+                                   {itemObj.isSoldOut && <div className="absolute top-2 right-2 z-10 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-sm uppercase tracking-widest">Tükendi</div>}
+                                   <div className="relative w-full h-40 sm:h-48 bg-[#0a0a0a] flex items-center justify-center overflow-hidden shrink-0 border-b border-slate-800">
                                       <img src={itemObj.image} alt={itemObj.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                    </div>
-                                   <div className="p-5 flex flex-col justify-between grow">
+                                   <div className="p-5 flex flex-col justify-between bg-[#111] grow">
                                       <div>
-                                        <div className="flex justify-between items-start gap-4 mb-2"><span className="text-slate-800 font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-500 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}</div>
-                                        {itemObj.description && <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">{itemObj.description}</p>}
+                                        <div className="flex justify-between items-start gap-4 mb-2"><span className="text-white font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}</div>
+                                        {itemObj.description && <p className="text-slate-400 text-xs line-clamp-2 mb-3">{itemObj.description}</p>}
                                       </div>
+                                      <div className="w-full flex justify-end mt-auto"><div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0)] group-hover:shadow-[0_0_8px_rgba(249,115,22,0.8)] transition-all"></div></div>
                                    </div>
                                 </div>
                              );
                            } else {
                              return (
-                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-white border border-slate-200 rounded-[24px] p-6 flex flex-col justify-between group hover:border-orange-400 hover:shadow-lg transition-all h-full min-h-[90px] cursor-pointer relative shadow-sm ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
-                                   {itemObj.isSoldOut && <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-[8px] font-black px-2 py-0.5 rounded-md shadow-sm uppercase tracking-widest">Tükendi</div>}
+                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-[#111] border border-white/5 rounded-2xl p-5 flex flex-col justify-between group hover:border-orange-500/30 hover:bg-[#161616] transition-all h-full min-h-[90px] cursor-pointer relative ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
+                                   {itemObj.isSoldOut && <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-widest">Tükendi</div>}
                                    {itemObj.badges && itemObj.badges.length > 0 && (
-                                     <div className="flex gap-1.5 mb-3">
+                                     <div className="flex gap-1.5 mb-2">
                                        {itemObj.badges.map(b => {
                                           const def = BADGE_OPTIONS.find(o=>o.id===b);
-                                          return def ? <span key={b} className="bg-orange-50 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-100">{def.icon}</span> : null;
+                                          return def ? <span key={b} className="bg-white/10 text-slate-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-white/5">{def.icon}</span> : null;
                                        })}
                                      </div>
                                    )}
                                    <div className="flex justify-between items-start gap-4">
-                                     <span className="text-slate-800 font-bold group-hover:text-orange-600 transition-colors leading-snug text-sm sm:text-base">{itemObj.name}</span>
-                                     {itemObj.price && <span className="text-orange-500 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}
+                                     <span className="text-slate-300 font-medium group-hover:text-white transition-colors leading-snug text-sm sm:text-base">{itemObj.name}</span>
+                                     {itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}
                                    </div>
-                                   {itemObj.description && <p className="text-slate-500 text-xs mt-2 line-clamp-2 leading-relaxed">{itemObj.description}</p>}
+                                   {itemObj.description && <p className="text-slate-500 text-xs mt-2 line-clamp-2">{itemObj.description}</p>}
                                 </div>
                              );
                            }
@@ -1637,7 +1760,7 @@ export default function App() {
           </div>
         </header>
 
-        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-16 relative z-10">
+        <main className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-16 relative z-10">
            {personnelList.length === 0 ? (
              <div className="text-center text-slate-400 py-20 flex flex-col items-center">
                 <Users size={64} className="mb-4 opacity-50" />
@@ -1735,7 +1858,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-20 mt-8 lg:mt-10 relative z-10">
+      <main className="w-full px-4 sm:px-8 lg:px-12 xl:px-20 mt-8 lg:mt-10 relative z-10">
         
         {loading ? (
           <div className="flex flex-col items-center justify-center mt-32 relative z-10 w-full text-emerald-600"><Loader2 className="animate-spin mb-4" size={64} /><p className="font-bold text-lg tracking-widest animate-pulse uppercase">Sisteme Bağlanıyor...</p></div>
@@ -2175,8 +2298,9 @@ export default function App() {
                                 <p className="text-sm text-slate-600 line-clamp-2 mb-4 italic">{person.skills}</p>
                               )}
                               <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-slate-100">
-                                <button type="button" onClick={()=>{setPersonnelData({name: person.name, surname: person.surname, nickname: person.nickname||'', skills: person.skills||'', image: person.image||'', order: person.order||'', reviews: person.reviews||[]}); setIsPersonnelEditing(person.id); window.scrollTo(0,0);}} className="p-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-600 text-slate-600 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"><Edit2 size={14}/> Düzenle</button>
-                                <button type="button" onClick={() => executeDeletePersonnel(person.id)} className="p-2 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded-lg transition-colors"><Trash2 size={16}/></button>
+                                <button type="button" onClick={() => setManagingReviewsFor(person)} className="p-2 bg-blue-50 hover:bg-blue-100 hover:text-blue-600 text-blue-500 rounded-lg transition-colors font-bold text-xs flex items-center justify-center gap-1 flex-1"><MessageSquareText size={14}/> Yorumlar ({person.reviews?.length || 0})</button>
+                                <button type="button" onClick={()=>{setPersonnelData({name: person.name, surname: person.surname, nickname: person.nickname||'', skills: person.skills||'', image: person.image||'', order: person.order||'', reviews: person.reviews||[]}); setIsPersonnelEditing(person.id); window.scrollTo(0,0);}} className="p-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-600 text-slate-600 rounded-lg transition-colors flex items-center justify-center"><Edit2 size={16}/></button>
+                                <button type="button" onClick={() => executeDeletePersonnel(person.id)} className="p-2 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded-lg transition-colors flex items-center justify-center"><Trash2 size={16}/></button>
                               </div>
                            </div>
                          );
