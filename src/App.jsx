@@ -94,7 +94,8 @@ const DEFAULT_MENU_ITEMS = [
 
 // OVERFLOW HATALARI VE STICKY BOZULMASINI ENGELLEYEN CSS
 const GLOBAL_CSS = `
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc !important; scroll-behavior: smooth; overflow-x: hidden; }
+#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
