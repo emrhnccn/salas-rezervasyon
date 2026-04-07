@@ -144,10 +144,12 @@ export default function App() {
   // --- PERSONEL STATE ---
   const [personnelList, setPersonnelList] = useState([]);
   const [isPersonnelEditing, setIsPersonnelEditing] = useState(null);
-  const initialPersonnelState = { name: '', surname: '', nickname: '', skills: '', image: '', order: '' };
+  const initialPersonnelState = { name: '', surname: '', nickname: '', skills: '', image: '', order: '', reviews: [] };
   const [personnelData, setPersonnelData] = useState(initialPersonnelState);
   const [personnelErrorMsg, setPersonnelErrorMsg] = useState('');
   const [uploadingPersonnelImage, setUploadingPersonnelImage] = useState(false);
+  const [selectedPersonnel, setSelectedPersonnel] = useState(null); // Personel Modalı için
+  const [reviewData, setReviewData] = useState({ name: '', isAnonymous: false, rating: 5, comment: '' }); // Personel Yorum Formu için
 
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [selectedMatchDate, setSelectedMatchDate] = useState(getToday());
@@ -679,7 +681,8 @@ export default function App() {
     
     const dataToSave = {
       ...personnelData,
-      order: personnelData.order === '' ? 999 : personnelData.order
+      order: personnelData.order === '' ? 999 : personnelData.order,
+      reviews: personnelData.reviews || [] // Keep existing reviews if editing
     };
 
     try {
@@ -715,6 +718,35 @@ export default function App() {
     }
   };
 
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewData.comment.trim()) return;
+    if (!reviewData.isAnonymous && !reviewData.name.trim()) {
+       alert("Lütfen adınızı girin veya Anonim olarak işaretleyin.");
+       return;
+    }
+
+    const newReview = {
+      id: Date.now().toString(),
+      name: reviewData.isAnonymous ? 'Anonim' : reviewData.name.trim(),
+      rating: reviewData.rating,
+      comment: reviewData.comment.trim(),
+      date: new Date().toISOString()
+    };
+
+    try {
+      const personRef = doc(db, 'personnel', selectedPersonnel.id);
+      const updatedReviews = [...(selectedPersonnel.reviews || []), newReview];
+      await updateDoc(personRef, { reviews: updatedReviews });
+      
+      setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
+      setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });
+      alert("Yorumunuz başarıyla eklendi! Teşekkür ederiz.");
+    } catch (error) {
+      console.error(error);
+      alert("Yorum eklenirken hata oluştu.");
+    }
+  };
 
   // --- DRAG AND DROP SIFIRLAMA (HTML5) ---
   const handleDragStart = (e, item) => {
@@ -1199,10 +1231,120 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* DETAYLI PERSONEL MODALI VE YORUM ALANI */}
+      {selectedPersonnel && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
+            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white p-2 rounded-full transition-colors">
+              <X size={20} />
+            </button>
+            
+            <div className="w-full h-48 sm:h-56 bg-slate-200 relative shrink-0">
+              {selectedPersonnel.image ? (
+                 <img src={selectedPersonnel.image} alt={selectedPersonnel.name} className="w-full h-full object-cover" />
+              ) : (
+                 <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100"><UserSquare size={64} /></div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+                 <div className="flex justify-between items-end">
+                   <div>
+                     <h3 className="text-2xl font-black leading-tight">{selectedPersonnel.name} {selectedPersonnel.surname}</h3>
+                     {selectedPersonnel.nickname && <p className="text-orange-400 font-bold italic mt-0.5">"{selectedPersonnel.nickname}"</p>}
+                   </div>
+                   <div className="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex flex-col items-center">
+                     <span className="flex items-center gap-1 text-yellow-400 font-black text-lg"><Star size={16} className="fill-yellow-400"/> {selectedPersonnel.reviews?.length > 0 ? (selectedPersonnel.reviews.reduce((a,c)=>a+c.rating,0)/selectedPersonnel.reviews.length).toFixed(1) : '5.0'}</span>
+                     <span className="text-[10px] text-slate-200 font-medium">{selectedPersonnel.reviews?.length || 0} Değerlendirme</span>
+                   </div>
+                 </div>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 bg-slate-50 hide-scrollbar">
+               {selectedPersonnel.skills && (
+                 <div className="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                   <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Yetenekler & Uzmanlık</h4>
+                   <p className="text-sm font-medium text-slate-700 leading-relaxed italic">"{selectedPersonnel.skills}"</p>
+                 </div>
+               )}
+
+               <div className="mb-8">
+                 <h4 className="font-black text-slate-800 mb-4 border-b border-slate-200 pb-2 flex items-center gap-2"><MessageSquareText size={18} className="text-orange-500"/> Müşteri Yorumları</h4>
+                 {(!selectedPersonnel.reviews || selectedPersonnel.reviews.length === 0) ? (
+                    <p className="text-sm text-slate-500 italic text-center py-4">Bu personel için henüz yorum yapılmamış. İlk değerlendiren siz olun!</p>
+                 ) : (
+                    <div className="space-y-4">
+                      {selectedPersonnel.reviews.sort((a,b) => new Date(b.date) - new Date(a.date)).map(rev => (
+                        <div key={rev.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-bold text-sm text-slate-800">{rev.name}</span>
+                            <div className="flex gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} size={12} className={i < rev.rating ? "fill-orange-400 text-orange-400" : "text-slate-200"} />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-sm text-slate-600 leading-relaxed">{rev.comment}</p>
+                          <span className="text-[10px] font-bold text-slate-400 mt-2 block">{new Date(rev.date).toLocaleDateString('tr-TR')}</span>
+                        </div>
+                      ))}
+                    </div>
+                 )}
+               </div>
+               
+               {/* Yorum Ekleme Formu */}
+               <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-md">
+                 <h4 className="font-black text-slate-800 mb-4 text-lg">Puan Verin</h4>
+                 <form onSubmit={handleReviewSubmit} className="space-y-4">
+                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <div className="flex gap-1.5">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <button key={star} type="button" onClick={() => setReviewData({...reviewData, rating: star})} className="hover:scale-110 transition-transform">
+                            <Star size={28} className={reviewData.rating >= star ? "fill-orange-500 text-orange-500" : "fill-slate-200 text-slate-200"} />
+                          </button>
+                        ))}
+                      </div>
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                        <input type="checkbox" checked={reviewData.isAnonymous} onChange={(e) => setReviewData({...reviewData, isAnonymous: e.target.checked, name: e.target.checked ? '' : reviewData.name})} className="w-4 h-4 text-emerald-500 rounded border-slate-300 focus:ring-emerald-500" />
+                        Gizli İsim (Anonim)
+                      </label>
+                   </div>
+                   
+                   {!reviewData.isAnonymous && (
+                     <div>
+                       <input type="text" placeholder="Adınız Soyadınız" value={reviewData.name} onChange={(e) => setReviewData({...reviewData, name: e.target.value})} className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm font-bold bg-white transition-colors" required />
+                     </div>
+                   )}
+                   
+                   <div>
+                     <textarea placeholder="Personelimiz hakkındaki görüşlerinizi yazın..." value={reviewData.comment} onChange={(e) => setReviewData({...reviewData, comment: e.target.value})} rows="3" className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm resize-none bg-white transition-colors" required></textarea>
+                   </div>
+                   
+                   <button type="submit" className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-black uppercase tracking-widest text-sm transition-transform hover:-translate-y-1 shadow-lg">Yorumu Gönder</button>
+                 </form>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col p-6">
+              <h3 className="font-black text-lg mb-4 text-slate-800">Yeni Kategori Ekle</h3>
+              <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-bold mb-6 text-slate-800" autoFocus />
+              <div className="flex gap-3">
+                 <button type="button" onClick={()=>setShowCategoryModal(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors">İptal</button>
+                 <button type="button" onClick={handleAddCategory} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-md hover:bg-emerald-700 transition-colors">Ekle</button>
+              </div>
+           </div>
+        </div>
+      )}
     </>
   );
 
-  // --- SAYFA RENDER: VİTRİN (LANDING) ---
+  // --- SAYFA RENDER: VİTRİN ---
   if (currentView === 'landing') {
     return (
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full">
@@ -1378,8 +1520,8 @@ export default function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
                    {activeGallery.map((item, idx) => (
                       <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-white border border-slate-200 rounded-3xl overflow-hidden hover:border-orange-400 transition-all duration-300 group relative shadow-sm hover:shadow-lg h-80 md:h-96 cursor-pointer">
-                         <img src={item.image} alt={item.name} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${item.isSoldOut ? 'opacity-30 grayscale' : 'opacity-90 group-hover:opacity-100'}`} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
+                         <img src={item.image} alt={item.name} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${item.isSoldOut ? 'opacity-30 grayscale' : 'opacity-90 group-hover:opacity-100'}`} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-8 lg:p-10">
                             {item.isSoldOut ? (
                                <span className="bg-red-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg">TÜKENDİ</span>
                             ) : item.tag && (
@@ -1504,36 +1646,54 @@ export default function App() {
              </div>
            ) : (
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12">
-               {personnelList.sort((a,b) => (a.order || 999) - (b.order || 999)).map(person => (
-                 <div key={person.id} className="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group border border-slate-200">
-                    <div className="h-64 sm:h-72 w-full bg-slate-200 relative overflow-hidden">
-                       {person.image ? (
-                         <img src={person.image} alt={`${person.name} ${person.surname}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                       ) : (
-                         <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400"><UserSquare size={64}/></div>
-                       )}
-                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
-                       <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-                          <h3 className="text-2xl font-black leading-tight">{person.name} <span className="font-light">{person.surname}</span></h3>
-                          {person.nickname && <p className="text-orange-400 font-bold italic mt-1">"{person.nickname}"</p>}
-                       </div>
-                    </div>
-                    <div className="p-6 bg-white min-h-[120px]">
-                       <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Yetenekler & Uzmanlık</h4>
-                       {person.skills ? (
-                         <p className="text-sm font-medium text-slate-700 leading-relaxed">{person.skills}</p>
-                       ) : (
-                         <p className="text-sm font-medium text-slate-400 italic">Belirtilmedi</p>
-                       )}
-                    </div>
-                 </div>
-               ))}
+               {personnelList.sort((a,b) => (a.order || 999) - (b.order || 999)).map(person => {
+                 const avgRating = person.reviews?.length > 0 ? (person.reviews.reduce((a,c)=>a+c.rating,0)/person.reviews.length).toFixed(1) : 'Yeni';
+                 return (
+                   <div key={person.id} onClick={() => setSelectedPersonnel(person)} className="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group border border-slate-200 cursor-pointer relative">
+                      <div className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">
+                        <Star size={14} className="fill-orange-500 text-orange-500" />
+                        <span className="font-black text-slate-800 text-xs">{avgRating}</span>
+                      </div>
+                      <div className="h-64 sm:h-72 w-full bg-slate-200 relative overflow-hidden">
+                         {person.image ? (
+                           <img src={person.image} alt={`${person.name} ${person.surname}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                         ) : (
+                           <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400"><UserSquare size={64}/></div>
+                         )}
+                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                         <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+                            <h3 className="text-2xl font-black leading-tight">{person.name} <span className="font-light">{person.surname}</span></h3>
+                            {person.nickname && <p className="text-orange-400 font-bold italic mt-1">"{person.nickname}"</p>}
+                         </div>
+                      </div>
+                      <div className="p-6 bg-white min-h-[120px]">
+                         <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Yetenekler & Uzmanlık</h4>
+                         {person.skills ? (
+                           <p className="text-sm font-medium text-slate-700 leading-relaxed line-clamp-3">{person.skills}</p>
+                         ) : (
+                           <p className="text-sm font-medium text-slate-400 italic">Belirtilmedi</p>
+                         )}
+                      </div>
+                   </div>
+                 );
+               })}
              </div>
            )}
         </main>
         
         {renderFooter()}
         {renderModals()}
+
+        {/* WHATSAPP FLOATING BUTTON */}
+        <a 
+          href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20`} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
+        >
+          <span className="text-xl">💬</span>
+          <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
+        </a>
       </div>
     );
   }
@@ -1995,27 +2155,32 @@ export default function App() {
                      <div className="text-center py-12 text-slate-400">Henüz personel eklenmedi. Sol taraftan kayıt oluşturabilirsiniz.</div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                       {personnelList.sort((a,b) => (a.order||999) - (b.order||999)).map((person) => (
-                         <div key={person.id} className={`border border-slate-200 p-5 rounded-2xl flex flex-col bg-white hover:shadow-lg transition-shadow relative ${isPersonnelEditing === person.id ? 'ring-2 ring-orange-500' : ''}`}>
-                            <div className="flex gap-4 items-start mb-4">
-                              <div className="w-20 h-20 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-slate-200">
-                                {person.image ? <img src={person.image} className="w-full h-full object-cover" alt={person.name} /> : <UserSquare size={40} className="w-full h-full p-3 text-slate-400" />}
+                       {personnelList.sort((a,b) => (a.order||999) - (b.order||999)).map((person) => {
+                         const avg = person.reviews?.length > 0 ? (person.reviews.reduce((acc,curr)=>acc+curr.rating,0)/person.reviews.length).toFixed(1) : 0;
+                         return (
+                           <div key={person.id} className={`border border-slate-200 p-5 rounded-2xl flex flex-col bg-white hover:shadow-lg transition-shadow relative ${isPersonnelEditing === person.id ? 'ring-2 ring-orange-500' : ''}`}>
+                              <div className="flex gap-4 items-start mb-4">
+                                <div className="w-20 h-20 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-slate-200">
+                                  {person.image ? <img src={person.image} className="w-full h-full object-cover" alt={person.name} /> : <UserSquare size={40} className="w-full h-full p-3 text-slate-400" />}
+                                </div>
+                                <div>
+                                  <h3 className="font-black text-slate-800 text-lg leading-tight">{person.name} {person.surname}</h3>
+                                  {person.nickname && <p className="text-orange-500 font-bold text-sm italic mt-0.5">"{person.nickname}"</p>}
+                                  <span className="text-xs font-bold text-slate-400 block mt-2">
+                                    Sıra: {person.order || 999} • <Star size={12} className="inline fill-orange-400 text-orange-400 -mt-0.5"/> {avg} ({person.reviews?.length || 0} Yorum)
+                                  </span>
+                                </div>
                               </div>
-                              <div>
-                                <h3 className="font-black text-slate-800 text-lg leading-tight">{person.name} {person.surname}</h3>
-                                {person.nickname && <p className="text-orange-500 font-bold text-sm italic mt-0.5">"{person.nickname}"</p>}
-                                <span className="text-xs font-bold text-slate-400 block mt-2">Sıra: {person.order || 999}</span>
+                              {person.skills && (
+                                <p className="text-sm text-slate-600 line-clamp-2 mb-4 italic">{person.skills}</p>
+                              )}
+                              <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-slate-100">
+                                <button type="button" onClick={()=>{setPersonnelData({name: person.name, surname: person.surname, nickname: person.nickname||'', skills: person.skills||'', image: person.image||'', order: person.order||'', reviews: person.reviews||[]}); setIsPersonnelEditing(person.id); window.scrollTo(0,0);}} className="p-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-600 text-slate-600 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"><Edit2 size={14}/> Düzenle</button>
+                                <button type="button" onClick={() => executeDeletePersonnel(person.id)} className="p-2 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded-lg transition-colors"><Trash2 size={16}/></button>
                               </div>
-                            </div>
-                            {person.skills && (
-                              <p className="text-sm text-slate-600 line-clamp-2 mb-4 italic">{person.skills}</p>
-                            )}
-                            <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-slate-100">
-                              <button type="button" onClick={()=>{setPersonnelData({name: person.name, surname: person.surname, nickname: person.nickname||'', skills: person.skills||'', image: person.image||'', order: person.order||''}); setIsPersonnelEditing(person.id); window.scrollTo(0,0);}} className="p-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-600 text-slate-600 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"><Edit2 size={14}/> Düzenle</button>
-                              <button type="button" onClick={() => executeDeletePersonnel(person.id)} className="p-2 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded-lg transition-colors"><Trash2 size={16}/></button>
-                            </div>
-                         </div>
-                       ))}
+                           </div>
+                         );
+                       })}
                     </div>
                   )}
                </div>
