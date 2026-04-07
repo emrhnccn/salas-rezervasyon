@@ -92,9 +92,10 @@ const DEFAULT_MENU_ITEMS = [
   { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg', o:1}, {n:'Espresso', o:2}] }
 ];
 
+// Diğer özellikleri korurken overflow-x: hidden engeli kaldırıldı ki Sticky çalışsın.
 const GLOBAL_CSS = `
 #root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -139,7 +140,7 @@ export default function App() {
   const [pendingRequests, setPendingRequests] = useState([]);
   
   const [menuItems, setMenuItems] = useState([]);
-  const [dbCategories, setDbCategories] = useState([]); // Dinamik Kategoriler
+  const [dbCategories, setDbCategories] = useState([]); 
 
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [selectedMatchDate, setSelectedMatchDate] = useState(getToday());
@@ -168,19 +169,18 @@ export default function App() {
   // --- MENÜ YÖNETİMİ STATE ---
   const [isMenuEditing, setIsMenuEditing] = useState(null);
   const [menuSearchTerm, setMenuSearchTerm] = useState('');
-  const [menuFilterCategory, setMenuFilterCategory] = useState('all'); // Kategori Filtresi
+  const [menuFilterCategory, setMenuFilterCategory] = useState('all');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   
-  const [draggedItem, setDraggedItem] = useState(null); // Drag & Drop State
+  const [draggedItem, setDraggedItem] = useState(null);
 
   const initialMenuItemState = { category: 'kahvalti', name: '', price: '', description: '', image: '', isFeatured: false, order: '', badges: [], isSoldOut: false, prepTime: '', calories: '' };
   const [menuItemData, setMenuItemData] = useState(initialMenuItemState);
   const [menuErrorMsg, setMenuErrorMsg] = useState('');
   const [menuDeleteConfirmId, setMenuDeleteConfirmId] = useState(null);
 
-  // --- ZİYARETÇİ EKRANI MODAL ---
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
   // --- EFEKTLER ---
@@ -268,7 +268,7 @@ export default function App() {
   const scrollToMenuCategory = (id) => {
     const el = document.getElementById(`cat-${id}`);
     if (el) { 
-      const y = el.getBoundingClientRect().top + window.scrollY - 130; 
+      const y = el.getBoundingClientRect().top + window.scrollY - 140; // Yapışkan bara çarpmaması için güvenli boşluk
       window.scrollTo({ top: y, behavior: 'smooth' }); 
     }
   };
@@ -551,7 +551,6 @@ export default function App() {
     } catch(err) { console.error(err); }
   };
 
-  // --- DRAG AND DROP SIFIRLAMA (HTML5) ---
   const handleDragStart = (e, item) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = 'move';
@@ -769,10 +768,10 @@ export default function App() {
 
   // --- RENDER MODÜLLERİ (YARDIMCI COMPONENTLER) ---
   const renderNavbar = (isDark = false) => (
-    <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none`}>
-      <nav className={`w-full pointer-events-auto transition-all duration-500 ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md py-3 border-b border-white/10' : 'bg-transparent py-5 sm:py-6'}`}>
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
-          <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 ${isScrolled || isDark ? 'h-10 sm:h-12' : 'h-12 sm:h-16'}`} onClick={handleNavToHome}>
+    <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none h-[72px] sm:h-[80px]`}>
+      <nav className={`w-full h-full pointer-events-auto transition-all duration-500 flex items-center ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md border-b border-white/10' : 'bg-transparent'}`}>
+        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
+          <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 h-10 sm:h-12`} onClick={handleNavToHome}>
             <img src="/salaaslogobg.png" alt="Salaaş Logo" className={`h-full w-auto object-contain ${isDark ? 'filter drop-shadow-md brightness-200' : ''}`} />
           </div>
           
@@ -1198,17 +1197,23 @@ export default function App() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+        
+        {/* Background Layer with Overflow Hidden (Prevents breaking sticky) */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
+          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3"></div>
+        </div>
+
         {renderNavbar(true)}
         
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
-        
-        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl">
-           <div className="w-full mx-auto px-4 sm:px-8 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
+        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl mt-[72px] sm:mt-[80px] w-full">
+           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
               {activeMenuCategories.map(cat => (
                   <button 
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className="whitespace-nowrap px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-orange-400 hover:border-orange-500 hover:bg-orange-500/10 transition-all uppercase text-xs font-bold tracking-widest"
+                    className="whitespace-nowrap px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border border-white/10 bg-[#161616] text-slate-300 hover:text-orange-500 hover:border-orange-500 transition-all uppercase text-[11px] sm:text-xs font-bold tracking-widest shadow-sm"
                   >
                       {cat.name}
                   </button>
@@ -1522,7 +1527,7 @@ export default function App() {
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Açıklama</label>
                     <div className="relative">
                       <AlignLeft size={18} className="absolute left-4 top-4 text-slate-400" />
-                      <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={3} className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 font-medium resize-y min-h-[80px] focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Ürün içeriği..."></textarea>
+                      <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={5} className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 font-medium resize-y min-h-[120px] focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Örn İçerik: Beyaz peynir, Taze kaşar..."></textarea>
                     </div>
                   </div>
                   
