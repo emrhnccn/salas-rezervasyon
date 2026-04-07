@@ -94,8 +94,8 @@ const DEFAULT_MENU_ITEMS = [
 
 // Diğer özellikleri korurken overflow-x: hidden engeli kaldırıldı ki Sticky çalışsın.
 const GLOBAL_CSS = `
-#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; }
+#root { max-width: 100vw !important; overflow-x: clip !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100vw !important; max-width: 100vw !important; overflow-x: clip !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -183,7 +183,77 @@ export default function App() {
 
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
-  // --- EFEKTLER ---
+  // --- DERIVED STATE CALCULATIONS (MANDATORY BEFORE EFFECTS) ---
+  const ALL_CATEGORIES = [...BASE_CATEGORIES];
+  dbCategories.forEach(dbC => {
+    if (!ALL_CATEGORIES.find(c => c.id === dbC.id)) {
+       ALL_CATEGORIES.push({ ...dbC, Icon: AVAILABLE_ICONS_MAP[dbC.iconString] || UtensilsCrossed });
+    }
+  });
+
+  const activeMenuCategories = menuItems.length > 0 
+    ? ALL_CATEGORIES.map(cat => ({ 
+        ...cat, 
+        items: menuItems
+                 .filter(item => item.category === cat.id)
+                 .sort((a,b) => (a.order || 999) - (b.order || 999) || a.name.localeCompare(b.name)) 
+      })).filter(cat => cat.items.length > 0)
+    : ALL_CATEGORIES.map(cat => {
+        const defaultCat = DEFAULT_MENU_ITEMS.find(c => c.cat === cat.id);
+        return { 
+          ...cat, 
+          items: defaultCat ? defaultCat.items.map(i => ({
+            name: i.n, image: i.i || null, isFeatured: i.f || false, tag: i.t || null, price: null, description: null, order: i.o || 999, badges: i.b || [], isSoldOut: false, prepTime: '', calories: ''
+          })).sort((a,b) => a.order - b.order) : [] 
+        };
+      }).filter(cat => cat.items.length > 0);
+
+  // --- DYNAMIC SCROLL & CATEGORY STATE ---
+  const [activeCategory, setActiveCategory] = useState('');
+
+  // Sadece aktif kategori değiştiğinde veya menü yüklendiğinde ilk atamayı yap
+  useEffect(() => {
+    if (!activeCategory && activeMenuCategories.length > 0) {
+      setActiveCategory(activeMenuCategories[0].id);
+    }
+  }, [activeMenuCategories, activeCategory]);
+
+  // Scroll Spy (Aşağı indikçe kategori barını otomatik güncelleme)
+  useEffect(() => {
+    if (currentView !== 'menu') return;
+
+    let timeoutId;
+    const handleScrollSpy = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+          const scrollPosition = window.scrollY + 160; // Yapışkan başlık payı
+          
+          for (let i = activeMenuCategories.length - 1; i >= 0; i--) {
+            const cat = activeMenuCategories[i];
+            const el = document.getElementById(`cat-${cat.id}`);
+            if (el && el.offsetTop <= scrollPosition) {
+              setActiveCategory(cat.id);
+              // Otomatik yatay kaydırma
+              const btn = document.getElementById(`btn-${cat.id}`);
+              if (btn && btn.parentNode) {
+                const container = btn.parentNode;
+                const scrollLeft = btn.offsetLeft - (container.offsetWidth / 2) + (btn.offsetWidth / 2);
+                container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+              }
+              break;
+            }
+          }
+      }, 50); 
+    };
+
+    window.addEventListener('scroll', handleScrollSpy);
+    return () => {
+      window.removeEventListener('scroll', handleScrollSpy);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [currentView, activeMenuCategories]);
+
+  // Sayfa başlığı scroll takibi
   useEffect(() => {
     document.title = "Salaaş Cafe Restaurant";
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -266,9 +336,10 @@ export default function App() {
   };
 
   const scrollToMenuCategory = (id) => {
+    setActiveCategory(id); // Tıklandığında anında aktif yap
     const el = document.getElementById(`cat-${id}`);
     if (el) { 
-      const y = el.getBoundingClientRect().top + window.scrollY - 140; // Yapışkan bara çarpmaması için güvenli boşluk
+      const y = el.getBoundingClientRect().top + window.scrollY - 140; // Yapışkan bara çarpmaması için ofset
       window.scrollTo({ top: y, behavior: 'smooth' }); 
     }
   };
@@ -693,31 +764,6 @@ export default function App() {
     return parts.length === 1 ? parts[0].substring(0, 2).toUpperCase() : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // --- HESAPLAMALAR VE VİTRİN ---
-  const ALL_CATEGORIES = [...BASE_CATEGORIES];
-  dbCategories.forEach(dbC => {
-    if (!ALL_CATEGORIES.find(c => c.id === dbC.id)) {
-       ALL_CATEGORIES.push({ ...dbC, Icon: AVAILABLE_ICONS_MAP[dbC.iconString] || UtensilsCrossed });
-    }
-  });
-
-  const activeMenuCategories = menuItems.length > 0 
-    ? ALL_CATEGORIES.map(cat => ({ 
-        ...cat, 
-        items: menuItems
-                 .filter(item => item.category === cat.id)
-                 .sort((a,b) => (a.order || 999) - (b.order || 999) || a.name.localeCompare(b.name)) 
-      })).filter(cat => cat.items.length > 0)
-    : ALL_CATEGORIES.map(cat => {
-        const defaultCat = DEFAULT_MENU_ITEMS.find(c => c.cat === cat.id);
-        return { 
-          ...cat, 
-          items: defaultCat ? defaultCat.items.map(i => ({
-            name: i.n, image: i.i || null, isFeatured: i.f || false, tag: i.t || null, price: null, description: null, order: i.o || 999, badges: i.b || [], isSoldOut: false, prepTime: '', calories: ''
-          })).sort((a,b) => a.order - b.order) : [] 
-        };
-      }).filter(cat => cat.items.length > 0);
-
   const activeGallery = menuItems.length > 0 
     ? menuItems.filter(item => item.isFeatured).sort((a,b) => (a.order || 999) - (b.order || 999)) 
     : DEFAULT_MENU_GALLERY;
@@ -1114,7 +1160,7 @@ export default function App() {
         </header>
 
         <main className="w-full relative z-10 flex-1 flex flex-col">
-          <section id="hakkimizda" className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-24 text-center bg-white">
+          <section id="hakkimizda" className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-20 md:py-32 text-center bg-white">
             <div className="animate-float inline-block mb-6">
               <MoonStar size={56} className="text-orange-400 opacity-80" />
             </div>
@@ -1188,6 +1234,17 @@ export default function App() {
 
         {renderFooter()}
         {renderModals()}
+        
+        {/* WHATSAPP FLOATING BUTTON */}
+        <a 
+          href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20`} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
+        >
+          <span className="text-xl">💬</span>
+          <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
+        </a>
       </div>
     );
   }
@@ -1207,13 +1264,18 @@ export default function App() {
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl mt-[72px] sm:mt-[80px] w-full">
-           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
+        <div className="sticky top-[72px] sm:top-[80px] z-[45] bg-[#0a0a0a] border-b border-white/5 py-3 sm:py-4 shadow-2xl w-full">
+           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-2 sm:gap-3 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
+                    id={`btn-${cat.id}`}
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className="whitespace-nowrap px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border border-white/10 bg-[#161616] text-slate-300 hover:text-orange-500 hover:border-orange-500 transition-all uppercase text-[11px] sm:text-xs font-bold tracking-widest shadow-sm"
+                    className={`whitespace-nowrap px-6 py-2.5 rounded-[30px] border transition-all uppercase text-[11px] sm:text-xs font-black tracking-widest flex-shrink-0 ${
+                      activeCategory === cat.id 
+                        ? 'border-orange-500 text-orange-500 bg-transparent shadow-[0_0_10px_rgba(249,115,22,0.1)]' 
+                        : 'border-white/10 bg-[#111] text-slate-300 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
+                    }`}
                   >
                       {cat.name}
                   </button>
@@ -1319,6 +1381,17 @@ export default function App() {
         </main>
         {renderFooter()}
         {renderModals()}
+
+        {/* WHATSAPP FLOATING BUTTON */}
+        <a 
+          href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20`} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
+        >
+          <span className="text-xl">💬</span>
+          <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
+        </a>
       </div>
     );
   }
