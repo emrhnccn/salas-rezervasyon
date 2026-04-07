@@ -5,7 +5,7 @@ import {
   Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, 
   MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, 
   ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare,
-  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud, GripVertical
+  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud, GripVertical, UserSquare
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
@@ -92,9 +92,8 @@ const DEFAULT_MENU_ITEMS = [
   { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg', o:1}, {n:'Espresso', o:2}] }
 ];
 
-// OVERFLOW HATALARI VE STICKY BOZULMASINI ENGELLEYEN CSS
 const GLOBAL_CSS = `
-#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
 body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -116,7 +115,7 @@ export default function App() {
   const typeLabels = { kahvalti: 'Kahvaltı', yemek: 'Yemek', dogum_gunu: 'Doğum Günü', organizasyon: 'Organizasyon', mac: 'Maç Yayını' };
 
   // --- STATE ---
-  const [currentView, setCurrentView] = useState('landing');
+  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'menu', 'personnel', 'admin'
   const [activeAdminTab, setActiveAdminTab] = useState('restoran');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -141,6 +140,14 @@ export default function App() {
   
   const [menuItems, setMenuItems] = useState([]);
   const [dbCategories, setDbCategories] = useState([]); 
+
+  // --- PERSONEL STATE ---
+  const [personnelList, setPersonnelList] = useState([]);
+  const [isPersonnelEditing, setIsPersonnelEditing] = useState(null);
+  const initialPersonnelState = { name: '', surname: '', nickname: '', skills: '', image: '', order: '' };
+  const [personnelData, setPersonnelData] = useState(initialPersonnelState);
+  const [personnelErrorMsg, setPersonnelErrorMsg] = useState('');
+  const [uploadingPersonnelImage, setUploadingPersonnelImage] = useState(false);
 
   const [selectedFilterDate, setSelectedFilterDate] = useState(getToday());
   const [selectedMatchDate, setSelectedMatchDate] = useState(getToday());
@@ -296,6 +303,10 @@ export default function App() {
     const catUnsub = onSnapshot(collection(db, 'menuCategories'), (snapshot) => {
       setDbCategories(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
+
+    const personnelUnsub = onSnapshot(collection(db, 'personnel'), (snapshot) => {
+      setPersonnelList(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
     
     return () => { 
       restoranUnsub(); 
@@ -303,6 +314,7 @@ export default function App() {
       reqUnsub(); 
       menuUnsub(); 
       catUnsub();
+      personnelUnsub();
     };
   }, [user]);
 
@@ -314,6 +326,11 @@ export default function App() {
 
   const handleNavToHome = () => {
     setCurrentView('landing');
+    window.scrollTo(0, 0);
+  };
+
+  const handleNavToPersonnel = () => {
+    setCurrentView('personnel');
     window.scrollTo(0, 0);
   };
 
@@ -619,6 +636,87 @@ export default function App() {
     } catch(err) { console.error(err); }
   };
 
+  // --- PERSONEL YÖNETİMİ FONKSİYONLARI ---
+  const handlePersonnelChange = (e) => {
+    const { name, value } = e.target;
+    setPersonnelErrorMsg('');
+    setPersonnelData(prev => ({ 
+      ...prev, 
+      [name]: name === 'order' ? (value === '' ? '' : parseInt(value, 10)) : value 
+    }));
+  };
+
+  const handlePersonnelImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingPersonnelImage(true);
+    setPersonnelErrorMsg('');
+    
+    try {
+      const storageRef = ref(storage, `personnel_images/${Date.now()}_${file.name}`);
+      const uploadTask = await uploadBytesResumable(storageRef, file);
+      const downloadURL = await getDownloadURL(uploadTask.ref);
+      setPersonnelData(prev => ({ ...prev, image: downloadURL }));
+    } catch (error) {
+      console.error(error);
+      setPersonnelErrorMsg("Resim yüklenirken hata oluştu.");
+    } finally {
+      setUploadingPersonnelImage(false);
+    }
+  };
+
+  const removePersonnelImage = () => {
+    setPersonnelData(prev => ({ ...prev, image: '' }));
+  };
+
+  const handlePersonnelSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!personnelData.name?.trim() || !personnelData.surname?.trim()) { 
+      setPersonnelErrorMsg("İsim ve Soyisim zorunludur."); 
+      return; 
+    }
+    
+    const dataToSave = {
+      ...personnelData,
+      order: personnelData.order === '' ? 999 : personnelData.order
+    };
+
+    try {
+      if (isPersonnelEditing) {
+        await updateDoc(doc(db, 'personnel', isPersonnelEditing), { 
+          ...dataToSave, 
+          updatedAt: new Date().toISOString() 
+        });
+        setIsPersonnelEditing(null);
+      } else {
+        await addDoc(collection(db, 'personnel'), { 
+          ...dataToSave, 
+          createdAt: new Date().toISOString() 
+        });
+      }
+      setPersonnelData(initialPersonnelState); 
+      setPersonnelErrorMsg('');
+    } catch (err) { 
+      setPersonnelErrorMsg("Personel kaydedilirken hata oluştu."); 
+    }
+  };
+
+  const executeDeletePersonnel = async (id) => {
+    if (!user) return;
+    if(window.confirm('Bu personeli silmek istediğinize emin misiniz?')) {
+      try {
+        await deleteDoc(doc(db, 'personnel', id));
+        if (isPersonnelEditing === id) { 
+          setIsPersonnelEditing(null); 
+          setPersonnelData(initialPersonnelState); 
+        }
+      } catch (err) { console.error(err); }
+    }
+  };
+
+
+  // --- DRAG AND DROP SIFIRLAMA (HTML5) ---
   const handleDragStart = (e, item) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = 'move';
@@ -818,10 +916,11 @@ export default function App() {
             <img src="/salaaslogobg.png" alt="Salaaş Logo" className={`h-full w-auto object-contain ${isDark ? 'filter drop-shadow-md brightness-200' : ''}`} />
           </div>
           
-          <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-12 font-bold text-sm xl:text-base transition-colors duration-500 ${isScrolled ? (isDark ? 'text-slate-300' : 'text-slate-700') : 'text-white drop-shadow-md'}`}>
-            <button onClick={() => handleScrollToId('hakkimizda')} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
-            <button onClick={() => handleScrollToId('lezzetler')} className="hover:text-orange-500 transition-colors">Lezzetler</button>
-            <button onClick={() => handleScrollToId('iletisim')} className="hover:text-orange-500 transition-colors">İletişim</button>
+          <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-12 font-bold text-sm xl:text-base transition-colors duration-500 ${isScrolled || isDark ? 'text-slate-300' : 'text-white drop-shadow-md'}`}>
+            <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
+            <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }} className="hover:text-orange-500 transition-colors">Lezzetler</button>
+            <button onClick={handleNavToPersonnel} className={`hover:text-orange-500 transition-colors ${currentView === 'personnel' ? 'text-orange-500' : ''}`}>Personellerimiz</button>
+            <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="hover:text-orange-500 transition-colors">İletişim</button>
           </div>
           
           <div className="shrink-0 flex items-center justify-end gap-3 sm:gap-4">
@@ -900,6 +999,14 @@ export default function App() {
                 className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"
               >
                 <ChevronRight size={18} className="text-orange-500"/> Dijital Menü
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={handleNavToPersonnel} 
+                className="hover:text-white transition-colors flex items-center justify-center md:justify-start gap-3"
+              >
+                <ChevronRight size={18} className="text-orange-500"/> Personellerimiz
               </button>
             </li>
           </ul>
@@ -1092,23 +1199,10 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {showCategoryModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col p-6">
-              <h3 className="font-black text-lg mb-4 text-slate-800">Yeni Kategori Ekle</h3>
-              <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-bold mb-6 text-slate-800" autoFocus />
-              <div className="flex gap-3">
-                 <button type="button" onClick={()=>setShowCategoryModal(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors">İptal</button>
-                 <button type="button" onClick={handleAddCategory} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-md hover:bg-emerald-700 transition-colors">Ekle</button>
-              </div>
-           </div>
-        </div>
-      )}
     </>
   );
 
-  // --- SAYFA RENDER: VİTRİN ---
+  // --- SAYFA RENDER: VİTRİN (LANDING) ---
   if (currentView === 'landing') {
     return (
       <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full">
@@ -1386,31 +1480,90 @@ export default function App() {
     );
   }
 
+  // --- SAYFA RENDER: PERSONELLERİMİZ ---
+  if (currentView === 'personnel') {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative w-full">
+        <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+        {renderNavbar(false)}
+        
+        <header className="w-full pt-32 pb-16 lg:pt-40 lg:pb-24 bg-[#0B3B2C] text-white text-center relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
+          <div className="relative z-10 px-4">
+             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#FBE18D] to-orange-400">Ekibimizin Kalbi</h1>
+             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-light">Salaaş Cafe’nin sıcaklığını ve lezzetini var eden, her gün güler yüzle hizmet sunan değerlerimiz.</p>
+          </div>
+        </header>
+
+        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-16 relative z-10">
+           {personnelList.length === 0 ? (
+             <div className="text-center text-slate-400 py-20 flex flex-col items-center">
+                <Users size={64} className="mb-4 opacity-50" />
+                <h3 className="text-2xl font-black text-slate-600">Henüz kimse eklenmedi</h3>
+                <p>Ekibimizi çok yakında burada görebileceksiniz.</p>
+             </div>
+           ) : (
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-12">
+               {personnelList.sort((a,b) => (a.order || 999) - (b.order || 999)).map(person => (
+                 <div key={person.id} className="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group border border-slate-200">
+                    <div className="h-64 sm:h-72 w-full bg-slate-200 relative overflow-hidden">
+                       {person.image ? (
+                         <img src={person.image} alt={`${person.name} ${person.surname}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                       ) : (
+                         <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400"><UserSquare size={64}/></div>
+                       )}
+                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                       <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+                          <h3 className="text-2xl font-black leading-tight">{person.name} <span className="font-light">{person.surname}</span></h3>
+                          {person.nickname && <p className="text-orange-400 font-bold italic mt-1">"{person.nickname}"</p>}
+                       </div>
+                    </div>
+                    <div className="p-6 bg-white min-h-[120px]">
+                       <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Yetenekler & Uzmanlık</h4>
+                       {person.skills ? (
+                         <p className="text-sm font-medium text-slate-700 leading-relaxed">{person.skills}</p>
+                       ) : (
+                         <p className="text-sm font-medium text-slate-400 italic">Belirtilmedi</p>
+                       )}
+                    </div>
+                 </div>
+               ))}
+             </div>
+           )}
+        </main>
+        
+        {renderFooter()}
+        {renderModals()}
+      </div>
+    );
+  }
+
   // --- SAYFA RENDER: ADMİN PANELİ ---
   return (
-    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full ${activeAdminTab === 'restoran' || activeAdminTab === 'menu' ? 'bg-slate-50' : (activeAdminTab === 'mac' ? 'bg-[#f0f4f8]' : 'bg-slate-100')}`}>
+    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full ${activeAdminTab === 'restoran' || activeAdminTab === 'menu' || activeAdminTab === 'personel' ? 'bg-slate-50' : (activeAdminTab === 'mac' ? 'bg-[#f0f4f8]' : 'bg-slate-100')}`}>
       {bulkMessage && <div className="fixed top-24 right-4 sm:right-10 z-[100] bg-slate-800 text-white p-4 sm:p-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-sm border border-slate-700 animate-in slide-in-from-right-8 duration-300"><CheckCircle size={24} className="text-emerald-400 shrink-0" /><p className="font-bold text-sm sm:text-base leading-snug">{bulkMessage}</p><button type="button" onClick={() => setBulkMessage('')} className="ml-auto text-slate-400 hover:text-white bg-slate-700 p-1.5 rounded-lg transition-colors shrink-0"><X size={18} /></button></div>}
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
 
-      <header className={`${activeAdminTab === 'restoran' || activeAdminTab === 'menu' ? 'bg-[#0B3B2C]' : activeAdminTab === 'mac' ? 'bg-[#0a192f]' : 'bg-slate-900'} text-white shadow-lg sticky z-20 print:hidden transition-colors duration-500 w-full top-0`}>
+      <header className={`${activeAdminTab === 'restoran' || activeAdminTab === 'menu' || activeAdminTab === 'personel' ? 'bg-[#0B3B2C]' : activeAdminTab === 'mac' ? 'bg-[#0a192f]' : 'bg-slate-900'} text-white shadow-lg sticky z-20 print:hidden transition-colors duration-500 w-full top-0`}>
         <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-20 py-3 sm:py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
           <div className="flex items-center justify-between w-full lg:w-auto gap-4">
             <div className="flex items-center gap-4">
               <div className="h-10 sm:h-12 shrink-0 flex items-center justify-center overflow-visible drop-shadow-md bg-transparent cursor-pointer" onClick={() => setCurrentView('landing')}>
                 <img src="/salaaslogobg.png" alt="Salaaş Cafe Logo" className="h-full w-auto object-contain bg-transparent" />
               </div>
-              <div className="hidden sm:block"><h1 className={`text-base md:text-lg lg:text-xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activeAdminTab === 'restoran' || activeAdminTab === 'menu' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : activeAdminTab === 'mac' ? 'bg-gradient-to-r from-blue-400 to-cyan-300' : 'bg-gradient-to-r from-slate-200 to-white'}`}>Yönetim Paneli</h1></div>
+              <div className="hidden sm:block"><h1 className={`text-base md:text-lg lg:text-xl font-black tracking-wide text-transparent bg-clip-text font-serif ${activeAdminTab === 'restoran' || activeAdminTab === 'menu' || activeAdminTab === 'personel' ? 'bg-gradient-to-r from-orange-400 to-yellow-300' : activeAdminTab === 'mac' ? 'bg-gradient-to-r from-blue-400 to-cyan-300' : 'bg-gradient-to-r from-slate-200 to-white'}`}>Yönetim Paneli</h1></div>
             </div>
             <div className="flex items-center bg-black/40 p-1.5 rounded-xl border border-white/10 shadow-inner ml-2 sm:ml-0 overflow-x-auto">
               <button onClick={() => setActiveAdminTab('restoran')} className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activeAdminTab === 'restoran' ? 'bg-orange-500 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}><UtensilsCrossed size={16}/> RESTORAN</button>
               <button onClick={() => setActiveAdminTab('mac')} className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activeAdminTab === 'mac' ? 'bg-blue-600 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}><MonitorPlay size={16}/> MAÇ</button>
               <button onClick={() => setActiveAdminTab('menu')} className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activeAdminTab === 'menu' ? 'bg-orange-500 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}><MenuSquare size={16}/> MENÜ</button>
+              <button onClick={() => setActiveAdminTab('personel')} className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activeAdminTab === 'personel' ? 'bg-orange-500 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}><Users size={16}/> PERSONEL</button>
               <button onClick={() => setActiveAdminTab('talepler')} className={`relative px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activeAdminTab === 'talepler' ? 'bg-emerald-600 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}><Inbox size={16}/> TALEPLER {pendingRequests.length > 0 && (<span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full animate-bounce shadow-md">{pendingRequests.length}</span>)}</button>
               <button onClick={() => setActiveAdminTab('gecmis')} className={`px-4 py-2 lg:px-6 lg:py-2.5 rounded-lg text-xs lg:text-sm font-black tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 ${activeAdminTab === 'gecmis' ? 'bg-purple-600 text-white shadow-md scale-105' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}><History size={16}/> GEÇMİŞ</button>
             </div>
           </div>
           <div className="flex flex-row items-center justify-end gap-3 w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0">
-            {activeAdminTab !== 'talepler' && activeAdminTab !== 'gecmis' && activeAdminTab !== 'menu' && (
+            {(activeAdminTab === 'restoran' || activeAdminTab === 'mac') && (
               <div className="flex shrink-0 items-center bg-white/10 rounded-xl px-4 py-2.5 lg:px-5 lg:py-3 border border-white/10 hover:bg-white/20 transition-colors w-full lg:w-auto justify-center">
                 <CalendarDays className={`mr-2 ${activeAdminTab === 'restoran' ? 'text-orange-400' : 'text-cyan-400'}`} size={20} />
                 <span className="text-[10px] lg:text-xs font-bold uppercase tracking-widest opacity-70 text-cyan-100 hidden lg:inline mr-3">Tarih Seç:</span>
@@ -1761,6 +1914,110 @@ export default function App() {
                      ))}
                      {menuItems.length === 0 && <div className="col-span-full py-12 text-center text-slate-400 font-medium">Veritabanında henüz bir menü öğesi yok.</div>}
                   </div>
+               </div>
+            </div>
+          </div>
+        ) : activeAdminTab === 'personel' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 w-full col-span-12">
+            <div className="lg:col-span-4 xl:col-span-3 space-y-6 w-full">
+              <div className={`bg-white rounded-3xl shadow-xl border w-full ${isPersonnelEditing ? 'border-orange-400' : 'border-slate-200'}`}>
+                <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${isPersonnelEditing ? 'bg-orange-100 text-orange-600' : 'bg-slate-200 text-slate-600'}`}>{isPersonnelEditing ? <Edit2 size={20} /> : <Plus size={20} />}</div>
+                    <h2 className="font-black text-lg text-slate-800">{isPersonnelEditing ? 'Personel Düzenle' : 'Yeni Personel'}</h2>
+                  </div>
+                  {isPersonnelEditing && <button type="button" onClick={()=>{setIsPersonnelEditing(null); setPersonnelData(initialPersonnelState); setPersonnelErrorMsg('');}} className="text-slate-400 p-1.5 hover:bg-slate-100 rounded-full transition-colors"><X size={18}/></button>}
+                </div>
+                <form onSubmit={handlePersonnelSubmit} className="p-6 space-y-4">
+                  {personnelErrorMsg && <div className="text-red-500 font-bold text-sm bg-red-50 p-3 rounded-xl flex items-center gap-2"><X size={16}/> {personnelErrorMsg}</div>}
+                  
+                  <div className="flex gap-3">
+                     <div className="flex-1">
+                        <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ad *</label>
+                        <input type="text" name="name" value={personnelData.name} onChange={handlePersonnelChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-orange-500 outline-none bg-white text-slate-800" required placeholder="Örn: Ahmet" />
+                     </div>
+                     <div className="flex-1">
+                        <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Soyad *</label>
+                        <input type="text" name="surname" value={personnelData.surname} onChange={handlePersonnelChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-orange-500 outline-none bg-white text-slate-800" required placeholder="Örn: Yılmaz" />
+                     </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Lakap (Opsiyonel)</label>
+                    <input type="text" name="nickname" value={personnelData.nickname} onChange={handlePersonnelChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-orange-500 outline-none bg-white text-slate-800" placeholder="Örn: Hızlı Şef" />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Yetenekler & Uzmanlık</label>
+                    <textarea name="skills" value={personnelData.skills} onChange={handlePersonnelChange} rows={3} className="w-full p-3 rounded-xl border border-slate-300 font-medium resize-y focus:ring-2 focus:ring-orange-500 outline-none bg-white text-slate-800" placeholder="Örn: Dünya mutfağında 10 yıllık deneyim..."></textarea>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 items-center">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Fotoğraf</label>
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center justify-center px-4 py-2.5 bg-slate-100 border border-slate-300 rounded-xl cursor-pointer hover:bg-slate-200 transition-colors text-sm font-bold text-slate-700 w-full text-center">
+                          {uploadingPersonnelImage ? <Loader2 className="animate-spin mr-2" size={16} /> : <UploadCloud className="mr-2" size={16} />}
+                          Dosya Seç
+                          <input type="file" accept="image/*" onChange={handlePersonnelImageUpload} className="hidden" disabled={uploadingPersonnelImage} />
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Sıra</label>
+                      <input type="number" name="order" value={personnelData.order} onChange={handlePersonnelChange} className="w-full p-2.5 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-orange-500 outline-none bg-white text-slate-800" placeholder="999" />
+                    </div>
+                  </div>
+                  
+                  {personnelData.image && (
+                     <div className="relative inline-block mt-2">
+                        <img src={personnelData.image} alt="Preview" className="h-24 w-24 rounded-full object-cover border border-slate-200 shadow-sm" />
+                        <button type="button" onClick={removePersonnelImage} className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors" title="Resmi Kaldır">
+                           <X size={12}/>
+                        </button>
+                     </div>
+                  )}
+                  
+                  <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-4 rounded-xl shadow-lg transition-transform hover:-translate-y-1 uppercase tracking-widest mt-4">
+                    {isPersonnelEditing ? 'Güncelle' : 'Personel Ekle'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div className="lg:col-span-8 xl:col-span-9 w-full">
+               <div className="bg-white rounded-3xl shadow-sm border border-slate-200/60 p-6 sm:p-8 min-h-[500px] w-full">
+                  <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between mb-8 pb-4 border-b border-slate-100 gap-4">
+                     <h2 className="text-2xl font-black flex items-center gap-3 text-slate-800"><Users className="text-orange-500" size={28} /> Ekibimiz ({personnelList.length})</h2>
+                  </div>
+                  
+                  {personnelList.length === 0 ? (
+                     <div className="text-center py-12 text-slate-400">Henüz personel eklenmedi. Sol taraftan kayıt oluşturabilirsiniz.</div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                       {personnelList.sort((a,b) => (a.order||999) - (b.order||999)).map((person) => (
+                         <div key={person.id} className={`border border-slate-200 p-5 rounded-2xl flex flex-col bg-white hover:shadow-lg transition-shadow relative ${isPersonnelEditing === person.id ? 'ring-2 ring-orange-500' : ''}`}>
+                            <div className="flex gap-4 items-start mb-4">
+                              <div className="w-20 h-20 rounded-full bg-slate-100 shrink-0 overflow-hidden border-2 border-slate-200">
+                                {person.image ? <img src={person.image} className="w-full h-full object-cover" alt={person.name} /> : <UserSquare size={40} className="w-full h-full p-3 text-slate-400" />}
+                              </div>
+                              <div>
+                                <h3 className="font-black text-slate-800 text-lg leading-tight">{person.name} {person.surname}</h3>
+                                {person.nickname && <p className="text-orange-500 font-bold text-sm italic mt-0.5">"{person.nickname}"</p>}
+                                <span className="text-xs font-bold text-slate-400 block mt-2">Sıra: {person.order || 999}</span>
+                              </div>
+                            </div>
+                            {person.skills && (
+                              <p className="text-sm text-slate-600 line-clamp-2 mb-4 italic">{person.skills}</p>
+                            )}
+                            <div className="flex justify-end gap-2 mt-auto pt-4 border-t border-slate-100">
+                              <button type="button" onClick={()=>{setPersonnelData({name: person.name, surname: person.surname, nickname: person.nickname||'', skills: person.skills||'', image: person.image||'', order: person.order||''}); setIsPersonnelEditing(person.id); window.scrollTo(0,0);}} className="p-2 bg-slate-100 hover:bg-orange-100 hover:text-orange-600 text-slate-600 rounded-lg transition-colors font-bold text-xs flex items-center gap-1"><Edit2 size={14}/> Düzenle</button>
+                              <button type="button" onClick={() => executeDeletePersonnel(person.id)} className="p-2 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded-lg transition-colors"><Trash2 size={16}/></button>
+                            </div>
+                         </div>
+                       ))}
+                    </div>
+                  )}
                </div>
             </div>
           </div>
