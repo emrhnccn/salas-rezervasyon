@@ -93,8 +93,8 @@ const DEFAULT_MENU_ITEMS = [
 ];
 
 const GLOBAL_CSS = `
-#root { max-width: 100vw !important; overflow-x: clip !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100vw !important; max-width: 100vw !important; overflow-x: clip !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
+#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; scroll-behavior: smooth; overflow-x: hidden !important; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -1255,17 +1255,17 @@ export default function App() {
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
-           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
+        <div className="sticky top-[72px] sm:top-[80px] z-[45] bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-2 sm:gap-3 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
                     id={`btn-${cat.id}`}
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all uppercase text-xs font-bold tracking-widest flex-shrink-0 ${
+                    className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all uppercase text-[11px] sm:text-xs font-black tracking-widest flex-shrink-0 ${
                       activeCategory === cat.id 
-                        ? 'border-orange-500 bg-orange-500/10 text-orange-400' 
-                        : 'border-white/10 bg-white/5 text-slate-300 hover:text-orange-400 hover:border-orange-500 hover:bg-orange-500/10'
+                        ? 'border-orange-500 text-orange-500 bg-transparent shadow-[0_0_10px_rgba(249,115,22,0.1)]' 
+                        : 'border-white/10 bg-[#111] text-slate-300 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
                     }`}
                   >
                       {cat.name}
