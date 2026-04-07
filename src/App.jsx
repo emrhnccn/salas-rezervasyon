@@ -93,7 +93,7 @@ const DEFAULT_MENU_ITEMS = [
 ];
 
 const GLOBAL_CSS = `
-#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
 body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -535,7 +535,8 @@ export default function App() {
     } catch(err) { console.error(err); }
   };
 
-  const handleAddCategory = async () => {
+  const handleAddCategory = async (e) => {
+    if (e) e.preventDefault();
     if (!user || !newCategoryName.trim()) return;
     try {
       const catId = newCategoryName.trim().toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/g, '');
@@ -883,7 +884,7 @@ export default function App() {
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
             <div className="bg-emerald-700 p-6 sm:p-8 flex items-center justify-between text-white shrink-0 z-10">
               <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><CalendarDays size={28} className="text-emerald-300"/> Rezervasyon Talebi</h3>
-              <button onClick={() => setShowRequestModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={28}/></button>
+              <button type="button" onClick={() => setShowRequestModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={28}/></button>
             </div>
             
             <div className="overflow-y-auto bg-white flex-1 relative">
@@ -966,7 +967,7 @@ export default function App() {
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
             <div className="bg-[#0B3B2C] p-6 sm:p-8 flex items-center justify-between text-white">
               <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl"><Lock size={20} className="text-orange-400"/> Sistem Girişi</h3>
-              <button onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
+              <button type="button" onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
             </div>
             
             <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4 sm:space-y-6 bg-white">
@@ -998,7 +999,7 @@ export default function App() {
       {selectedMenuItem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-[#111] rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative border border-white/10 animate-in zoom-in-95 duration-300">
-            <button onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition-colors">
+            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition-colors">
               <X size={20} />
             </button>
             
@@ -1042,7 +1043,7 @@ export default function App() {
                  </p>
                )}
                
-               <button onClick={() => setSelectedMenuItem(null)} className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-xl transition-colors uppercase tracking-widest text-sm">
+               <button type="button" onClick={() => setSelectedMenuItem(null)} className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-xl transition-colors uppercase tracking-widest text-sm">
                  Kapat
                </button>
             </div>
@@ -1056,8 +1057,8 @@ export default function App() {
               <h3 className="font-black text-lg mb-4 text-slate-800">Yeni Kategori Ekle</h3>
               <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-[#8b5cf6] outline-none font-bold mb-6" autoFocus />
               <div className="flex gap-3">
-                 <button onClick={()=>setShowCategoryModal(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors">İptal</button>
-                 <button onClick={handleAddCategory} className="flex-1 py-3 bg-[#8b5cf6] text-white font-bold rounded-xl shadow-md hover:bg-[#7c3aed] transition-colors">Ekle</button>
+                 <button type="button" onClick={()=>setShowCategoryModal(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors">İptal</button>
+                 <button type="button" onClick={handleAddCategory} className="flex-1 py-3 bg-[#8b5cf6] text-white font-bold rounded-xl shadow-md hover:bg-[#7c3aed] transition-colors">Ekle</button>
               </div>
            </div>
         </div>
@@ -1068,7 +1069,7 @@ export default function App() {
   // --- SAYFA RENDER: VİTRİN ---
   if (currentView === 'landing') {
     return (
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full overflow-x-hidden">
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative flex flex-col scroll-smooth w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
 
@@ -1195,13 +1196,13 @@ export default function App() {
   // --- SAYFA RENDER: DİJİTAL MENÜ ---
   if (currentView === 'menu') {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full overflow-x-hidden">
+      <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(true)}
         
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
         
-        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl mt-[73px] sm:mt-[81px]">
+        <div className="sticky top-[73px] sm:top-[81px] z-30 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 shadow-2xl">
            <div className="w-full mx-auto px-4 sm:px-8 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
               {activeMenuCategories.map(cat => (
                   <button 
@@ -1319,8 +1320,8 @@ export default function App() {
 
   // --- SAYFA RENDER: ADMİN PANELİ ---
   return (
-    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full overflow-x-hidden ${activeAdminTab === 'restoran' || activeAdminTab === 'menu' ? 'bg-slate-50' : (activeAdminTab === 'mac' ? 'bg-[#f0f4f8]' : 'bg-slate-100')}`}>
-      {bulkMessage && <div className="fixed top-24 right-4 sm:right-10 z-[100] bg-slate-800 text-white p-4 sm:p-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-sm border border-slate-700 animate-in slide-in-from-right-8 duration-300"><CheckCircle size={24} className="text-emerald-400 shrink-0" /><p className="font-bold text-sm sm:text-base leading-snug">{bulkMessage}</p><button onClick={() => setBulkMessage('')} className="ml-auto text-slate-400 hover:text-white bg-slate-700 p-1.5 rounded-lg transition-colors shrink-0"><X size={18} /></button></div>}
+    <div className={`min-h-screen font-sans text-slate-800 pb-12 print:bg-white print:pb-0 relative transition-colors duration-500 w-full ${activeAdminTab === 'restoran' || activeAdminTab === 'menu' ? 'bg-slate-50' : (activeAdminTab === 'mac' ? 'bg-[#f0f4f8]' : 'bg-slate-100')}`}>
+      {bulkMessage && <div className="fixed top-24 right-4 sm:right-10 z-[100] bg-slate-800 text-white p-4 sm:p-5 rounded-2xl shadow-2xl flex items-center gap-4 max-w-sm border border-slate-700 animate-in slide-in-from-right-8 duration-300"><CheckCircle size={24} className="text-emerald-400 shrink-0" /><p className="font-bold text-sm sm:text-base leading-snug">{bulkMessage}</p><button type="button" onClick={() => setBulkMessage('')} className="ml-auto text-slate-400 hover:text-white bg-slate-700 p-1.5 rounded-lg transition-colors shrink-0"><X size={18} /></button></div>}
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
 
       <header className={`${activeAdminTab === 'restoran' || activeAdminTab === 'menu' ? 'bg-[#0B3B2C]' : activeAdminTab === 'mac' ? 'bg-[#0a192f]' : 'bg-slate-900'} text-white shadow-lg sticky z-20 print:hidden transition-colors duration-500 w-full top-0`}>
@@ -1389,7 +1390,7 @@ export default function App() {
               <div className={`bg-white/95 backdrop-blur-sm rounded-3xl shadow-xl border overflow-hidden transition-colors w-full ${activeAdminTab==='mac' ? (isMatchEditing?'border-blue-400':'border-slate-200') : (isEditing?'border-orange-400':'border-slate-200')}`}>
                 <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
                   <h2 className="text-lg font-black">{activeAdminTab==='mac' ? (isMatchEditing?'Maç Düzelt':'Yeni Maç Kaydı') : (isEditing?'Kayıt Düzelt':'Yeni Rezervasyon')}</h2>
-                  {(isEditing || isMatchEditing) && <button onClick={()=>activeAdminTab==='mac'?cancelEdit(true):cancelEdit(false)}><X size={18}/></button>}
+                  {(isEditing || isMatchEditing) && <button type="button" onClick={()=>activeAdminTab==='mac'?cancelEdit(true):cancelEdit(false)}><X size={18}/></button>}
                 </div>
                 <form onSubmit={(e) => handleFormSubmit(e, activeAdminTab==='mac')} className="p-6 space-y-4">
                   {activeAdminTab === 'restoran' && (
@@ -1454,10 +1455,9 @@ export default function App() {
               {menuItems.length === 0 && (
                 <div className="bg-orange-100 border border-orange-200 rounded-3xl p-6 text-center shadow-sm">
                   <p className="text-orange-800 font-bold mb-4 text-sm">Sisteminizde hiç menü öğesi yok.</p>
-                  <button onClick={importDefaultMenu} className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-black uppercase text-xs w-full transition-colors">Varsayılan Menüyü Aktar</button>
+                  <button type="button" onClick={importDefaultMenu} className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 rounded-xl font-black uppercase text-xs w-full transition-colors">Varsayılan Menüyü Aktar</button>
                 </div>
               )}
-              
               <div className={`bg-white rounded-3xl shadow-xl border w-full ${isMenuEditing ? 'border-[#8b5cf6]' : 'border-slate-200'}`}>
                 <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center">
                   <div className="flex items-center gap-3">
@@ -1471,7 +1471,7 @@ export default function App() {
                   
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
-                    <button type="button" onClick={() => setShowCategoryModal(true)} className="text-[10px] bg-[#8b5cf6]/10 text-[#8b5cf6] font-bold px-2 py-1 rounded hover:bg-[#8b5cf6]/20 transition-colors">+ Yeni</button>
+                    <button type="button" onClick={(e) => { e.preventDefault(); setShowCategoryModal(true); }} className="text-[10px] bg-[#8b5cf6]/10 text-[#8b5cf6] font-bold px-2 py-1 rounded hover:bg-[#8b5cf6]/20 transition-colors">+ Yeni</button>
                   </div>
                   <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold outline-none focus:ring-2 focus:ring-[#8b5cf6] bg-slate-50 text-slate-700">
                     {ALL_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -1678,16 +1678,16 @@ export default function App() {
                           <div className="flex justify-between items-center mt-auto pt-3 border-t border-slate-100">
                             <span className="text-xs font-bold text-slate-400">Sıra: {item.order || 999}</span>
                             <div className="flex gap-1.5">
-                              <button onClick={() => toggleSoldOut(item)} className={`p-1.5 rounded transition-colors ${item.isSoldOut ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200' : 'bg-red-50 text-red-500 hover:bg-red-100'}`} title={item.isSoldOut ? "Satışa Aç" : "Tükendi Yap"}>
+                              <button type="button" onClick={() => toggleSoldOut(item)} className={`p-1.5 rounded transition-colors ${item.isSoldOut ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200' : 'bg-red-50 text-red-500 hover:bg-red-100'}`} title={item.isSoldOut ? "Satışa Aç" : "Tükendi Yap"}>
                                  {item.isSoldOut ? <CheckCircle size={16}/> : <X size={16}/>}
                               </button>
-                              <button onClick={() => duplicateMenuItem(item)} className="p-1.5 bg-slate-100 hover:bg-blue-100 hover:text-blue-600 text-slate-600 rounded transition-colors" title="Kopyala">
+                              <button type="button" onClick={() => duplicateMenuItem(item)} className="p-1.5 bg-slate-100 hover:bg-blue-100 hover:text-blue-600 text-slate-600 rounded transition-colors" title="Kopyala">
                                  <Plus size={16}/>
                               </button>
-                              <button onClick={()=>{setMenuItemData({category: item.category, name: item.name, price: item.price||'', description: item.description||'', image: item.image||'', isFeatured: item.isFeatured||false, order: item.order||'', badges: item.badges||[], isSoldOut: item.isSoldOut||false, prepTime: item.prepTime||'', calories: item.calories||''}); setIsMenuEditing(item.id); window.scrollTo(0,0);}} className="p-1.5 bg-slate-100 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] text-slate-600 rounded transition-colors" title="Düzenle">
+                              <button type="button" onClick={()=>{setMenuItemData({category: item.category, name: item.name, price: item.price||'', description: item.description||'', image: item.image||'', isFeatured: item.isFeatured||false, order: item.order||999, badges: item.badges||[], isSoldOut: item.isSoldOut||false, prepTime: item.prepTime||'', calories: item.calories||''}); setIsMenuEditing(item.id); window.scrollTo(0,0);}} className="p-1.5 bg-slate-100 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] text-slate-600 rounded transition-colors" title="Düzenle">
                                  <Edit2 size={16}/>
                               </button>
-                              <button onClick={()=>{if(window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) executeDelete(item.id, 'menuItems');}} className="p-1.5 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded transition-colors" title="Sil">
+                              <button type="button" onClick={()=>{if(window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) executeDelete(item.id, 'menuItems');}} className="p-1.5 bg-slate-100 hover:bg-red-100 hover:text-red-600 text-red-400 rounded transition-colors" title="Sil">
                                  <Trash2 size={16}/>
                               </button>
                             </div>
@@ -1723,6 +1723,8 @@ export default function App() {
           </div>
         ) : null}
       </main>
+      
+      {renderModals()}
     </div>
   );
 }
