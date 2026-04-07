@@ -92,9 +92,9 @@ const DEFAULT_MENU_ITEMS = [
   { cat: 'sicak_kahve', items: [{n:'Caramel Macchiato', i:'/caramelmachiato.jpg', o:1}, {n:'Espresso', o:2}] }
 ];
 
+// OVERFLOW HATALARI VE STICKY BOZULMASINI ENGELLEYEN CSS
 const GLOBAL_CSS = `
-#root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; scroll-behavior: smooth; overflow-x: hidden !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc !important; scroll-behavior: smooth; overflow-x: hidden; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -1038,53 +1038,53 @@ export default function App() {
 
       {/* DETAYLI ÜRÜN MODALI */}
       {selectedMenuItem && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#111] rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative border border-white/10 animate-in zoom-in-95 duration-300">
-            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full transition-colors">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300">
+            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white p-2 rounded-full transition-colors">
               <X size={20} />
             </button>
             
-            <div className="w-full bg-[#1a1a1a] relative flex justify-center items-center border-b border-white/10">
+            <div className="w-full bg-slate-100 relative flex justify-center items-center border-b border-slate-200">
               {selectedMenuItem.image ? (
                  <img src={selectedMenuItem.image} alt={selectedMenuItem.name} className={`w-full h-auto max-h-[45vh] object-contain ${selectedMenuItem.isSoldOut ? 'opacity-40 grayscale' : ''}`} />
               ) : (
-                 <div className="w-full h-48 flex items-center justify-center text-slate-500"><ImageIcon size={48} /></div>
+                 <div className="w-full h-48 flex items-center justify-center text-slate-400"><ImageIcon size={48} /></div>
               )}
               {selectedMenuItem.isSoldOut && (
                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-red-600/90 text-white px-6 py-2 rounded-xl font-black text-xl tracking-widest uppercase rotate-[-10deg] shadow-2xl border-2 border-red-400">TÜKENDİ</span>
+                    <span className="bg-red-600/90 text-white px-6 py-2 rounded-xl font-black text-xl tracking-widest uppercase rotate-[-10deg] shadow-2xl border-2 border-white">TÜKENDİ</span>
                  </div>
               )}
             </div>
             
             <div className="p-6 sm:p-8 flex flex-col gap-4">
                <div className="flex justify-between items-start gap-4">
-                  <h3 className={`text-2xl font-serif font-black leading-tight ${selectedMenuItem.isSoldOut ? 'text-slate-500' : 'text-white'}`}>{selectedMenuItem.name}</h3>
-                  {selectedMenuItem.price && <span className={`text-xl font-black whitespace-nowrap ${selectedMenuItem.isSoldOut ? 'text-slate-600' : 'text-orange-500'}`}>{selectedMenuItem.price} TL</span>}
+                  <h3 className={`text-2xl font-serif font-black leading-tight ${selectedMenuItem.isSoldOut ? 'text-slate-500' : 'text-[#0B3B2C]'}`}>{selectedMenuItem.name}</h3>
+                  {selectedMenuItem.price && <span className={`text-xl font-black whitespace-nowrap ${selectedMenuItem.isSoldOut ? 'text-slate-400' : 'text-orange-500'}`}>{selectedMenuItem.price} TL</span>}
                </div>
                
                {(selectedMenuItem.badges?.length > 0 || selectedMenuItem.prepTime || selectedMenuItem.calories) && (
-                 <div className="flex flex-wrap gap-2 items-center border-b border-white/10 pb-4">
+                 <div className="flex flex-wrap gap-2 items-center border-b border-slate-100 pb-4">
                    {selectedMenuItem.badges?.map(b => {
                      const badgeDef = BADGE_OPTIONS.find(opt => opt.id === b);
                      return badgeDef ? (
-                       <span key={b} className={`bg-white/10 text-slate-300 text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 border border-white/5 ${selectedMenuItem.isSoldOut ? 'opacity-50' : ''}`}>
+                       <span key={b} className={`bg-orange-50 text-orange-700 text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 border border-orange-100 ${selectedMenuItem.isSoldOut ? 'opacity-50' : ''}`}>
                          <span>{badgeDef.icon}</span> {badgeDef.label}
                        </span>
                      ) : null;
                    })}
-                   {selectedMenuItem.prepTime && <span className="flex items-center gap-1 text-slate-400 text-sm ml-2"><Clock size={14}/> {selectedMenuItem.prepTime}</span>}
-                   {selectedMenuItem.calories && <span className="flex items-center gap-1 text-slate-400 text-sm ml-2"><Flame size={14}/> {selectedMenuItem.calories}</span>}
+                   {selectedMenuItem.prepTime && <span className="flex items-center gap-1 text-slate-500 font-medium text-sm ml-2"><Clock size={14}/> {selectedMenuItem.prepTime}</span>}
+                   {selectedMenuItem.calories && <span className="flex items-center gap-1 text-slate-500 font-medium text-sm ml-2"><Flame size={14}/> {selectedMenuItem.calories}</span>}
                  </div>
                )}
                
                {selectedMenuItem.description && (
-                 <p className={`text-sm leading-relaxed ${selectedMenuItem.isSoldOut ? 'text-slate-600' : 'text-slate-400'}`}>
+                 <p className={`text-sm leading-relaxed ${selectedMenuItem.isSoldOut ? 'text-slate-400' : 'text-slate-600'}`}>
                    {selectedMenuItem.description}
                  </p>
                )}
                
-               <button type="button" onClick={() => setSelectedMenuItem(null)} className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-xl transition-colors uppercase tracking-widest text-sm">
+               <button type="button" onClick={() => setSelectedMenuItem(null)} className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-xl transition-colors uppercase tracking-widest text-sm shadow-md hover:shadow-lg">
                  Kapat
                </button>
             </div>
@@ -1096,10 +1096,10 @@ export default function App() {
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col p-6">
               <h3 className="font-black text-lg mb-4 text-slate-800">Yeni Kategori Ekle</h3>
-              <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-[#8b5cf6] outline-none font-bold mb-6" autoFocus />
+              <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-bold mb-6 text-slate-800" autoFocus />
               <div className="flex gap-3">
                  <button type="button" onClick={()=>setShowCategoryModal(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors">İptal</button>
-                 <button type="button" onClick={handleAddCategory} className="flex-1 py-3 bg-[#8b5cf6] text-white font-bold rounded-xl shadow-md hover:bg-[#7c3aed] transition-colors">Ekle</button>
+                 <button type="button" onClick={handleAddCategory} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-md hover:bg-emerald-700 transition-colors">Ekle</button>
               </div>
            </div>
         </div>
@@ -1248,24 +1248,23 @@ export default function App() {
   // --- SAYFA RENDER: DİJİTAL MENÜ ---
   if (currentView === 'menu') {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full">
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 relative w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         
-        <div className="absolute inset-0 opacity-[0.03] z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
-
-        {renderNavbar(true)}
+        {renderNavbar(false)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-[45] bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+        {/* YAPISKAN KATEGORİ ÇUBUĞU (PREMIUM DARK) */}
+        <div className="fixed top-[72px] sm:top-[80px] left-0 z-[45] bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/5 py-3 sm:py-4 shadow-xl w-full">
            <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-2 sm:gap-3 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
                     id={`btn-${cat.id}`}
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className={`whitespace-nowrap px-4 py-2 rounded-full border transition-all uppercase text-[11px] sm:text-xs font-black tracking-widest flex-shrink-0 ${
+                    className={`whitespace-nowrap px-6 py-2.5 rounded-[30px] border transition-all uppercase text-[11px] sm:text-xs font-black tracking-widest flex-shrink-0 ${
                       activeCategory === cat.id 
                         ? 'border-orange-500 text-orange-500 bg-transparent shadow-[0_0_10px_rgba(249,115,22,0.1)]' 
-                        : 'border-white/10 bg-[#111] text-slate-300 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
+                        : 'border-white/10 bg-[#111] text-slate-400 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
                     }`}
                   >
                       {cat.name}
@@ -1274,18 +1273,18 @@ export default function App() {
            </div>
         </div>
 
-        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-20 relative z-10">
+        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-40 md:pt-48 pb-12 md:pb-20 relative z-10">
            {activeGallery.length > 0 && (
              <div className="mb-24">
                 <div className="text-center mb-16">
                    <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-500 mb-4 drop-shadow-lg">Öne Çıkanlar</h1>
-                   <p className="text-slate-400 max-w-2xl mx-auto text-lg font-light">En çok tercih edilen imza lezzetlerimiz.</p>
+                   <p className="text-slate-500 max-w-2xl mx-auto text-lg font-light">En çok tercih edilen imza lezzetlerimiz.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-10">
                    {activeGallery.map((item, idx) => (
-                      <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 group relative shadow-2xl h-80 md:h-96 cursor-pointer">
-                         <img src={item.image} alt={item.name} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${item.isSoldOut ? 'opacity-30 grayscale' : 'opacity-80 group-hover:opacity-100'}`} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
+                      <div key={item.id || idx} onClick={() => setSelectedMenuItem(item)} className="bg-white border border-slate-200 rounded-3xl overflow-hidden hover:border-orange-400 transition-all duration-300 group relative shadow-sm hover:shadow-lg h-80 md:h-96 cursor-pointer">
+                         <img src={item.image} alt={item.name} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${item.isSoldOut ? 'opacity-30 grayscale' : 'opacity-90 group-hover:opacity-100'}`} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-6 lg:p-8">
                             {item.isSoldOut ? (
                                <span className="bg-red-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full w-max mb-3 flex items-center gap-1.5 shadow-lg">TÜKENDİ</span>
                             ) : item.tag && (
@@ -1299,61 +1298,60 @@ export default function App() {
              </div>
            )}
 
-           <div className="space-y-20">
+           <div className="space-y-24">
               {activeMenuCategories.map(cat => {
                  const CatIcon = cat.Icon || UtensilsCrossed;
                  return (
-                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-44">
+                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-[200px]">
                       <div className="flex items-center gap-4 mb-8">
                          <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
                            <CatIcon size={20} />
                          </div>
-                         <h2 className="text-2xl sm:text-3xl font-serif font-black text-white tracking-wide">{cat.name}</h2>
-                         <div className="h-[1px] flex-1 bg-gradient-to-r from-orange-500/50 to-transparent ml-4"></div>
+                         <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#0B3B2C] tracking-wide">{cat.name}</h2>
+                         <div className="h-[1px] flex-1 bg-gradient-to-r from-slate-200 to-transparent ml-4"></div>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                          {cat.items.map((itemObj, idx) => {
                            if(itemObj.image) {
                              return (
-                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-all duration-300 group shadow-lg flex flex-col h-full min-h-[220px] cursor-pointer relative ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
+                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-white border border-slate-200 rounded-[24px] overflow-hidden hover:border-orange-400 transition-all duration-300 group shadow-sm hover:shadow-lg flex flex-col h-full min-h-[220px] cursor-pointer relative ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
                                    {itemObj.badges && itemObj.badges.length > 0 && (
-                                     <div className="absolute top-2 left-2 z-10 flex gap-1">
+                                     <div className="absolute top-3 left-3 z-10 flex gap-1">
                                        {itemObj.badges.map(b => {
                                           const def = BADGE_OPTIONS.find(o=>o.id===b);
-                                          return def ? <span key={b} className="bg-white/90 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">{def.icon}</span> : null;
+                                          return def ? <span key={b} className="bg-white/95 text-slate-800 text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100">{def.icon}</span> : null;
                                        })}
                                      </div>
                                    )}
-                                   {itemObj.isSoldOut && <div className="absolute top-2 right-2 z-10 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-widest">Tükendi</div>}
-                                   <div className="relative w-full h-40 sm:h-48 bg-[#0a0a0a] flex items-center justify-center overflow-hidden shrink-0">
+                                   {itemObj.isSoldOut && <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-md shadow-sm uppercase tracking-widest">Tükendi</div>}
+                                   <div className="relative w-full h-40 sm:h-48 bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 border-b border-slate-100">
                                       <img src={itemObj.image} alt={itemObj.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-2" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                    </div>
-                                   <div className="p-5 flex flex-col justify-between bg-[#111] grow">
+                                   <div className="p-5 flex flex-col justify-between grow">
                                       <div>
-                                        <div className="flex justify-between items-start gap-4 mb-2"><span className="text-white font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemObj.price} TL</span>}</div>
-                                        {itemObj.description && <p className="text-slate-400 text-xs line-clamp-2 mb-3">{itemObj.description}</p>}
+                                        <div className="flex justify-between items-start gap-4 mb-2"><span className="text-slate-800 font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-500 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}</div>
+                                        {itemObj.description && <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">{itemObj.description}</p>}
                                       </div>
-                                      <div className="w-full flex justify-end mt-auto"><div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0)] group-hover:shadow-[0_0_8px_rgba(249,115,22,0.8)] transition-all"></div></div>
                                    </div>
                                 </div>
                              );
                            } else {
                              return (
-                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-[#111] border border-white/5 rounded-2xl p-5 flex flex-col justify-between group hover:border-orange-500/30 hover:bg-[#161616] transition-all h-full min-h-[90px] cursor-pointer relative ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
-                                   {itemObj.isSoldOut && <div className="absolute top-2 right-2 z-10 bg-red-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-widest">Tükendi</div>}
+                                <div key={idx} onClick={() => setSelectedMenuItem(itemObj)} className={`bg-white border border-slate-200 rounded-[24px] p-6 flex flex-col justify-between group hover:border-orange-400 hover:shadow-lg transition-all h-full min-h-[90px] cursor-pointer relative shadow-sm ${itemObj.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
+                                   {itemObj.isSoldOut && <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-[8px] font-black px-2 py-0.5 rounded-md shadow-sm uppercase tracking-widest">Tükendi</div>}
                                    {itemObj.badges && itemObj.badges.length > 0 && (
-                                     <div className="flex gap-1 mb-2">
+                                     <div className="flex gap-1.5 mb-3">
                                        {itemObj.badges.map(b => {
                                           const def = BADGE_OPTIONS.find(o=>o.id===b);
-                                          return def ? <span key={b} className="bg-white/10 text-slate-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-white/5">{def.icon}</span> : null;
+                                          return def ? <span key={b} className="bg-orange-50 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-100">{def.icon}</span> : null;
                                        })}
                                      </div>
                                    )}
                                    <div className="flex justify-between items-start gap-4">
-                                     <span className="text-slate-300 font-medium group-hover:text-white transition-colors leading-snug text-sm sm:text-base">{itemObj.name}</span>
-                                     {itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{itemObj.price} TL</span>}
+                                     <span className="text-slate-800 font-bold group-hover:text-orange-600 transition-colors leading-snug text-sm sm:text-base">{itemObj.name}</span>
+                                     {itemObj.price && <span className="text-orange-500 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}
                                    </div>
-                                   {itemObj.description && <p className="text-slate-500 text-xs mt-2 line-clamp-2">{itemObj.description}</p>}
+                                   {itemObj.description && <p className="text-slate-500 text-xs mt-2 line-clamp-2 leading-relaxed">{itemObj.description}</p>}
                                 </div>
                              );
                            }
@@ -1468,14 +1466,14 @@ export default function App() {
                       <select name="type" value={formData.type} onChange={(e)=>setFormData({...formData, type: e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold outline-none"><option value="kahvalti">Kahvaltı</option><option value="yemek">Yemek</option><option value="dogum_gunu">Doğum Günü</option><option value="organizasyon">Organizasyon</option></select>
                     </div>
                   )}
-                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">İsim</label><input type="text" name="name" value={activeAdminTab==='mac'?matchFormData.name:formData.name} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, name:e.target.value}):setFormData({...formData, name:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold" required /></div>
-                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Telefon</label><input type="tel" name="phone" value={activeAdminTab==='mac'?matchFormData.phone:formData.phone} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, phone:e.target.value}):setFormData({...formData, phone:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold" /></div>
+                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">İsim</label><input type="text" name="name" value={activeAdminTab==='mac'?matchFormData.name:formData.name} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, name:e.target.value}):setFormData({...formData, name:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold bg-white text-slate-800" required /></div>
+                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Telefon</label><input type="tel" name="phone" value={activeAdminTab==='mac'?matchFormData.phone:formData.phone} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, phone:e.target.value}):setFormData({...formData, phone:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold bg-white text-slate-800" /></div>
                   <div className="flex gap-3">
-                    <div className="flex-[2]"><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Masa</label><input type="text" name="table" value={activeAdminTab==='mac'?matchFormData.table:formData.table} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, table:e.target.value}):setFormData({...formData, table:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold uppercase" /></div>
-                    <div className="flex-[1]"><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Kişi</label><input type="number" name="peopleCount" min="1" value={activeAdminTab==='mac'?matchFormData.peopleCount:formData.peopleCount} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, peopleCount:parseInt(e.target.value)||1}):setFormData({...formData, peopleCount:parseInt(e.target.value)||1})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold text-center" /></div>
+                    <div className="flex-[2]"><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Masa</label><input type="text" name="table" value={activeAdminTab==='mac'?matchFormData.table:formData.table} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, table:e.target.value}):setFormData({...formData, table:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold uppercase bg-white text-slate-800" /></div>
+                    <div className="flex-[1]"><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Kişi</label><input type="number" name="peopleCount" min="1" value={activeAdminTab==='mac'?matchFormData.peopleCount:formData.peopleCount} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, peopleCount:parseInt(e.target.value)||1}):setFormData({...formData, peopleCount:parseInt(e.target.value)||1})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold text-center bg-white text-slate-800" /></div>
                   </div>
-                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tarih</label><input type="date" name="date" value={activeAdminTab==='mac'?matchFormData.date:formData.date} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, date:e.target.value}):setFormData({...formData, date:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold" required /></div>
-                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Not</label><textarea name="notes" value={activeAdminTab==='mac'?matchFormData.notes:formData.notes} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, notes:e.target.value}):setFormData({...formData, notes:e.target.value})} rows="2" className="w-full p-3 rounded-xl border-2 border-slate-200 font-medium resize-none"></textarea></div>
+                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tarih</label><input type="date" name="date" value={activeAdminTab==='mac'?matchFormData.date:formData.date} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, date:e.target.value}):setFormData({...formData, date:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold bg-white text-slate-800" required /></div>
+                  <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Not</label><textarea name="notes" value={activeAdminTab==='mac'?matchFormData.notes:formData.notes} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, notes:e.target.value}):setFormData({...formData, notes:e.target.value})} rows="2" className="w-full p-3 rounded-xl border-2 border-slate-200 font-medium resize-none bg-white text-slate-800"></textarea></div>
                   <button type="submit" className={`w-full text-white font-black py-4 rounded-xl shadow-lg hover:-translate-y-1 transition-transform ${activeAdminTab==='mac' ? 'bg-blue-600' : 'bg-orange-500'}`}>{activeAdminTab==='mac'?(isMatchEditing?'GÜNCELLE':'EKLE'):(isEditing?'GÜNCELLE':'EKLE')}</button>
                 </form>
               </div>
@@ -1486,7 +1484,7 @@ export default function App() {
                 <div className="flex flex-col md:flex-row items-center justify-between mb-8 pb-4 border-b border-slate-100 gap-4">
                   <h2 className="text-2xl font-black text-slate-800">{activeAdminTab==='mac' ? 'Maç Rezervasyonları' : 'Aktif Masalar'}</h2>
                   <div className="flex items-center gap-3 w-full md:w-auto">
-                    <input type="text" placeholder="Ara..." value={activeAdminTab==='mac'?matchSearchTerm:searchTerm} onChange={(e)=>activeAdminTab==='mac'?setMatchSearchTerm(e.target.value):setSearchTerm(e.target.value)} className="p-2 border-2 border-slate-200 rounded-lg outline-none font-medium w-full md:w-48" />
+                    <input type="text" placeholder="Ara..." value={activeAdminTab==='mac'?matchSearchTerm:searchTerm} onChange={(e)=>activeAdminTab==='mac'?setMatchSearchTerm(e.target.value):setSearchTerm(e.target.value)} className="p-2 border-2 border-slate-200 rounded-lg outline-none font-medium w-full md:w-48 bg-white text-slate-800" />
                     <span className="font-bold text-sm bg-slate-100 px-3 py-2 rounded-lg whitespace-nowrap">{(activeAdminTab==='mac'?sortedMatchReservations:sortedReservations).length} Kayıt</span>
                     <button onClick={()=>window.print()} className="bg-slate-800 text-white p-2 rounded-lg"><Printer size={20}/></button>
                   </div>
@@ -1542,13 +1540,13 @@ export default function App() {
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
                     <button type="button" onClick={(e) => { e.preventDefault(); setShowCategoryModal(true); }} className="text-[10px] bg-[#8b5cf6]/10 text-[#8b5cf6] font-bold px-2 py-1 rounded hover:bg-[#8b5cf6]/20 transition-colors">+ Yeni</button>
                   </div>
-                  <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold outline-none focus:ring-2 focus:ring-[#8b5cf6] bg-slate-50 text-slate-700">
+                  <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold outline-none focus:ring-2 focus:ring-[#8b5cf6] bg-white text-slate-800">
                     {ALL_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                   
                   <div>
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Ürün Adı *</label>
-                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" required placeholder="Örn: Karışık Tost" />
+                    <input type="text" name="name" value={menuItemData.name} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none bg-white text-slate-800" required placeholder="Örn: Karışık Tost" />
                   </div>
                   
                   <div className="flex gap-3">
@@ -1556,21 +1554,21 @@ export default function App() {
                         <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Fiyat</label>
                         <div className="relative">
                           <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                          <input type="text" name="price" value={menuItemData.price} onChange={handleMenuChange} className="w-full pl-9 pr-3 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="150" />
+                          <input type="text" name="price" value={menuItemData.price} onChange={handleMenuChange} className="w-full pl-9 pr-3 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none bg-white text-slate-800" placeholder="150" />
                         </div>
                      </div>
                      <div className="flex-1">
                         <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Hazırlama</label>
                         <div className="relative">
                           <Clock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                          <input type="text" name="prepTime" value={menuItemData.prepTime} onChange={handleMenuChange} className="w-full pl-9 pr-3 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="15 dk" />
+                          <input type="text" name="prepTime" value={menuItemData.prepTime} onChange={handleMenuChange} className="w-full pl-9 pr-3 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none bg-white text-slate-800" placeholder="15 dk" />
                         </div>
                      </div>
                      <div className="flex-1">
                         <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Kalori</label>
                         <div className="relative">
                           <Flame size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                          <input type="text" name="calories" value={menuItemData.calories} onChange={handleMenuChange} className="w-full pl-9 pr-3 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="350 kcal" />
+                          <input type="text" name="calories" value={menuItemData.calories} onChange={handleMenuChange} className="w-full pl-9 pr-3 py-3 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none bg-white text-slate-800" placeholder="350 kcal" />
                         </div>
                      </div>
                   </div>
@@ -1579,7 +1577,7 @@ export default function App() {
                     <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Durum & Etiket (Maks: 2)</label>
                     <div className="flex flex-wrap gap-2">
                       {BADGE_OPTIONS.map(badge => (
-                        <label key={badge.id} className="flex items-center gap-1.5 cursor-pointer bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                        <label key={badge.id} className="flex items-center gap-1.5 cursor-pointer bg-white border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                           <input type="checkbox" checked={menuItemData.badges.includes(badge.id)} onChange={() => handleBadgeChange(badge.id)} className="w-3.5 h-3.5 text-[#8b5cf6] rounded border-gray-300 focus:ring-[#8b5cf6]" />
                           <span className="text-xs font-bold text-slate-700 flex items-center gap-1"><span>{badge.icon}</span> {badge.label}</span>
                         </label>
@@ -1591,7 +1589,7 @@ export default function App() {
                     <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Açıklama</label>
                     <div className="relative">
                       <AlignLeft size={18} className="absolute left-4 top-4 text-slate-400" />
-                      <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={5} className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 font-medium resize-y min-h-[120px] focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="Örn İçerik: Beyaz peynir, Taze kaşar..."></textarea>
+                      <textarea name="description" value={menuItemData.description} onChange={handleMenuChange} rows={5} className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-300 font-medium resize-y min-h-[120px] focus:ring-2 focus:ring-[#8b5cf6] outline-none bg-white text-slate-800" placeholder="Örn İçerik: Beyaz peynir, Taze kaşar..."></textarea>
                     </div>
                   </div>
                   
@@ -1608,13 +1606,13 @@ export default function App() {
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Sıra</label>
-                      <input type="number" name="order" value={menuItemData.order} onChange={handleMenuChange} className="w-full p-2.5 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none" placeholder="999" />
+                      <input type="number" name="order" value={menuItemData.order} onChange={handleMenuChange} className="w-full p-2.5 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-[#8b5cf6] outline-none bg-white text-slate-800" placeholder="999" />
                     </div>
                   </div>
                   
                   {menuItemData.image && (
                      <div className="relative inline-block mt-2">
-                        <img src={menuItemData.image} alt="Preview" className="h-24 w-auto rounded-lg object-contain border border-slate-200 shadow-sm bg-[#0a0a0a]" />
+                        <img src={menuItemData.image} alt="Preview" className="h-24 w-auto rounded-lg object-contain border border-slate-200 shadow-sm bg-slate-50" />
                         <button type="button" onClick={removeMenuImage} className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md transition-colors" title="Resmi Kaldır">
                            <X size={14}/>
                         </button>
@@ -1622,7 +1620,7 @@ export default function App() {
                   )}
                   
                   <div className="grid grid-cols-2 gap-3 mt-4">
-                     <label className="flex items-center gap-3 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                     <label className="flex items-center gap-3 cursor-pointer bg-white p-3 rounded-xl border border-slate-200">
                         <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${menuItemData.isFeatured ? 'bg-orange-500 border-orange-500 text-white' : 'bg-white border-slate-300'}`}>
                            {menuItemData.isFeatured && <Check size={14} />}
                         </div>
@@ -1631,7 +1629,7 @@ export default function App() {
                            <span className="font-bold text-xs text-slate-700 block">Vitrin Göster</span>
                         </div>
                      </label>
-                     <label className="flex items-center gap-3 cursor-pointer bg-slate-50 p-3 rounded-xl border border-slate-200">
+                     <label className="flex items-center gap-3 cursor-pointer bg-white p-3 rounded-xl border border-slate-200">
                         <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${menuItemData.isSoldOut ? 'bg-red-500 border-red-500 text-white' : 'bg-white border-slate-300'}`}>
                            {menuItemData.isSoldOut && <Check size={14} />}
                         </div>
@@ -1649,37 +1647,34 @@ export default function App() {
                   {/* CANLI ÖNİZLEME ALANI */}
                   <div className="mt-6 border-t border-slate-200 pt-6">
                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2"><MonitorPlay size={14}/> Menü Görünümü (Önizleme)</h3>
-                     <div className="bg-[#111] border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col min-h-[200px] max-w-sm mx-auto relative pointer-events-none">
+                     <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-lg flex flex-col min-h-[200px] max-w-sm mx-auto relative pointer-events-none">
                         {menuItemData.badges && menuItemData.badges.length > 0 && (
-                          <div className="absolute top-2 left-2 z-10 flex gap-1">
+                          <div className="absolute top-3 left-3 z-10 flex gap-1">
                             {menuItemData.badges.map(b => {
                                const def = BADGE_OPTIONS.find(o=>o.id===b);
-                               return def ? <span key={b} className="bg-white/90 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">{def.icon}</span> : null;
+                               return def ? <span key={b} className="bg-white/95 text-slate-800 text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100">{def.icon}</span> : null;
                             })}
                           </div>
                         )}
-                        {menuItemData.isSoldOut && <div className="absolute top-2 right-2 z-10 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded shadow-sm uppercase tracking-widest">Tükendi</div>}
+                        {menuItemData.isSoldOut && <div className="absolute top-3 right-3 z-10 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded-md shadow-sm uppercase tracking-widest">Tükendi</div>}
                         
                         {menuItemData.image ? (
-                          <div className="relative w-full h-32 bg-[#0a0a0a] flex items-center justify-center overflow-hidden shrink-0">
+                          <div className="relative w-full h-40 bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 border-b border-slate-100">
                             <img src={menuItemData.image} alt={menuItemData.name} className={`w-full h-full object-contain p-2 ${menuItemData.isSoldOut ? 'opacity-40 grayscale' : ''}`} />
                           </div>
                         ) : (
-                          <div className={`relative w-full h-24 bg-[#111] flex flex-col items-center justify-center border-b border-white/5 shrink-0 ${menuItemData.isSoldOut ? 'opacity-40 grayscale' : ''}`}>
-                            <ImageIcon size={32} className="text-white/20"/>
+                          <div className={`relative w-full h-24 bg-slate-50 flex flex-col items-center justify-center border-b border-slate-100 shrink-0 ${menuItemData.isSoldOut ? 'opacity-40 grayscale' : ''}`}>
+                            <ImageIcon size={32} className="text-slate-300"/>
                           </div>
                         )}
                         
-                        <div className={`p-4 flex flex-col justify-between bg-[#111] grow ${menuItemData.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
+                        <div className={`p-5 flex flex-col justify-between bg-white grow ${menuItemData.isSoldOut ? 'opacity-60 grayscale' : ''}`}>
                            <div>
-                             <div className="flex justify-between items-start gap-3 mb-1.5">
-                                <span className="text-white font-bold text-sm tracking-wide leading-snug">{menuItemData.name || 'Örnek Ürün Adı'}</span>
-                                {menuItemData.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm">{menuItemData.price} TL</span>}
+                             <div className="flex justify-between items-start gap-4 mb-2">
+                                <span className={`font-bold text-sm sm:text-base tracking-wide leading-snug ${menuItemData.isSoldOut ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{menuItemData.name || 'Örnek Ürün Adı'}</span>
+                                {menuItemData.price && <span className="text-orange-500 font-black whitespace-nowrap text-sm sm:text-base">{menuItemData.price} TL</span>}
                              </div>
-                             {menuItemData.description && <p className="text-slate-400 text-[11px] line-clamp-2 mb-2 leading-relaxed">{menuItemData.description}</p>}
-                           </div>
-                           <div className="w-full flex justify-end mt-auto pt-2 border-t border-white/5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-orange-500/50"></div>
+                             {menuItemData.description && <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">{menuItemData.description}</p>}
                            </div>
                         </div>
                      </div>
@@ -1695,13 +1690,13 @@ export default function App() {
                      <h2 className="text-2xl font-black flex items-center gap-3 text-slate-800"><MenuSquare className="text-[#8b5cf6]" size={28} /> Sistemdeki Menü Öğeleri</h2>
                      
                      <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
-                        <select value={menuFilterCategory} onChange={(e) => setMenuFilterCategory(e.target.value)} className="w-full sm:w-auto p-2.5 border border-slate-300 rounded-xl outline-none font-bold text-sm focus:border-[#8b5cf6]">
+                        <select value={menuFilterCategory} onChange={(e) => setMenuFilterCategory(e.target.value)} className="w-full sm:w-auto p-2.5 border border-slate-300 rounded-xl outline-none font-bold text-sm focus:border-[#8b5cf6] bg-white text-slate-800">
                            <option value="all">Tüm Kategoriler</option>
                            {ALL_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                         <div className="relative w-full sm:w-64">
                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                           <input type="text" placeholder="Ürün ara..." value={menuSearchTerm} onChange={(e) => setMenuSearchTerm(e.target.value)} className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#8b5cf6] text-sm font-medium outline-none transition-all" />
+                           <input type="text" placeholder="Ürün ara..." value={menuSearchTerm} onChange={(e) => setMenuSearchTerm(e.target.value)} className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#8b5cf6] text-sm font-medium outline-none transition-all bg-white text-slate-800" />
                         </div>
                         <span className="font-bold text-sm bg-slate-100 px-4 py-2.5 rounded-xl whitespace-nowrap shrink-0">{menuItems.length} Öğe</span>
                      </div>
@@ -1732,11 +1727,11 @@ export default function App() {
 
                           <div className="flex gap-3 items-center mb-3">
                             {item.image ? (
-                               <div className="w-16 h-16 rounded-xl bg-[#0a0a0a] shrink-0 flex items-center justify-center p-1 border border-slate-100">
+                               <div className="w-16 h-16 rounded-xl bg-slate-50 shrink-0 flex items-center justify-center p-1 border border-slate-100">
                                  <img src={item.image} className={`w-full h-full object-contain ${item.isSoldOut ? 'opacity-40 grayscale' : ''}`} alt="" onError={(e)=>{e.currentTarget.style.display='none'}} />
                                </div>
                             ) : (
-                               <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>
+                               <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center text-slate-300 shrink-0"><ImageIcon size={24}/></div>
                             )}
                             <div>
                               <h3 className={`font-bold leading-tight line-clamp-2 ${item.isSoldOut ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{item.name}</h3>
