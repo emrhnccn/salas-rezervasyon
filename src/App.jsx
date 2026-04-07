@@ -95,7 +95,7 @@ const DEFAULT_MENU_ITEMS = [
 // Diğer özellikleri korurken overflow-x: hidden engeli kaldırıldı ki Sticky çalışsın.
 const GLOBAL_CSS = `
 #root { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -1111,9 +1111,6 @@ export default function App() {
                 <div className="w-1 h-2 lg:h-3 bg-white/60 rounded-full"></div>
               </div>
            </div>
-
-           {/* Yumuşak Geçiş Katmanı */}
-           <div className="absolute bottom-0 left-0 w-full h-24 sm:h-32 lg:h-48 bg-gradient-to-t from-white to-transparent pointer-events-none z-10"></div>
         </header>
 
         <main className="w-full relative z-10 flex-1 flex flex-col">
@@ -1191,17 +1188,6 @@ export default function App() {
 
         {renderFooter()}
         {renderModals()}
-        
-        {/* WHATSAPP FLOATING BUTTON */}
-        <a 
-          href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20rezervasyon%20yapmak%20istiyorum.`} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
-        >
-          <span className="text-xl">💬</span>
-          <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
-        </a>
       </div>
     );
   }
@@ -1221,7 +1207,7 @@ export default function App() {
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl mt-[72px] sm:mt-[80px] w-full">
            <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar">
               {activeMenuCategories.map(cat => (
                   <button 
@@ -1331,20 +1317,8 @@ export default function App() {
               </a>
            </div>
         </main>
-        
         {renderFooter()}
         {renderModals()}
-
-        {/* WHATSAPP FLOATING BUTTON */}
-        <a 
-          href={`https://wa.me/${WHATSAPP_NO}?text=Merhaba%20Salaas%20Cafe,%20`} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20b858] text-white px-5 py-3.5 rounded-full font-black shadow-2xl flex items-center justify-center gap-2 transition-transform hover:scale-110 border-4 border-white"
-        >
-          <span className="text-xl">💬</span>
-          <span className="hidden sm:block text-sm uppercase tracking-widest">WhatsApp</span>
-        </a>
       </div>
     );
   }
@@ -1502,7 +1476,7 @@ export default function App() {
                   
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
-                    <button type="button" onClick={() => setShowCategoryModal(true)} className="text-[10px] bg-[#8b5cf6]/10 text-[#8b5cf6] font-bold px-2 py-1 rounded hover:bg-[#8b5cf6]/20 transition-colors">+ Yeni</button>
+                    <button type="button" onClick={(e) => { e.preventDefault(); setShowCategoryModal(true); }} className="text-[10px] bg-[#8b5cf6]/10 text-[#8b5cf6] font-bold px-2 py-1 rounded hover:bg-[#8b5cf6]/20 transition-colors">+ Yeni</button>
                   </div>
                   <select name="category" value={menuItemData.category} onChange={handleMenuChange} className="w-full p-3 rounded-xl border border-slate-300 font-bold outline-none focus:ring-2 focus:ring-[#8b5cf6] bg-slate-50 text-slate-700">
                     {ALL_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
