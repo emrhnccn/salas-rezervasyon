@@ -1510,13 +1510,13 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
 
-        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-24 sm:pt-20">
+        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-16">
            <div className="absolute inset-0 z-0">
-             <img src="/salaasarkaplan.jpeg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50 scale-105 object-center" />
+             <img src="/salaaslogouzun.jpg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50 scale-105 object-center" />
              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent w-full"></div>
            </div>
            
-           <div className="relative z-10 text-center px-4 sm:px-6 w-full flex flex-col items-center justify-center h-full pb-10">
+           <div className="relative z-10 text-center px-4 sm:px-6 w-full mx-auto flex flex-col items-center justify-center h-full pb-10">
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wide text-white font-serif mb-6 drop-shadow-2xl animate-fade-in-up delay-100 leading-tight">
                 Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
               </h1>
