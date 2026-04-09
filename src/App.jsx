@@ -5,12 +5,23 @@ import {
   Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, 
   MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, 
   ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare,
-  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud, GripVertical, UserSquare, Menu
+  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud, GripVertical, UserSquare
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+
+// --- ZORUNLU MOBİL UYUMLULUK (VIEWPORT) ---
+if (typeof document !== 'undefined') {
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+  if (!viewportMeta) {
+    viewportMeta = document.createElement('meta');
+    viewportMeta.name = 'viewport';
+    document.head.appendChild(viewportMeta);
+  }
+  viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+}
 
 // --- FIREBASE AYARLARI ---
 const firebaseConfig = {
@@ -128,7 +139,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [bulkMessage, setBulkMessage] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobil menü state'i eklendi
   
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
@@ -223,23 +233,7 @@ export default function App() {
 
   const [activeCategory, setActiveCategory] = useState('');
 
-  // Mobil cihazlarda doğru render için Viewport meta tag enjeksiyonu
-  useEffect(() => {
-    let viewportMeta = document.querySelector('meta[name="viewport"]');
-    if (!viewportMeta) {
-      viewportMeta = document.createElement('meta');
-      viewportMeta.name = 'viewport';
-      document.head.appendChild(viewportMeta);
-    }
-    viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-  }, []);
-
-  useEffect(() => {
-    if (!activeCategory && activeMenuCategories.length > 0) {
-      setActiveCategory(activeMenuCategories[0].id);
-    }
-  }, [activeMenuCategories, activeCategory]);
-
+  // Scroll Spy Logic
   useEffect(() => {
     if (currentView !== 'menu') return;
 
@@ -247,7 +241,7 @@ export default function App() {
     const handleScrollSpy = () => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-          const scrollPosition = window.scrollY + 160; 
+          const scrollPosition = window.scrollY + 200; // Updated margin to clear fixed bars safely
           
           for (let i = activeMenuCategories.length - 1; i >= 0; i--) {
             const cat = activeMenuCategories[i];
@@ -801,6 +795,25 @@ export default function App() {
     }
   };
 
+  const handleDeleteReply = async (personId, reviewId) => {
+    if (!window.confirm("Bu cevabı silmek istediğinize emin misiniz?")) return;
+    try {
+      const person = personnelList.find(p => p.id === personId);
+      const updatedReviews = person.reviews.map(r => r.id === reviewId ? { ...r, reply: '' } : r);
+      await updateDoc(doc(db, 'personnel', personId), { reviews: updatedReviews });
+      
+      if (managingReviewsFor && managingReviewsFor.id === personId) {
+        setManagingReviewsFor(prev => ({ ...prev, reviews: updatedReviews }));
+      }
+      if (selectedPersonnel && selectedPersonnel.id === personId) {
+        setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Cevap silinirken hata oluştu.");
+    }
+  };
+
   const handleDragStart = (e, item) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = 'move';
@@ -994,10 +1007,11 @@ export default function App() {
   // --- RENDER MODÜLLERİ (YARDIMCI COMPONENTLER) ---
   const renderNavbar = (isDark = false) => (
     <>
-      <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none h-[72px] sm:h-[80px]`}>
-        <nav className={`w-full h-full pointer-events-auto transition-all duration-500 flex items-center ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md border-b border-white/10' : 'bg-transparent'}`}>
-          <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
-            <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 h-10 sm:h-12`} onClick={handleNavToHome}>
+      <div className={`fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md border-b border-white/10' : 'bg-transparent'}`}>
+        <nav className="w-full pointer-events-auto transition-all duration-500 flex flex-col items-center">
+          
+          <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-24 flex flex-wrap items-center justify-between py-3 gap-y-3">
+            <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 h-8 sm:h-12`} onClick={handleNavToHome}>
               <img src="/salaaslogobg.png" alt="Salaaş Logo" className={`h-full w-auto object-contain ${isDark ? 'filter drop-shadow-md brightness-200' : ''}`} />
             </div>
             
@@ -1008,47 +1022,31 @@ export default function App() {
               <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="hover:text-orange-500 transition-colors">İletişim</button>
             </div>
             
-            <div className="shrink-0 flex items-center justify-end gap-3 sm:gap-4">
+            <div className="shrink-0 flex items-center justify-end gap-2 sm:gap-4">
               <button 
                 onClick={() => setShowRequestModal(true)} 
-                className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled && !isDark ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}
+                className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled && !isDark ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}
               >
-                <CalendarDays size={16} /> Rezervasyon
+                <CalendarDays size={14} /> <span className="hidden sm:inline">Rezervasyon</span><span className="sm:hidden">Rezv.</span>
               </button>
               <button 
                 onClick={handleNavToMenu} 
-                className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2"
+                className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] transition-all shadow-lg whitespace-nowrap flex items-center gap-1 sm:gap-2"
               >
-                <MenuSquare size={16} className="hidden sm:block" /> Dijital Menü
-              </button>
-              <button 
-                onClick={() => setIsMobileMenuOpen(true)}
-                className={`lg:hidden flex items-center justify-center p-2 rounded-lg transition-colors ${isScrolled || isDark ? 'text-slate-300 hover:text-white' : 'text-white drop-shadow-md'}`}
-              >
-                <Menu size={28} />
+                <MenuSquare size={14} /> <span className="hidden sm:inline">Dijital</span> Menü
               </button>
             </div>
+            
+            <div className={`lg:hidden w-full flex items-center justify-center gap-4 overflow-x-auto hide-scrollbar text-[11px] font-bold pb-2 ${isScrolled || isDark ? 'text-slate-300' : 'text-white drop-shadow-md'}`}>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">Biz Kimiz?</button>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">Lezzetler</button>
+              <button onClick={handleNavToPersonnel} className={`whitespace-nowrap hover:text-orange-500 transition-colors ${currentView === 'personnel' ? 'text-orange-500' : ''}`}>Personeller</button>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">İletişim</button>
+            </div>
+            
           </div>
         </nav>
       </div>
-
-      {/* MOBİL MENÜ ALANI */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[200] bg-[#0B3B2C]/95 backdrop-blur-xl flex flex-col p-6 animate-in fade-in duration-300 lg:hidden">
-          <div className="flex justify-between items-center w-full">
-            <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-10 object-contain filter drop-shadow-md brightness-200" />
-            <button onClick={() => setIsMobileMenuOpen(false)} className="text-white p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><X size={24} /></button>
-          </div>
-          <div className="flex flex-col items-center justify-center gap-8 flex-1 text-xl font-black text-white uppercase tracking-widest">
-            <button onClick={() => { setIsMobileMenuOpen(false); if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }}>Biz Kimiz?</button>
-            <button onClick={() => { setIsMobileMenuOpen(false); if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }}>Lezzetler</button>
-            <button onClick={() => { setIsMobileMenuOpen(false); handleNavToPersonnel(); }} className={currentView === 'personnel' ? 'text-orange-500' : ''}>Personellerimiz</button>
-            <button onClick={() => { setIsMobileMenuOpen(false); if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }}>İletişim</button>
-            <hr className="w-16 border-white/20" />
-            <button onClick={() => { setIsMobileMenuOpen(false); setShowRequestModal(true); }} className="text-emerald-400 flex items-center gap-2 bg-white/10 px-6 py-3 rounded-full"><CalendarDays size={20}/> Rezervasyon</button>
-          </div>
-        </div>
-      )}
     </>
   );
 
@@ -1313,8 +1311,8 @@ export default function App() {
       {/* DETAYLI PERSONEL MODALI VE YORUM ALANI */}
       {selectedPersonnel && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
-            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-slate-900/50 hover:bg-slate-900 text-white p-3 w-10 h-10 rounded-full transition-colors backdrop-blur-md flex items-center justify-center">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[85vh] sm:max-h-[90vh]">
+            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-slate-900/60 hover:bg-slate-900 text-white p-3 w-10 h-10 rounded-full transition-colors backdrop-blur-md flex items-center justify-center">
               <X size={24} />
             </button>
             
@@ -1340,7 +1338,7 @@ export default function App() {
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-5 sm:p-7 bg-slate-50 hide-scrollbar pb-6 sm:pb-8">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-7 bg-slate-50 hide-scrollbar pb-24 sm:pb-8">
                {selectedPersonnel.skills && (
                  <div className="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
                    <h4 className="text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Yetenekler & Uzmanlık</h4>
@@ -1455,8 +1453,13 @@ export default function App() {
                       <span className="text-[10px] font-bold text-slate-400">{new Date(rev.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                       
                       {rev.reply ? (
-                        <div className="mt-4 bg-blue-50 p-3.5 rounded-xl border border-blue-100 relative">
-                          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-1">Cevabınız</span>
+                        <div className="mt-4 bg-blue-50 p-3.5 rounded-xl border border-blue-100 relative group">
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Cevabınız</span>
+                            <button type="button" onClick={() => handleDeleteReply(managingReviewsFor.id, rev.id)} className="text-red-500 hover:text-red-700 p-1 bg-red-50 hover:bg-red-100 rounded transition-colors flex items-center gap-1 text-[10px] font-bold opacity-0 group-hover:opacity-100" title="Cevabı Sil">
+                              <Trash2 size={12}/> Sil
+                            </button>
+                          </div>
                           <p className="text-sm text-slate-700">{rev.reply}</p>
                         </div>
                       ) : (
@@ -1507,7 +1510,7 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
 
-        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-16">
+        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-24 sm:pt-20">
            <div className="absolute inset-0 z-0">
              <img src="/salaasarkaplan.jpeg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50 scale-105 object-center" />
              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent w-full"></div>
@@ -1549,7 +1552,7 @@ export default function App() {
         </header>
 
         <main className="w-full relative z-10 flex-1 flex flex-col">
-          <section id="hakkimizda" className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-20 md:py-32 text-center bg-white">
+          <section id="hakkimizda" className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-20 md:py-32 text-center bg-white">
             <div className="animate-float inline-block mb-6">
               <MoonStar size={56} className="text-orange-400 opacity-80" />
             </div>
@@ -1562,7 +1565,7 @@ export default function App() {
           </section>
 
           <section id="lezzetler" className="w-full py-20 md:py-32 border-y border-slate-200/50 bg-slate-50">
-            <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24">
+            <div className="w-full mx-auto px-4 sm:px-8 lg:px-12 xl:px-24">
               
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-12 gap-6">
                 <div>
@@ -1604,7 +1607,7 @@ export default function App() {
              <div className="absolute inset-0 opacity-5 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
              <div className="absolute -right-20 -top-20 opacity-10 text-emerald-500 hidden md:block"><Star size={500}/></div>
              
-             <div className="w-full px-4 sm:px-8 lg:px-16 text-center relative z-10">
+             <div className="w-full mx-auto px-4 sm:px-8 lg:px-16 text-center relative z-10">
                <h2 className="text-base lg:text-lg font-black tracking-[0.4em] text-emerald-400 uppercase mb-6">Davet & Organizasyon</h2>
                <h3 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-10 drop-shadow-lg text-white">Özel Günleriniz İçin Yanınızdayız</h3>
                <p className="text-lg sm:text-xl lg:text-3xl text-emerald-100 font-light mb-16 max-w-4xl mx-auto leading-relaxed">
@@ -1648,15 +1651,17 @@ export default function App() {
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
-           <div className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
+        <div className="fixed top-[90px] lg:top-[80px] left-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+           <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
                     id={`btn-${cat.id}`}
                     key={cat.id} 
                     onClick={() => scrollToMenuCategory(cat.id)} 
-                    className={`whitespace-nowrap px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border border-white/10 bg-[#161616] text-slate-300 hover:text-orange-500 hover:border-orange-500 transition-all uppercase text-[11px] sm:text-xs font-bold tracking-widest shadow-sm ${
-                      activeCategory === cat.id ? 'border-orange-500 text-orange-500 bg-transparent' : ''
+                    className={`whitespace-nowrap px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border transition-all uppercase text-[11px] sm:text-xs font-bold tracking-widest flex-shrink-0 ${
+                      activeCategory === cat.id 
+                        ? 'border-orange-500 text-orange-500 bg-orange-500/10 shadow-[0_0_10px_rgba(249,115,22,0.1)]' 
+                        : 'border-white/10 bg-[#111] text-slate-400 hover:text-white hover:border-white/30 hover:bg-[#1a1a1a]'
                     }`}
                   >
                       {cat.name}
@@ -1665,7 +1670,7 @@ export default function App() {
            </div>
         </div>
 
-        <main className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-12 md:py-20 relative z-10">
+        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-[160px] lg:pt-[180px] pb-12 md:pb-20 relative z-10">
            {activeGallery.length > 0 && (
              <div className="mb-24">
                 <div className="text-center mb-16">
@@ -1690,11 +1695,11 @@ export default function App() {
              </div>
            )}
 
-           <div className="space-y-20">
+           <div className="space-y-24">
               {activeMenuCategories.map(cat => {
                  const CatIcon = cat.Icon || UtensilsCrossed;
                  return (
-                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-44">
+                   <div id={`cat-${cat.id}`} key={cat.id} className="scroll-mt-[200px]">
                       <div className="flex items-center gap-4 mb-8">
                          <div className="bg-gradient-to-br from-orange-500 to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-[0_0_15px_rgba(249,115,22,0.3)] shrink-0">
                            <CatIcon size={20} />
@@ -1724,7 +1729,6 @@ export default function App() {
                                         <div className="flex justify-between items-start gap-4 mb-2"><span className="text-white font-bold text-sm sm:text-base tracking-wide leading-snug">{itemObj.name}</span>{itemObj.price && <span className="text-orange-400 font-black whitespace-nowrap text-sm sm:text-base">{itemObj.price} TL</span>}</div>
                                         {itemObj.description && <p className="text-slate-400 text-xs line-clamp-2 mb-3">{itemObj.description}</p>}
                                       </div>
-                                      <div className="w-full flex justify-end mt-auto"><div className="w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0)] group-hover:shadow-[0_0_8px_rgba(249,115,22,0.8)] transition-all"></div></div>
                                    </div>
                                 </div>
                              );
@@ -1785,7 +1789,7 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
         
-        <header className="w-full pt-32 pb-16 lg:pt-40 lg:pb-24 bg-[#0B3B2C] text-white text-center relative overflow-hidden">
+        <header className="w-full pt-36 pb-16 lg:pt-40 lg:pb-24 bg-[#0B3B2C] text-white text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
           <div className="relative z-10 px-4">
              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#FBE18D] to-orange-400">Ekibimizin Kalbi</h1>
@@ -1793,7 +1797,7 @@ export default function App() {
           </div>
         </header>
 
-        <main className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 py-16 relative z-10">
+        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-16 relative z-10">
            {personnelList.length === 0 ? (
              <div className="text-center text-slate-400 py-20 flex flex-col items-center">
                 <Users size={64} className="mb-4 opacity-50" />
