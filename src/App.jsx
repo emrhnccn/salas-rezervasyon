@@ -1048,14 +1048,6 @@ export default function App() {
                 <Menu size={28} />
               </button>
             </div>
-            
-            <div className={`lg:hidden w-full flex items-center justify-center gap-4 overflow-x-auto hide-scrollbar text-[11px] font-bold pb-2 ${isScrolled || isDark ? 'text-slate-300' : 'text-white drop-shadow-md'}`}>
-              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">Biz Kimiz?</button>
-              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">Lezzetler</button>
-              <button onClick={handleNavToPersonnel} className={`whitespace-nowrap hover:text-orange-500 transition-colors ${currentView === 'personnel' ? 'text-orange-500' : ''}`}>Personeller</button>
-              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">İletişim</button>
-            </div>
-            
           </div>
         </nav>
       </div>
@@ -1540,14 +1532,16 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
 
-        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-24 sm:pt-20 group cursor-default">
-           <div className="absolute inset-0 z-0 bg-slate-900 transition-colors duration-700 group-hover:bg-[#0f172a]">
-             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent w-full"></div>
-             <div className="absolute inset-0 opacity-[0.05] group-hover:opacity-[0.1] transition-opacity duration-700" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
+        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-16">
+           <div className="absolute inset-0 z-0">
+             <img src="/salaasarkaplan.jpeg" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50 scale-105 object-center" />
+             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent w-full"></div>
            </div>
            
-           <div className="relative z-10 text-center px-4 sm:px-6 w-full flex flex-col items-center justify-center h-full pb-10">
-              <img src="/salaaslogouzun.png" alt="Salaaş Cafe" className="w-full max-w-xl sm:max-w-3xl lg:max-w-5xl mx-auto object-contain mb-6 drop-shadow-2xl animate-fade-in-up delay-100 transform group-hover:scale-[1.02] transition-transform duration-700" />
+           <div className="relative z-10 text-center px-4 sm:px-6 w-full mx-auto flex flex-col items-center justify-center h-full pb-10">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wide text-white font-serif mb-6 drop-shadow-2xl animate-fade-in-up delay-100 leading-tight">
+                Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
+              </h1>
               <p className="text-lg sm:text-xl lg:text-3xl text-slate-200 max-w-4xl mx-auto font-medium mb-10 drop-shadow-lg animate-fade-in-up delay-200">
                 Şehrin gürültüsünden uzak, samimi atmosferimizde unutulmaz tatlar ve anılar biriktirin.
               </p>
@@ -1574,15 +1568,8 @@ export default function App() {
            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 animate-bounce cursor-pointer z-20" onClick={() => handleScrollToId('hakkimizda')}>
               <span className="text-[10px] sm:text-xs tracking-widest uppercase font-bold block mb-2 opacity-70 text-center">Keşfet</span>
               <div className="w-6 h-10 lg:w-8 lg:h-12 border-2 border-white/30 rounded-full flex justify-center p-1 mx-auto">
-                <div className="w-1 h-2 lg:h-3 bg-white/60 rounded-full group-hover:bg-orange-400 transition-colors duration-500"></div>
+                <div className="w-1 h-2 lg:h-3 bg-white/60 rounded-full"></div>
               </div>
-           </div>
-
-           {/* Alt Beyaz Alana Geçiş - Dalga (Wave) Efekti ve Hover */}
-           <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none transform translate-y-[1px]">
-              <svg className="relative block w-full h-[40px] sm:h-[60px] lg:h-[80px] text-white transition-all duration-700 ease-in-out group-hover:h-[60px] sm:group-hover:h-[80px] lg:group-hover:h-[120px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                  <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,130.85,133.32,204.34,114.32,244.38,103.85,283.74,80.7,321.39,56.44Z" fill="currentColor"></path>
-              </svg>
            </div>
         </header>
 
@@ -1686,7 +1673,7 @@ export default function App() {
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-[45] bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/5 py-3 sm:py-4 shadow-xl w-full">
+        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
            <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
@@ -1705,7 +1692,7 @@ export default function App() {
            </div>
         </div>
 
-        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-12 md:pt-20 pb-12 md:pb-20 relative z-10">
+        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-[160px] lg:pt-[180px] pb-12 md:pb-20 relative z-10">
            {activeGallery.length > 0 && (
              <div className="mb-24">
                 <div className="text-center mb-16">
