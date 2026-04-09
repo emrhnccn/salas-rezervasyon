@@ -5,7 +5,7 @@ import {
   Printer, MessageSquareText, MessageCircle, Map, Flame, BellRing, 
   MonitorPlay, Lock, ArrowRight, MapPin, Instagram, Wind, Coffee, 
   ChevronRight, Star, Inbox, CheckCircle2, AlertTriangle, History, MenuSquare,
-  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud, GripVertical, UserSquare
+  Image as ImageIcon, AlignLeft, DollarSign, UploadCloud, GripVertical, UserSquare, Menu
 } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
@@ -94,7 +94,7 @@ const DEFAULT_MENU_ITEMS = [
 
 const GLOBAL_CSS = `
 #root { width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc !important; scroll-behavior: smooth; overflow-x: hidden; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -128,6 +128,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [bulkMessage, setBulkMessage] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobil menü state'i eklendi
   
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
@@ -221,6 +222,17 @@ export default function App() {
       }).filter(cat => cat.items.length > 0);
 
   const [activeCategory, setActiveCategory] = useState('');
+
+  // Mobil cihazlarda doğru render için Viewport meta tag enjeksiyonu
+  useEffect(() => {
+    let viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (!viewportMeta) {
+      viewportMeta = document.createElement('meta');
+      viewportMeta.name = 'viewport';
+      document.head.appendChild(viewportMeta);
+    }
+    viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+  }, []);
 
   useEffect(() => {
     if (!activeCategory && activeMenuCategories.length > 0) {
@@ -981,37 +993,63 @@ export default function App() {
 
   // --- RENDER MODÜLLERİ (YARDIMCI COMPONENTLER) ---
   const renderNavbar = (isDark = false) => (
-    <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none h-[72px] sm:h-[80px]`}>
-      <nav className={`w-full h-full pointer-events-auto transition-all duration-500 flex items-center ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md border-b border-white/10' : 'bg-transparent'}`}>
-        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
-          <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 h-10 sm:h-12`} onClick={handleNavToHome}>
-            <img src="/salaaslogobg.png" alt="Salaaş Logo" className={`h-full w-auto object-contain ${isDark ? 'filter drop-shadow-md brightness-200' : ''}`} />
+    <>
+      <div className={`fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none h-[72px] sm:h-[80px]`}>
+        <nav className={`w-full h-full pointer-events-auto transition-all duration-500 flex items-center ${isScrolled || isDark ? 'bg-black/90 backdrop-blur-md shadow-md border-b border-white/10' : 'bg-transparent'}`}>
+          <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-24 flex items-center justify-between">
+            <div className={`transition-all duration-500 cursor-pointer flex items-center justify-center shrink-0 h-10 sm:h-12`} onClick={handleNavToHome}>
+              <img src="/salaaslogobg.png" alt="Salaaş Logo" className={`h-full w-auto object-contain ${isDark ? 'filter drop-shadow-md brightness-200' : ''}`} />
+            </div>
+            
+            <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-12 font-bold text-sm xl:text-base transition-colors duration-500 ${isScrolled || isDark ? 'text-slate-300' : 'text-white drop-shadow-md'}`}>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }} className="hover:text-orange-500 transition-colors">Lezzetler</button>
+              <button onClick={handleNavToPersonnel} className={`hover:text-orange-500 transition-colors ${currentView === 'personnel' ? 'text-orange-500' : ''}`}>Personellerimiz</button>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="hover:text-orange-500 transition-colors">İletişim</button>
+            </div>
+            
+            <div className="shrink-0 flex items-center justify-end gap-3 sm:gap-4">
+              <button 
+                onClick={() => setShowRequestModal(true)} 
+                className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled && !isDark ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}
+              >
+                <CalendarDays size={16} /> Rezervasyon
+              </button>
+              <button 
+                onClick={handleNavToMenu} 
+                className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2"
+              >
+                <MenuSquare size={16} className="hidden sm:block" /> Dijital Menü
+              </button>
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className={`lg:hidden flex items-center justify-center p-2 rounded-lg transition-colors ${isScrolled || isDark ? 'text-slate-300 hover:text-white' : 'text-white drop-shadow-md'}`}
+              >
+                <Menu size={28} />
+              </button>
+            </div>
           </div>
-          
-          <div className={`hidden lg:flex flex-1 justify-center items-center gap-6 xl:gap-12 font-bold text-sm xl:text-base transition-colors duration-500 ${isScrolled || isDark ? 'text-slate-300' : 'text-white drop-shadow-md'}`}>
-            <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }} className="hover:text-orange-500 transition-colors">Biz Kimiz?</button>
-            <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }} className="hover:text-orange-500 transition-colors">Lezzetler</button>
-            <button onClick={handleNavToPersonnel} className={`hover:text-orange-500 transition-colors ${currentView === 'personnel' ? 'text-orange-500' : ''}`}>Personellerimiz</button>
-            <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="hover:text-orange-500 transition-colors">İletişim</button>
+        </nav>
+      </div>
+
+      {/* MOBİL MENÜ ALANI */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[200] bg-[#0B3B2C]/95 backdrop-blur-xl flex flex-col p-6 animate-in fade-in duration-300 lg:hidden">
+          <div className="flex justify-between items-center w-full">
+            <img src="/salaaslogobg.png" alt="Salaaş Logo" className="h-10 object-contain filter drop-shadow-md brightness-200" />
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-white p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><X size={24} /></button>
           </div>
-          
-          <div className="shrink-0 flex items-center justify-end gap-3 sm:gap-4">
-            <button 
-              onClick={() => setShowRequestModal(true)} 
-              className={`hidden sm:flex items-center gap-2 px-4 py-2.5 xl:px-6 xl:py-3 rounded-full text-xs xl:text-sm font-bold tracking-widest uppercase transition-all shadow-md ${isScrolled && !isDark ? 'bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50' : 'bg-emerald-700/80 backdrop-blur-sm text-white hover:bg-emerald-600 border border-emerald-500/50'}`}
-            >
-              <CalendarDays size={16} /> Rezervasyon
-            </button>
-            <button 
-              onClick={handleNavToMenu} 
-              className="shine-effect bg-black/80 text-[#FBE18D] border border-[#FBE18D]/30 px-5 py-2.5 sm:px-6 sm:py-3 xl:px-8 xl:py-3.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase hover:bg-black hover:border-[#FBE18D] hover:scale-105 transition-all shadow-lg whitespace-nowrap flex items-center gap-2"
-            >
-              <MenuSquare size={16} /> Dijital Menü
-            </button>
+          <div className="flex flex-col items-center justify-center gap-8 flex-1 text-xl font-black text-white uppercase tracking-widest">
+            <button onClick={() => { setIsMobileMenuOpen(false); if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }}>Biz Kimiz?</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }}>Lezzetler</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); handleNavToPersonnel(); }} className={currentView === 'personnel' ? 'text-orange-500' : ''}>Personellerimiz</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }}>İletişim</button>
+            <hr className="w-16 border-white/20" />
+            <button onClick={() => { setIsMobileMenuOpen(false); setShowRequestModal(true); }} className="text-emerald-400 flex items-center gap-2 bg-white/10 px-6 py-3 rounded-full"><CalendarDays size={20}/> Rezervasyon</button>
           </div>
         </div>
-      </nav>
-    </div>
+      )}
+    </>
   );
 
   const renderFooter = () => (
@@ -1188,7 +1226,7 @@ export default function App() {
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
             <div className="bg-[#0B3B2C] p-6 sm:p-8 flex items-center justify-between text-white">
               <h3 className="font-black tracking-wide flex items-center gap-2 sm:gap-3 text-lg sm:text-xl"><Lock size={20} className="text-orange-400"/> Sistem Girişi</h3>
-              <button type="button" onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-2 sm:p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={20}/></button>
+              <button type="button" onClick={() => {setShowLoginModal(false); setLoginError('');}} className="p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24}/></button>
             </div>
             
             <form onSubmit={handleLogin} className="p-6 sm:p-8 space-y-4 sm:space-y-6 bg-white">
@@ -1220,8 +1258,8 @@ export default function App() {
       {selectedMenuItem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300">
-            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white p-2 rounded-full transition-colors">
-              <X size={20} />
+            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white p-3 w-10 h-10 rounded-full transition-colors flex items-center justify-center">
+              <X size={24} />
             </button>
             
             <div className="w-full bg-slate-100 relative flex justify-center items-center border-b border-slate-200">
@@ -1276,8 +1314,8 @@ export default function App() {
       {selectedPersonnel && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[90vh]">
-            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-slate-900/50 hover:bg-slate-900 text-white p-2 rounded-full transition-colors backdrop-blur-md">
-              <X size={20} />
+            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-slate-900/50 hover:bg-slate-900 text-white p-3 w-10 h-10 rounded-full transition-colors backdrop-blur-md flex items-center justify-center">
+              <X size={24} />
             </button>
             
             <div className="w-full bg-slate-900 relative flex justify-center items-end shrink-0 border-b border-slate-800 overflow-hidden">
@@ -1390,7 +1428,7 @@ export default function App() {
                    </h3>
                    <p className="text-sm font-medium text-slate-500 mt-1">{managingReviewsFor.name} {managingReviewsFor.surname}</p>
                 </div>
-                <button type="button" onClick={()=>setManagingReviewsFor(null)} className="p-2 bg-white hover:bg-slate-200 rounded-full transition-colors shadow-sm"><X size={18}/></button>
+                <button type="button" onClick={()=>setManagingReviewsFor(null)} className="p-3 bg-white hover:bg-slate-200 rounded-full transition-colors shadow-sm w-10 h-10 flex items-center justify-center"><X size={24}/></button>
               </div>
               
               <div className="overflow-y-auto flex-1 p-6 space-y-4 bg-white">
@@ -1606,12 +1644,7 @@ export default function App() {
       <div className="min-h-screen bg-[#0a0a0a] font-sans text-slate-200 relative w-full">
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         
-        {/* Background Layer */}
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
-          <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-yellow-600/10 rounded-full blur-[150px] translate-x-1/3 translate-y-1/3"></div>
-        </div>
+        <div className="absolute inset-0 opacity-[0.03] z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '30px 30px' }}></div>
 
         {renderNavbar(true)}
         
