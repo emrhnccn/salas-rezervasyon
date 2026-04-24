@@ -105,7 +105,7 @@ const DEFAULT_MENU_ITEMS = [
 
 const GLOBAL_CSS = `
 #root { width: 100% !important; margin: 0 !important; padding: 0 !important; }
-body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; scroll-behavior: smooth; }
+body, html { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background-color: #f8fafc !important; scroll-behavior: smooth; color-scheme: light; }
 @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -1048,6 +1048,14 @@ export default function App() {
                 <Menu size={28} />
               </button>
             </div>
+            
+            <div className={`lg:hidden w-full flex items-center justify-center gap-4 overflow-x-auto hide-scrollbar text-[11px] font-bold pb-2 ${isScrolled || isDark ? 'text-slate-300' : 'text-white drop-shadow-md'}`}>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('hakkimizda'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">Biz Kimiz?</button>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('lezzetler'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">Lezzetler</button>
+              <button onClick={handleNavToPersonnel} className={`whitespace-nowrap hover:text-orange-500 transition-colors ${currentView === 'personnel' ? 'text-orange-500' : ''}`}>Personeller</button>
+              <button onClick={() => { if (currentView !== 'landing') handleNavToHome(); setTimeout(() => handleScrollToId('iletisim'), 100); }} className="whitespace-nowrap hover:text-orange-500 transition-colors">İletişim</button>
+            </div>
+            
           </div>
         </nav>
       </div>
@@ -1184,19 +1192,19 @@ export default function App() {
                   <div>
                     <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Rezervasyon Türü</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'kahvalti'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'kahvalti' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white'}`}>
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'kahvalti'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'kahvalti' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white text-slate-800'}`}>
                            <Coffee size={18}/> Kahvaltı
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'yemek'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'yemek' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white'}`}>
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'yemek'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'yemek' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white text-slate-800'}`}>
                            <UtensilsCrossed size={18}/> Yemek
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200 bg-white'}`}>
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200 bg-white text-slate-800'}`}>
                            <MonitorPlay size={18}/> Maç
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'dogum_gunu'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'dogum_gunu' ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-purple-200 bg-white'}`}>
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'dogum_gunu'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'dogum_gunu' ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-purple-200 bg-white text-slate-800'}`}>
                            <Star size={18}/> Doğum Günü
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'organizasyon'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 md:col-span-2 ${requestData.type === 'organizasyon' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-emerald-200 bg-white'}`}>
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'organizasyon'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 md:col-span-2 ${requestData.type === 'organizasyon' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-emerald-200 bg-white text-slate-800'}`}>
                            <Users size={18}/> Organizasyon
                         </button>
                     </div>
@@ -1205,22 +1213,22 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row gap-5">
                     <div className="flex-[2]">
                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
-                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className="w-full bg-white px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold text-slate-800 transition-all text-lg" required placeholder="Adınız Soyadınız" />
+                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-lg" required placeholder="Adınız Soyadınız" />
                     </div>
                     <div className="flex-[1]">
                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi Sayısı</label>
-                      <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className="w-full bg-white px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold text-slate-800 transition-all text-center text-lg" required />
+                      <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-center text-lg" required />
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-5">
                      <div className="flex-1">
                         <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
-                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className="w-full bg-white px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold text-slate-800 transition-all text-lg" required placeholder="05XX..." />
+                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-lg" required placeholder="05XX..." />
                      </div>
                      <div className="flex-1">
                         <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tarih</label>
-                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className="w-full bg-white px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold text-slate-800 transition-all text-lg" required />
+                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-lg" required />
                      </div>
                   </div>
 
@@ -1228,7 +1236,7 @@ export default function App() {
                     <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">
                       {(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'Detaylı Açıklama (Zorunlu)' : 'Notunuz (İsteğe Bağlı)'}
                     </label>
-                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className="w-full bg-white px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-medium text-slate-800 transition-all resize-none text-base" placeholder="Özel isteklerinizi yazın."></textarea>
+                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-medium transition-all resize-none text-base" placeholder="Özel isteklerinizi yazın."></textarea>
                   </div>
 
                   <button type="submit" className="w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg bg-emerald-600 hover:bg-emerald-700">
@@ -1420,12 +1428,12 @@ export default function App() {
                    
                    {!reviewData.isAnonymous && (
                      <div>
-                       <input type="text" placeholder="Adınız Soyadınız" value={reviewData.name} onChange={(e) => setReviewData({...reviewData, name: e.target.value})} className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm font-bold bg-white transition-colors" required />
+                       <input type="text" placeholder="Adınız Soyadınız" value={reviewData.name} onChange={(e) => setReviewData({...reviewData, name: e.target.value})} className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm font-bold bg-white text-slate-800 transition-colors" required />
                      </div>
                    )}
                    
                    <div>
-                     <textarea placeholder="Personelimiz hakkındaki görüşlerinizi yazın..." value={reviewData.comment} onChange={(e) => setReviewData({...reviewData, comment: e.target.value})} rows="3" className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm resize-none bg-white transition-colors" required></textarea>
+                     <textarea placeholder="Personelimiz hakkındaki görüşlerinizi yazın..." value={reviewData.comment} onChange={(e) => setReviewData({...reviewData, comment: e.target.value})} rows="3" className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm resize-none bg-white text-slate-800 transition-colors" required></textarea>
                    </div>
                    
                    <button type="submit" className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-black uppercase tracking-widest text-sm transition-transform hover:-translate-y-1 shadow-lg mt-2">Yorumu Gönder</button>
@@ -1491,7 +1499,7 @@ export default function App() {
                             placeholder="Müşteriye yanıt yazın..." 
                             value={replyTexts[rev.id] || ''} 
                             onChange={(e) => setReplyTexts({...replyTexts, [rev.id]: e.target.value})}
-                            className="flex-1 text-sm p-3 rounded-xl border border-slate-300 focus:border-blue-500 outline-none font-medium"
+                            className="flex-1 text-sm p-3 rounded-xl border border-slate-300 focus:border-blue-500 outline-none font-medium bg-white text-slate-800"
                           />
                           <button 
                             type="button"
@@ -1514,7 +1522,7 @@ export default function App() {
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col p-6">
               <h3 className="font-black text-lg mb-4 text-slate-800">Yeni Kategori Ekle</h3>
-              <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-bold mb-6 text-slate-800" autoFocus />
+              <input type="text" placeholder="Örn: Tatlılar" value={newCategoryName} onChange={(e)=>setNewCategoryName(e.target.value)} className="w-full p-3 border-2 border-slate-200 rounded-xl focus:border-emerald-500 outline-none font-bold mb-6 text-slate-800 bg-white" autoFocus />
               <div className="flex gap-3">
                  <button type="button" onClick={()=>setShowCategoryModal(false)} className="flex-1 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-colors">İptal</button>
                  <button type="button" onClick={handleAddCategory} className="flex-1 py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-md hover:bg-emerald-700 transition-colors">Ekle</button>
@@ -1532,13 +1540,13 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
 
-        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-16">
-           <div className="absolute inset-0 z-0">
-             <img src="/salaasarkaplan.png" alt="Salaaş Cafe Arka Plan" className="w-full h-full object-cover opacity-50 scale-105 object-center" />
-             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent w-full"></div>
+        <header className="relative w-full min-h-[500px] h-[75vh] lg:h-[85vh] max-h-[1000px] bg-slate-900 flex items-center justify-center overflow-hidden pt-24 sm:pt-20">
+           <div className="absolute inset-0 z-0 bg-slate-900">
+             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent w-full"></div>
+             <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #FBE18D 2px, transparent 2px)', backgroundSize: '40px 40px' }}></div>
            </div>
            
-           <div className="relative z-10 text-center px-4 sm:px-6 w-full mx-auto flex flex-col items-center justify-center h-full pb-10">
+           <div className="relative z-10 text-center px-4 sm:px-6 w-full flex flex-col items-center justify-center h-full pb-10">
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-wide text-white font-serif mb-6 drop-shadow-2xl animate-fade-in-up delay-100 leading-tight">
                 Lezzet ve <span className="text-orange-400">Muhabbetin</span> Adresi
               </h1>
@@ -1673,7 +1681,7 @@ export default function App() {
 
         {renderNavbar(true)}
         
-        <div className="sticky top-[72px] sm:top-[80px] z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/10 py-3 sm:py-4 shadow-xl w-full">
+        <div className="sticky top-[72px] sm:top-[80px] z-[45] bg-[#0a0a0a]/95 backdrop-blur-md border-b border-white/5 py-3 sm:py-4 shadow-xl w-full">
            <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 flex overflow-x-auto gap-3 sm:gap-4 hide-scrollbar items-center">
               {activeMenuCategories.map(cat => (
                   <button 
@@ -1692,7 +1700,7 @@ export default function App() {
            </div>
         </div>
 
-        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-[160px] lg:pt-[180px] pb-12 md:pb-20 relative z-10">
+        <main className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 pt-12 md:pt-20 pb-12 md:pb-20 relative z-10">
            {activeGallery.length > 0 && (
              <div className="mb-24">
                 <div className="text-center mb-16">
@@ -1959,7 +1967,7 @@ export default function App() {
                   {activeAdminTab === 'restoran' && (
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Türü</label>
-                      <select name="type" value={formData.type} onChange={(e)=>setFormData({...formData, type: e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold outline-none"><option value="kahvalti">Kahvaltı</option><option value="yemek">Yemek</option><option value="dogum_gunu">Doğum Günü</option><option value="organizasyon">Organizasyon</option></select>
+                      <select name="type" value={formData.type} onChange={(e)=>setFormData({...formData, type: e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold outline-none bg-white text-slate-800"><option value="kahvalti">Kahvaltı</option><option value="yemek">Yemek</option><option value="dogum_gunu">Doğum Günü</option><option value="organizasyon">Organizasyon</option></select>
                     </div>
                   )}
                   <div><label className="block text-xs font-bold text-slate-500 uppercase mb-1">İsim</label><input type="text" name="name" value={activeAdminTab==='mac'?matchFormData.name:formData.name} onChange={(e)=>activeAdminTab==='mac'?setMatchFormData({...matchFormData, name:e.target.value}):setFormData({...formData, name:e.target.value})} className="w-full p-3 rounded-xl border-2 border-slate-200 font-bold bg-white text-slate-800" required /></div>
