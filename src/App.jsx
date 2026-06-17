@@ -1666,18 +1666,24 @@ export default function App() {
         </header>
 
         <main className="w-full relative z-10 flex-1 flex flex-col">
-          <section id="hakkimizda" className="w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-24 md:py-36 text-center bg-[#1c1917] text-white">
-            <div className="animate-float inline-block mb-8">
-              <div className="w-20 h-20 rounded-full bg-[#c2784f]/10 flex items-center justify-center border border-[#c2784f]/20 shadow-[0_0_30px_rgba(194,120,79,0.15)]">
-                <MoonStar size={40} className="text-[#c2784f]" />
-              </div>
+          <section id="hakkimizda" className="relative w-full mx-auto px-4 sm:px-8 lg:px-16 xl:px-24 py-24 md:py-36 text-center bg-[#1c1917] text-white bg-[url('/bizkimizarkaplan.png')] bg-cover bg-center bg-fixed">
+            <div className="absolute inset-0 z-0 bg-black/60">
+              <div className="absolute inset-0 bg-gradient-to-b from-[#1c1917] via-black/40 to-[#0a0908]"></div>
             </div>
-            <h2 className="text-[10px] sm:text-xs lg:text-sm font-black tracking-[0.4em] text-[#e09f7a] uppercase mb-4">Hikayemiz</h2>
-            <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light text-white mb-10 leading-tight">Sıcak, Samimi ve <span className="text-gradient-copper font-black italic">Lezzetli</span></h3>
-            <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed font-light max-w-4xl mx-auto px-4">
-              Salaaş Cafe Restaurant olarak, misafirlerimize kendilerini evlerinde hissedecekleri sıcak bir ortam sunuyoruz. Özenle seçilmiş malzemelerle hazırladığımız zengin menümüz, imza ızgaralarımız, serpme kahvaltımız ve keyifli nargile köşemizle günün her saatinde kaliteli bir deneyim yaşatmayı hedefliyoruz.
-            </p>
-            <div className="w-20 h-1 bg-[#c2784f] mx-auto mt-16 rounded-full opacity-50"></div>
+            
+            <div className="relative z-10">
+              <div className="animate-float inline-block mb-8">
+                <div className="w-20 h-20 rounded-full bg-[#c2784f]/10 flex items-center justify-center border border-[#c2784f]/20 shadow-[0_0_30px_rgba(194,120,79,0.15)]">
+                  <MoonStar size={40} className="text-[#c2784f]" />
+                </div>
+              </div>
+              <h2 className="text-[10px] sm:text-xs lg:text-sm font-black tracking-[0.4em] text-[#e09f7a] uppercase mb-4">Hikayemiz</h2>
+              <h3 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light text-white mb-10 leading-tight">Sıcak, Samimi ve <span className="text-gradient-copper font-black italic">Lezzetli</span></h3>
+              <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed font-light max-w-4xl mx-auto px-4">
+                Salaaş Cafe Restaurant olarak, misafirlerimize kendilerini evlerinde hissedecekleri sıcak bir ortam sunuyoruz. Özenle seçilmiş malzemelerle hazırladığımız zengin menümüz, imza ızgaralarımız, serpme kahvaltımız ve keyifli nargile köşemizle günün her saatinde kaliteli bir deneyim yaşatmayı hedefliyoruz.
+              </p>
+              <div className="w-20 h-1 bg-[#c2784f] mx-auto mt-16 rounded-full opacity-50"></div>
+            </div>
           </section>
 
           <section id="lezzetler" className="w-full py-24 md:py-36 bg-[#0a0908] relative">
