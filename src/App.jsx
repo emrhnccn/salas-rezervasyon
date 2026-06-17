@@ -1169,80 +1169,81 @@ export default function App() {
   const renderModals = () => (
     <>
       {showRequestModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
-            <div className="bg-emerald-700 p-6 sm:p-8 flex items-center justify-between text-white shrink-0 z-10">
-              <h3 className="font-black tracking-wide flex items-center gap-3 text-xl lg:text-2xl"><CalendarDays size={28} className="text-emerald-300"/> Rezervasyon Talebi</h3>
-              <button type="button" onClick={() => setShowRequestModal(false)} className="p-3 hover:bg-white/20 rounded-2xl transition-colors"><X size={28}/></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0a0908] rounded-3xl shadow-[0_0_50px_rgba(194,120,79,0.15)] border border-white/10 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4 duration-300">
+            <div className="glass-panel p-6 sm:p-8 flex items-center justify-between text-white shrink-0 z-10 border-b border-white/10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#c2784f]/20 to-transparent opacity-50"></div>
+              <h3 className="font-black tracking-widest uppercase flex items-center gap-3 text-lg lg:text-xl relative z-10"><CalendarDays size={24} className="text-[#c2784f]"/> Rezervasyon Talebi</h3>
+              <button type="button" onClick={() => setShowRequestModal(false)} className="p-3 hover:bg-white/10 rounded-2xl transition-colors relative z-10"><X size={24}/></button>
             </div>
             
-            <div className="overflow-y-auto bg-white flex-1 relative">
+            <div className="overflow-y-auto bg-transparent flex-1 relative custom-scrollbar">
               {requestSuccess ? (
                  <div className="p-16 flex flex-col items-center justify-center text-center space-y-6 h-full min-h-[400px]">
-                    <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4"><CheckCircle2 size={48} /></div>
-                    <h3 className="text-3xl font-black text-slate-800">Talebiniz Alındı!</h3>
-                    <p className="text-lg text-slate-500">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
+                    <div className="w-24 h-24 bg-[#c2784f]/20 text-[#c2784f] border border-[#c2784f]/30 rounded-full flex items-center justify-center mb-4"><CheckCircle2 size={48} /></div>
+                    <h3 className="text-3xl font-black text-white tracking-wide">Talebiniz Alındı!</h3>
+                    <p className="text-lg text-slate-400 font-light leading-relaxed">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
                  </div>
               ) : (
                 <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
                   {requestError && (
-                    <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold border border-red-100 flex items-center gap-3">
+                    <div className="bg-red-500/10 text-red-400 p-4 rounded-2xl text-sm font-bold border border-red-500/20 flex items-center gap-3">
                       <AlertTriangle size={20} className="shrink-0" /> {requestError}
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Rezervasyon Türü</label>
+                    <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Rezervasyon Türü</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'kahvalti'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'kahvalti' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white text-slate-800'}`}>
-                           <Coffee size={18}/> Kahvaltı
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'kahvalti'})} className={`py-3.5 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-2 ${requestData.type === 'kahvalti' ? 'border-[#c2784f] bg-[#c2784f]/10 text-[#c2784f] shadow-[0_0_15px_rgba(194,120,79,0.2)]' : 'border-white/10 text-slate-400 hover:border-white/20 bg-white/5 hover:bg-white/10'}`}>
+                           <Coffee size={16}/> Kahvaltı
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'yemek'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'yemek' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-orange-200 bg-white text-slate-800'}`}>
-                           <UtensilsCrossed size={18}/> Yemek
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'yemek'})} className={`py-3.5 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-2 ${requestData.type === 'yemek' ? 'border-[#c2784f] bg-[#c2784f]/10 text-[#c2784f] shadow-[0_0_15px_rgba(194,120,79,0.2)]' : 'border-white/10 text-slate-400 hover:border-white/20 bg-white/5 hover:bg-white/10'}`}>
+                           <UtensilsCrossed size={16}/> Yemek
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-blue-200 bg-white text-slate-800'}`}>
-                           <MonitorPlay size={18}/> Maç
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'mac'})} className={`py-3.5 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-2 ${requestData.type === 'mac' ? 'border-[#c2784f] bg-[#c2784f]/10 text-[#c2784f] shadow-[0_0_15px_rgba(194,120,79,0.2)]' : 'border-white/10 text-slate-400 hover:border-white/20 bg-white/5 hover:bg-white/10'}`}>
+                           <MonitorPlay size={16}/> Maç
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'dogum_gunu'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 ${requestData.type === 'dogum_gunu' ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-purple-200 bg-white text-slate-800'}`}>
-                           <Star size={18}/> Doğum Günü
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'dogum_gunu'})} className={`py-3.5 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-2 ${requestData.type === 'dogum_gunu' ? 'border-[#c2784f] bg-[#c2784f]/10 text-[#c2784f] shadow-[0_0_15px_rgba(194,120,79,0.2)]' : 'border-white/10 text-slate-400 hover:border-white/20 bg-white/5 hover:bg-white/10'}`}>
+                           <Star size={16}/> Doğum Günü
                         </button>
-                        <button type="button" onClick={() => setRequestData({...requestData, type: 'organizasyon'})} className={`py-3.5 rounded-2xl font-black text-sm sm:text-base border-2 transition-all flex items-center justify-center gap-2 md:col-span-2 ${requestData.type === 'organizasyon' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-md' : 'border-slate-200 text-slate-500 hover:border-emerald-200 bg-white text-slate-800'}`}>
-                           <Users size={18}/> Organizasyon
+                        <button type="button" onClick={() => setRequestData({...requestData, type: 'organizasyon'})} className={`py-3.5 rounded-2xl font-bold text-sm border transition-all flex items-center justify-center gap-2 md:col-span-2 ${requestData.type === 'organizasyon' ? 'border-[#c2784f] bg-[#c2784f]/10 text-[#c2784f] shadow-[0_0_15px_rgba(194,120,79,0.2)]' : 'border-white/10 text-slate-400 hover:border-white/20 bg-white/5 hover:bg-white/10'}`}>
+                           <Users size={16}/> Organizasyon
                         </button>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-5">
                     <div className="flex-[2]">
-                      <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Ad Soyad</label>
-                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-lg" required placeholder="Adınız Soyadınız" />
+                      <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Ad Soyad</label>
+                      <input type="text" name="name" value={requestData.name} onChange={handleRequestChange} className="w-full bg-white/5 text-white px-5 py-4 rounded-2xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all text-base placeholder-slate-600" required placeholder="Adınız Soyadınız" />
                     </div>
                     <div className="flex-[1]">
-                       <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Kişi Sayısı</label>
-                       <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} onClick={e => e.target.select()} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-center text-lg" required />
+                       <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Kişi Sayısı</label>
+                       <input type="number" name="peopleCount" min="1" value={requestData.peopleCount} onChange={handleRequestChange} onClick={e => e.target.select()} className="w-full bg-white/5 text-white px-5 py-4 rounded-2xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all text-center text-base" required />
                      </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-5">
                      <div className="flex-1">
-                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Telefon</label>
-                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-lg" required placeholder="05XX..." />
+                        <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Telefon</label>
+                        <input type="tel" name="phone" value={requestData.phone} onChange={handleRequestChange} className="w-full bg-white/5 text-white px-5 py-4 rounded-2xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all text-base placeholder-slate-600" required placeholder="05XX..." />
                      </div>
                      <div className="flex-1">
-                        <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Tarih</label>
-                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-bold transition-all text-lg" required />
+                        <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Tarih</label>
+                        <input type="date" name="date" value={requestData.date} onChange={handleRequestChange} className="w-full bg-white/5 text-white px-5 py-4 rounded-2xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all text-base color-scheme-dark" required />
                      </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">
+                    <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">
                       {(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon') ? 'Detaylı Açıklama (Zorunlu)' : 'Notunuz (İsteğe Bağlı)'}
                     </label>
-                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className="w-full bg-white text-slate-800 px-5 py-4 rounded-2xl border-2 border-slate-200 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none font-medium transition-all resize-none text-base" placeholder="Özel isteklerinizi yazın."></textarea>
+                    <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className="w-full bg-white/5 text-white px-5 py-4 rounded-2xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all resize-none text-sm placeholder-slate-600" placeholder="Özel isteklerinizi yazın."></textarea>
                   </div>
 
-                  <button type="submit" className="w-full text-white font-black tracking-widest uppercase py-5 rounded-2xl transition-all shadow-lg hover:shadow-xl mt-4 flex items-center justify-center gap-3 hover:-translate-y-1 text-lg bg-emerald-600 hover:bg-emerald-700">
-                    Talebi Gönder <ArrowRight size={24} />
+                  <button type="submit" className="w-full btn-premium shine-effect font-black tracking-[0.2em] uppercase py-5 rounded-2xl mt-6 flex items-center justify-center gap-3 text-sm">
+                    Talebi Gönder <ArrowRight size={20} />
                   </button>
                 </form>
               )}
@@ -1286,53 +1287,53 @@ export default function App() {
 
       {/* DETAYLI ÜRÜN MODALI */}
       {selectedMenuItem && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300">
-            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-slate-900/50 hover:bg-slate-900 text-white p-3 w-10 h-10 rounded-full transition-colors flex items-center justify-center">
-              <X size={24} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#120f0d] rounded-3xl shadow-[0_0_50px_rgba(194,120,79,0.15)] border border-white/10 w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300">
+            <button type="button" onClick={() => setSelectedMenuItem(null)} className="absolute top-4 right-4 z-10 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-3 w-10 h-10 rounded-full transition-colors flex items-center justify-center border border-white/10">
+              <X size={20} />
             </button>
             
-            <div className="w-full bg-slate-100 relative flex justify-center items-center border-b border-slate-200">
+            <div className="w-full bg-[#0a0908] relative flex justify-center items-center border-b border-white/5 min-h-[12rem]">
               {selectedMenuItem.image ? (
                  <img src={selectedMenuItem.image} alt={selectedMenuItem.name} className={`w-full h-auto max-h-[45vh] object-contain ${selectedMenuItem.isSoldOut ? 'opacity-40 grayscale' : ''}`} />
               ) : (
-                 <div className="w-full h-48 flex items-center justify-center text-slate-400"><ImageIcon size={48} /></div>
+                 <div className="w-full h-48 flex items-center justify-center text-slate-600"><ImageIcon size={48} /></div>
               )}
               {selectedMenuItem.isSoldOut && (
-                 <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-red-600/90 text-white px-6 py-2 rounded-xl font-black text-xl tracking-widest uppercase rotate-[-10deg] shadow-2xl border-2 border-white">TÜKENDİ</span>
+                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <span className="bg-red-900/80 text-white px-6 py-2 rounded-xl font-black text-xl tracking-widest uppercase shadow-2xl border border-red-500/30">TÜKENDİ</span>
                  </div>
               )}
             </div>
             
             <div className="p-6 sm:p-8 flex flex-col gap-4">
                <div className="flex justify-between items-start gap-4">
-                  <h3 className={`text-2xl font-serif font-black leading-tight ${selectedMenuItem.isSoldOut ? 'text-slate-500' : 'text-[#0B3B2C]'}`}>{selectedMenuItem.name}</h3>
-                  {selectedMenuItem.price && <span className={`text-xl font-black whitespace-nowrap ${selectedMenuItem.isSoldOut ? 'text-slate-400' : 'text-orange-500'}`}>{selectedMenuItem.price} TL</span>}
+                  <h3 className={`text-2xl font-serif font-light tracking-wide leading-tight ${selectedMenuItem.isSoldOut ? 'text-slate-500' : 'text-white'}`}>{selectedMenuItem.name}</h3>
+                  {selectedMenuItem.price && <span className={`text-xl font-serif whitespace-nowrap ${selectedMenuItem.isSoldOut ? 'text-slate-500' : 'text-[#c2784f]'}`}>{selectedMenuItem.price} TL</span>}
                </div>
                
                {(selectedMenuItem.badges?.length > 0 || selectedMenuItem.prepTime || selectedMenuItem.calories) && (
-                 <div className="flex flex-wrap gap-2 items-center border-b border-slate-100 pb-4">
+                 <div className="flex flex-wrap gap-2 items-center border-b border-white/5 pb-5">
                    {selectedMenuItem.badges?.map(b => {
                      const badgeDef = BADGE_OPTIONS.find(opt => opt.id === b);
                      return badgeDef ? (
-                       <span key={b} className={`bg-orange-50 text-orange-700 text-[10px] sm:text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1 border border-orange-100 ${selectedMenuItem.isSoldOut ? 'opacity-50' : ''}`}>
+                       <span key={b} className={`bg-[#c2784f]/10 text-[#c2784f] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1.5 rounded-md flex items-center gap-1.5 border border-[#c2784f]/20 ${selectedMenuItem.isSoldOut ? 'opacity-50' : ''}`}>
                          <span>{badgeDef.icon}</span> {badgeDef.label}
                        </span>
                      ) : null;
                    })}
-                   {selectedMenuItem.prepTime && <span className="flex items-center gap-1 text-slate-500 font-medium text-sm ml-2"><Clock size={14}/> {selectedMenuItem.prepTime}</span>}
-                   {selectedMenuItem.calories && <span className="flex items-center gap-1 text-slate-500 font-medium text-sm ml-2"><Flame size={14}/> {selectedMenuItem.calories}</span>}
+                   {selectedMenuItem.prepTime && <span className="flex items-center gap-1.5 text-slate-400 font-medium text-xs ml-2 uppercase tracking-widest"><Clock size={14} className="text-[#c2784f]"/> {selectedMenuItem.prepTime}</span>}
+                   {selectedMenuItem.calories && <span className="flex items-center gap-1.5 text-slate-400 font-medium text-xs ml-2 uppercase tracking-widest"><Flame size={14} className="text-orange-500"/> {selectedMenuItem.calories}</span>}
                  </div>
                )}
                
                {selectedMenuItem.description && (
-                 <p className={`text-sm leading-relaxed ${selectedMenuItem.isSoldOut ? 'text-slate-400' : 'text-slate-600'}`}>
+                 <p className={`text-sm leading-relaxed font-light ${selectedMenuItem.isSoldOut ? 'text-slate-500' : 'text-slate-300'}`}>
                    {selectedMenuItem.description}
                  </p>
                )}
                
-               <button type="button" onClick={() => setSelectedMenuItem(null)} className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black py-3 sm:py-4 rounded-xl transition-colors uppercase tracking-widest text-sm shadow-md hover:shadow-lg">
+               <button type="button" onClick={() => setSelectedMenuItem(null)} className="w-full mt-6 btn-premium shine-effect py-4 rounded-xl font-black uppercase tracking-[0.2em] text-xs">
                  Kapat
                </button>
             </div>
@@ -1743,7 +1744,7 @@ export default function App() {
 
   if (currentView === 'menu') {
     return (
-      <div className="min-h-screen bg-[#0a0908] font-sans text-slate-200 relative w-full overflow-x-hidden">
+      <div className="min-h-screen bg-[#0a0908] font-sans text-slate-200 relative w-full">
         
         {/* Background Accents */}
         <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
