@@ -1343,66 +1343,66 @@ export default function App() {
 
       {/* DETAYLI PERSONEL MODALI VE YORUM ALANI */}
       {selectedPersonnel && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[85vh] sm:max-h-[90vh]">
-            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-slate-900/60 hover:bg-slate-900 text-white p-3 w-10 h-10 rounded-full transition-colors backdrop-blur-md flex items-center justify-center">
-              <X size={24} />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0a0908] rounded-3xl shadow-[0_0_50px_rgba(194,120,79,0.15)] border border-white/10 w-full max-w-md sm:max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95 duration-300 max-h-[85vh] sm:max-h-[90vh]">
+            <button type="button" onClick={() => {setSelectedPersonnel(null); setReviewData({ name: '', isAnonymous: false, rating: 5, comment: '' });}} className="absolute top-4 right-4 z-20 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-3 w-10 h-10 rounded-full transition-colors flex items-center justify-center border border-white/10">
+              <X size={20} />
             </button>
             
-            <div className="w-full bg-slate-900 relative flex justify-center items-end shrink-0 border-b border-slate-800 overflow-hidden">
+            <div className="w-full bg-[#120f0d] relative flex justify-center items-end shrink-0 border-b border-white/5 overflow-hidden">
               {selectedPersonnel.image ? (
-                 <img src={selectedPersonnel.image} alt={selectedPersonnel.name} className="w-full h-auto max-h-[40vh] object-contain p-4 pb-16" />
+                 <img src={selectedPersonnel.image} alt={selectedPersonnel.name} className="w-full h-auto max-h-[40vh] object-contain p-4 pb-16 opacity-90" />
               ) : (
-                 <div className="w-full h-48 flex items-center justify-center text-slate-500 bg-slate-800"><UserSquare size={64} /></div>
+                 <div className="w-full h-48 flex items-center justify-center text-slate-600 bg-[#120f0d]"><UserSquare size={64} /></div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0908] via-[#0a0908]/50 to-transparent pointer-events-none"></div>
               
               <div className="absolute bottom-0 left-0 p-5 sm:p-6 text-white w-full">
                  <div className="flex justify-between items-end gap-3">
                    <div className="flex-1">
-                     <h3 className="text-2xl sm:text-3xl font-black leading-tight drop-shadow-md">{selectedPersonnel.name} {selectedPersonnel.surname}</h3>
-                     {selectedPersonnel.nickname && <p className="text-orange-400 font-bold italic mt-1 drop-shadow-md">"{selectedPersonnel.nickname}"</p>}
+                     <h3 className="text-2xl sm:text-3xl font-serif font-light leading-tight drop-shadow-md text-white">{selectedPersonnel.name} <span className="font-black italic text-[#c2784f]">{selectedPersonnel.surname}</span></h3>
+                     {selectedPersonnel.nickname && <p className="text-[#e09f7a] font-light tracking-wide text-sm mt-1 drop-shadow-md">"{selectedPersonnel.nickname}"</p>}
                    </div>
-                   <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex flex-col items-center shrink-0 shadow-lg">
-                     <span className="flex items-center gap-1 text-yellow-400 font-black text-lg sm:text-xl"><Star size={16} className="fill-yellow-400"/> {selectedPersonnel.reviews?.length > 0 ? (selectedPersonnel.reviews.reduce((a,c)=>a+c.rating,0)/selectedPersonnel.reviews.length).toFixed(1) : '5.0'}</span>
-                     <span className="text-[10px] text-slate-300 font-medium">{selectedPersonnel.reviews?.length || 0} Yorum</span>
+                   <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex flex-col items-center shrink-0 shadow-lg">
+                     <span className="flex items-center gap-1 text-[#e09f7a] font-black text-lg sm:text-xl"><Star size={16} className="text-[#c2784f]"/> {selectedPersonnel.reviews?.length > 0 ? (selectedPersonnel.reviews.reduce((a,c)=>a+c.rating,0)/selectedPersonnel.reviews.length).toFixed(1) : '5.0'}</span>
+                     <span className="text-[10px] text-slate-400 font-medium tracking-widest uppercase">{selectedPersonnel.reviews?.length || 0} Yorum</span>
                    </div>
                  </div>
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 sm:p-7 bg-slate-50 hide-scrollbar pb-24 sm:pb-8">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-7 bg-transparent custom-scrollbar pb-24 sm:pb-8">
                {selectedPersonnel.skills && (
-                 <div className="mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-                   <h4 className="text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Yetenekler & Uzmanlık</h4>
-                   <p className="text-sm font-medium text-slate-700 leading-relaxed italic">"{selectedPersonnel.skills}"</p>
+                 <div className="mb-6 bg-white/5 p-4 rounded-xl border border-white/10 shadow-sm text-center">
+                   <h4 className="text-[10px] sm:text-xs font-black text-[#c2784f] uppercase tracking-widest mb-2 flex items-center justify-center gap-2"><div className="w-4 h-[1px] bg-[#c2784f]"></div> Yetenekler & Uzmanlık <div className="w-4 h-[1px] bg-[#c2784f]"></div></h4>
+                   <p className="text-sm font-light text-slate-300 leading-relaxed italic">"{selectedPersonnel.skills}"</p>
                  </div>
                )}
 
                <div className="mb-8">
-                 <h4 className="font-black text-slate-800 mb-4 border-b border-slate-200 pb-2 flex items-center gap-2"><MessageSquareText size={18} className="text-orange-500"/> Müşteri Yorumları</h4>
+                 <h4 className="font-serif font-light text-xl text-white mb-4 border-b border-white/5 pb-3 flex items-center gap-3"><MessageSquareText size={20} className="text-[#c2784f]"/> Müşteri Yorumları</h4>
                  {(!selectedPersonnel.reviews || selectedPersonnel.reviews.length === 0) ? (
-                    <p className="text-sm text-slate-500 italic text-center py-4">Bu personel için henüz yorum yapılmamış. İlk değerlendiren siz olun!</p>
+                    <p className="text-sm text-slate-500 italic text-center py-6 font-light">Bu personel için henüz yorum yapılmamış. İlk değerlendiren siz olun!</p>
                  ) : (
                     <div className="space-y-4">
                       {selectedPersonnel.reviews.sort((a,b) => new Date(b.date) - new Date(a.date)).map(rev => (
-                        <div key={rev.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-bold text-sm text-slate-800">{rev.name}</span>
-                            <div className="flex gap-0.5">
+                        <div key={rev.id} className="bg-white/5 p-5 rounded-2xl border border-white/5 shadow-sm">
+                          <div className="flex justify-between items-start mb-3">
+                            <span className="font-bold text-sm text-slate-200">{rev.name}</span>
+                            <div className="flex gap-1">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} size={12} className={i < rev.rating ? "fill-orange-400 text-orange-400" : "fill-slate-200 text-slate-200"} />
+                                <Star key={i} size={12} className={i < rev.rating ? "text-[#c2784f]" : "text-slate-700"} />
                               ))}
                             </div>
                           </div>
-                          <p className="text-sm text-slate-600 leading-relaxed">{rev.comment}</p>
-                          <span className="text-[10px] font-bold text-slate-400 mt-2 block">{new Date(rev.date).toLocaleDateString('tr-TR')}</span>
+                          <p className="text-sm text-slate-300 font-light leading-relaxed">{rev.comment}</p>
+                          <span className="text-[10px] font-black tracking-widest uppercase text-slate-500 mt-3 block">{new Date(rev.date).toLocaleDateString('tr-TR')}</span>
                           
                           {rev.reply && (
-                            <div className="mt-3 bg-orange-50 p-3 rounded-lg border border-orange-100 relative ml-4">
-                              <div className="absolute -left-2 top-3 w-0 h-0 border-t-[6px] border-t-transparent border-r-[8px] border-r-orange-50 border-b-[6px] border-b-transparent"></div>
-                              <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1 mb-1"><MessageCircle size={12}/> Salaaş Cafe Yönetimi</span>
-                              <p className="text-sm text-slate-700 leading-relaxed">{rev.reply}</p>
+                            <div className="mt-4 bg-[#1a1512] p-4 rounded-xl border border-[#c2784f]/20 relative ml-4">
+                              <div className="absolute -left-2 top-4 w-0 h-0 border-t-[6px] border-t-transparent border-r-[8px] border-r-[#1a1512] border-b-[6px] border-b-transparent"></div>
+                              <span className="text-[10px] font-black text-[#e09f7a] uppercase tracking-widest flex items-center gap-2 mb-2"><MessageCircle size={12}/> Salaaş Cafe Yönetimi</span>
+                              <p className="text-sm text-slate-300 font-light leading-relaxed">{rev.reply}</p>
                             </div>
                           )}
                         </div>
@@ -1412,34 +1412,34 @@ export default function App() {
                </div>
                
                {/* Yorum Ekleme Formu */}
-               <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-md">
-                 <h4 className="font-black text-slate-800 mb-4 text-lg text-center">Puan Verin</h4>
-                 <form onSubmit={handleReviewSubmit} className="space-y-4">
-                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                      <div className="flex gap-1.5 mx-auto sm:mx-0">
+               <div className="glass-panel p-5 sm:p-6 rounded-2xl border border-white/10 shadow-lg">
+                 <h4 className="font-serif font-light text-xl text-white mb-5 text-center">Puan Verin</h4>
+                 <form onSubmit={handleReviewSubmit} className="space-y-5">
+                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                      <div className="flex gap-2 mx-auto sm:mx-0">
                         {[1, 2, 3, 4, 5].map(star => (
                           <button key={star} type="button" onClick={() => setReviewData({...reviewData, rating: star})} className="hover:scale-110 transition-transform">
-                            <Star size={28} className={reviewData.rating >= star ? "fill-orange-500 text-orange-500" : "fill-slate-200 text-slate-200"} />
+                            <Star size={24} className={reviewData.rating >= star ? "text-[#c2784f]" : "text-slate-600"} />
                           </button>
                         ))}
                       </div>
-                      <label className="flex items-center justify-center gap-2 cursor-pointer text-sm font-bold text-slate-600 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm">
-                        <input type="checkbox" checked={reviewData.isAnonymous} onChange={(e) => setReviewData({...reviewData, isAnonymous: e.target.checked, name: e.target.checked ? '' : reviewData.name})} className="w-4 h-4 text-emerald-500 rounded border-slate-300 focus:ring-emerald-500" />
-                        Gizli İsim (Anonim)
+                      <label className="flex items-center justify-center gap-3 cursor-pointer text-xs font-black tracking-widest uppercase text-slate-400 bg-white/5 px-4 py-2.5 rounded-lg border border-white/10 shadow-sm transition-colors hover:bg-white/10">
+                        <input type="checkbox" checked={reviewData.isAnonymous} onChange={(e) => setReviewData({...reviewData, isAnonymous: e.target.checked, name: e.target.checked ? '' : reviewData.name})} className="w-4 h-4 text-[#c2784f] rounded border-white/20 bg-transparent focus:ring-[#c2784f]" />
+                        Gizli İsim
                       </label>
                    </div>
                    
                    {!reviewData.isAnonymous && (
                      <div>
-                       <input type="text" placeholder="Adınız Soyadınız" value={reviewData.name} onChange={(e) => setReviewData({...reviewData, name: e.target.value})} className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm font-bold bg-white text-slate-800 transition-colors" required />
+                       <input type="text" placeholder="Adınız Soyadınız" value={reviewData.name} onChange={(e) => setReviewData({...reviewData, name: e.target.value})} className="w-full px-5 py-4 rounded-xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all text-sm bg-white/5 text-white placeholder-slate-500" required />
                      </div>
                    )}
                    
                    <div>
-                     <textarea placeholder="Personelimiz hakkındaki görüşlerinizi yazın..." value={reviewData.comment} onChange={(e) => setReviewData({...reviewData, comment: e.target.value})} rows="3" className="w-full p-3.5 rounded-xl border-2 border-slate-200 focus:border-orange-500 outline-none text-sm resize-none bg-white text-slate-800 transition-colors" required></textarea>
+                     <textarea placeholder="Personelimiz hakkındaki görüşlerinizi yazın..." value={reviewData.comment} onChange={(e) => setReviewData({...reviewData, comment: e.target.value})} rows="3" className="w-full px-5 py-4 rounded-xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all resize-none text-sm bg-white/5 text-white placeholder-slate-500" required></textarea>
                    </div>
                    
-                   <button type="submit" className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-black uppercase tracking-widest text-sm transition-transform hover:-translate-y-1 shadow-lg mt-2">Yorumu Gönder</button>
+                   <button type="submit" className="w-full btn-premium shine-effect py-4 rounded-xl font-black uppercase tracking-[0.2em] text-xs shadow-lg mt-2">Yorumu Gönder</button>
                  </form>
                </div>
             </div>
