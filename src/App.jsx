@@ -546,6 +546,33 @@ export default function App() {
     });
   };
 
+  const compressImageToBase64 = (file, maxWidth = 800) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -553,17 +580,11 @@ export default function App() {
     setMenuErrorMsg('');
     
     try {
-      const storageRef = ref(storage, `menu_images/${Date.now()}_${file.name}`);
-      const uploadTask = await uploadBytesResumable(storageRef, file);
-      const downloadURL = await getDownloadURL(uploadTask.ref);
-      setMenuItemData(prev => ({ ...prev, image: downloadURL }));
+      const base64Image = await compressImageToBase64(file, 800);
+      setMenuItemData(prev => ({ ...prev, image: base64Image }));
     } catch (error) {
       console.error(error);
-      if (error.message && error.message.includes('CORS')) {
-         setMenuErrorMsg("CORS Hatası: Lütfen Vercel rehberindeki Firebase CORS ayarlarını yapın.");
-      } else {
-         setMenuErrorMsg("Resim yüklenirken hata oluştu: " + error.message);
-      }
+      setMenuErrorMsg("Resim işlenirken hata oluştu: " + (error.message || "Bilinmeyen hata"));
     } finally {
       setUploadingImage(false);
     }
@@ -664,13 +685,11 @@ export default function App() {
     setPersonnelErrorMsg('');
     
     try {
-      const storageRef = ref(storage, `personnel_images/${Date.now()}_${file.name}`);
-      const uploadTask = await uploadBytesResumable(storageRef, file);
-      const downloadURL = await getDownloadURL(uploadTask.ref);
-      setPersonnelData(prev => ({ ...prev, image: downloadURL }));
+      const base64Image = await compressImageToBase64(file, 800);
+      setPersonnelData(prev => ({ ...prev, image: base64Image }));
     } catch (error) {
       console.error(error);
-      setPersonnelErrorMsg("Resim yüklenirken hata oluştu.");
+      setPersonnelErrorMsg("Resim işlenirken hata oluştu.");
     } finally {
       setUploadingPersonnelImage(false);
     }
