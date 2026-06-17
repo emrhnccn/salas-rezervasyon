@@ -1624,10 +1624,10 @@ export default function App() {
         <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
         {renderNavbar(false)}
 
-        <header className="relative w-full min-h-[600px] h-[85vh] max-h-[1100px] bg-aurora flex items-center justify-center overflow-hidden pt-24 sm:pt-20">
-           <div className="absolute inset-0 z-0 bg-black/40">
-             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#0a0908] w-full"></div>
-             <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #c2784f 1px, transparent 1px)', backgroundSize: '50px 50px' }}></div>
+        <header className="relative w-full min-h-[600px] h-[85vh] max-h-[1100px] flex items-center justify-center overflow-hidden pt-24 sm:pt-20 bg-[#0a0908] bg-[url('/salaasarkaplan.jpeg')] bg-cover bg-center bg-no-repeat">
+           <div className="absolute inset-0 z-0 bg-black/50">
+             <div className="absolute inset-0 bg-gradient-to-b from-[#0a0908]/90 via-black/40 to-[#0a0908] w-full"></div>
+             <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, #c2784f 1.5px, transparent 1.5px)', backgroundSize: '60px 60px' }}></div>
            </div>
            
            <div className="relative z-10 text-center px-4 sm:px-6 w-full flex flex-col items-center justify-center h-full pb-16">
