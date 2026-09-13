@@ -1,16 +1,19 @@
-# React + Vite
+# Salaaş - Cafe & Restaurant Reservation System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack guest reservation and venue management portal built to handle customer bookings, capacity planning, and digital menu displays.
 
-Currently, two official plugins are available:
+## Key Features
+- **Online Booking System:** Client-facing reservation flow with date, time, and guest count validation.
+- **Capacity Tracking:** Dynamic management of available seating to prevent overbooking.
+- **Admin Control Panel:** Interface for approving, rescheduling, or canceling active reservations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
+- **Frontend:** React.js, Tailwind CSS
+- **Backend:** Node.js, Express.js, REST API
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+```bash
+git clone [https://github.com/emrhnccn/salas-rezervasyon.git](https://github.com/emrhnccn/salas-rezervasyon.git)
+cd salas-rezervasyon
+npm install
+npm run dev
