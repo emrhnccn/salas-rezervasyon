@@ -1097,7 +1097,7 @@ export default function App() {
     </>
   );
 
-  const renderFooter = () => (
+ const renderFooter = () => (
     <footer id="iletisim" className="w-full bg-[#0a0908] text-slate-400 py-24 lg:py-32 relative z-10 border-t border-white/5 overflow-hidden">
       {/* Footer Arkaplan Süslemeleri */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#c2784f]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
@@ -1180,26 +1180,27 @@ export default function App() {
       </div>
       
       {/* ALT TELİF VE GELİŞTİRİCİ İMZASI */}
-      <div className="w-full mx-auto px-6 sm:px-12 lg:px-24 mt-20 pt-10 border-t border-slate-800/50 flex flex-col items-center justify-center gap-4 text-center">
-        <p className="text-sm font-medium opacity-60">© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-24 mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+        <p className="text-xs sm:text-sm font-medium text-slate-400 opacity-80 order-2 md:order-1">
+          © 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.
+        </p>
         
-        {/* CCN Teknoloji Geliştirici Butonu */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-slate-400">
-          <span>Tasarım & Geliştirme:</span>
+        <div className="flex items-center gap-2 text-xs text-slate-300 order-1 md:order-2">
+          <span className="font-light tracking-wide text-slate-400">Tasarım & Geliştirme:</span>
           <a
             href="https://affan-portfolio-gilt.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 hover:text-[#c2784f] border border-white/10 hover:border-[#c2784f]/40 transition-all duration-200 group shadow-sm"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c2784f]/10 hover:bg-[#c2784f]/20 text-[#e09f7a] hover:text-white border border-[#c2784f]/30 hover:border-[#c2784f] transition-all duration-300 group shadow-[0_0_15px_rgba(194,120,79,0.15)] hover:shadow-[0_0_20px_rgba(194,120,79,0.3)] hover:-translate-y-0.5"
           >
-            <span className="font-semibold tracking-wide">CCN TEKNOLOJİ</span>
+            <span className="font-black tracking-widest text-[11px] uppercase">CCN TEKNOLOJİ</span>
             <svg
-              className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#c2784f] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              className="w-3.5 h-3.5 text-[#c2784f] group-hover:text-white transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </a>
         </div>
