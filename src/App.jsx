@@ -2512,6 +2512,31 @@ export default function App() {
               </table>
             </div>
             )}
+            {/* CCN Teknoloji Geliştirici İmzası */}
+<div className="mt-12 pb-6 pt-4 border-t border-neutral-800/60 flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-neutral-400">
+  <span>Tasarım & Geliştirme:</span>
+  <a
+    href="https://affan-portfolio-gilt.vercel.app/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-neutral-200 hover:text-white border border-neutral-700/80 hover:border-neutral-500 transition-all duration-200 group shadow-sm"
+  >
+    <span className="font-semibold tracking-wide">CCN TEKNOLOJİ</span>
+    <svg
+      className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+      />
+    </svg>
+  </a>
+</div>
           </div>
         ) : null}
       </main>
