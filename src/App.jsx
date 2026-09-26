@@ -744,7 +744,7 @@ export default function App() {
       setPersonnelDeleteConfirmId(null);
       showToast('Personel başarıyla silindi.', 'success');
     } catch (err) { 
-      console.error(err);
+      console.error(err); 
       showToast('Personel silinirken hata oluştu.', 'error');
     }
   };
@@ -792,8 +792,8 @@ export default function App() {
         setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
       }
       showToast('Yorum silindi.', 'info');
-    } catch (err) {
-      console.error(err);
+    } catch (err) { 
+      console.error(err); 
       showToast('Yorum silinirken bir hata oluştu.', 'error');
     }
   };
@@ -813,9 +813,9 @@ export default function App() {
         setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
       }
       setReplyTexts(prev => ({ ...prev, [reviewId]: '' }));
-    } catch (err) {
-      console.error(err);
-      alert("Cevap gönderilirken hata oluştu.");
+    } catch (err) { 
+      console.error(err); 
+      alert("Cevap gönderilirken hata oluştu."); 
     }
   };
 
@@ -832,8 +832,8 @@ export default function App() {
         setSelectedPersonnel(prev => ({ ...prev, reviews: updatedReviews }));
       }
       showToast('Cevap silindi.', 'info');
-    } catch (err) {
-      console.error(err);
+    } catch (err) { 
+      console.error(err); 
       showToast('Cevap silinirken bir hata oluştu.', 'error');
     }
   };
@@ -884,7 +884,7 @@ export default function App() {
             description: '', 
             image: item.i || '', 
             isFeatured: item.f || false, 
-            order: item.o || 999,
+            order: item.o || 999, 
             badges: item.b || [],
             isSoldOut: false,
             prepTime: '',
@@ -895,7 +895,7 @@ export default function App() {
       }
       showToast('Varsayılan menü başarıyla aktarıldı! ✅', 'success');
     } catch (err) { 
-      showToast('Menü aktarımı sırasında hata oluştu.', 'error');
+      showToast('Menü aktarımı sırasında hata oluştu.', 'error'); 
     }
   };
 
@@ -1179,8 +1179,30 @@ export default function App() {
         </div>
       </div>
       
-      <div className="w-full mx-auto px-6 sm:px-12 lg:px-24 mt-20 pt-10 border-t border-slate-800/50 text-center text-sm font-medium opacity-60">
-        <p>© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
+      {/* ALT TELİF VE GELİŞTİRİCİ İMZASI */}
+      <div className="w-full mx-auto px-6 sm:px-12 lg:px-24 mt-20 pt-10 border-t border-slate-800/50 flex flex-col items-center justify-center gap-4 text-center">
+        <p className="text-sm font-medium opacity-60">© 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.</p>
+        
+        {/* CCN Teknoloji Geliştirici Butonu */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-slate-400">
+          <span>Tasarım & Geliştirme:</span>
+          <a
+            href="https://affan-portfolio-gilt.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-200 hover:text-[#c2784f] border border-white/10 hover:border-[#c2784f]/40 transition-all duration-200 group shadow-sm"
+          >
+            <span className="font-semibold tracking-wide">CCN TEKNOLOJİ</span>
+            <svg
+              className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#c2784f] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
       </div>
     </footer>
   );
@@ -1520,12 +1542,12 @@ export default function App() {
                             type="text" 
                             placeholder="Müşteriye yanıt yazın..." 
                             value={replyTexts[rev.id] || ''} 
-                            onChange={(e) => setReplyTexts({...replyTexts, [rev.id]: e.target.value})}
+                            onChange={(e) => setReplyTexts({...replyTexts, [rev.id]: e.target.value})} 
                             className="flex-1 text-sm p-3 rounded-xl border border-slate-300 focus:border-blue-500 outline-none font-medium bg-white text-slate-800"
                           />
                           <button 
-                            type="button"
-                            onClick={() => handleReplyReview(managingReviewsFor.id, rev.id)}
+                            type="button" 
+                            onClick={() => handleReplyReview(managingReviewsFor.id, rev.id)} 
                             className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 shadow-md"
                           >
                             <MessageCircle size={14}/> Cevapla
@@ -1553,7 +1575,6 @@ export default function App() {
         </div>
       )}
 
-      {/* PERSONEL SİLME ONAY MODALI */}
       {personnelDeleteConfirmId && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
@@ -1574,7 +1595,6 @@ export default function App() {
         </div>
       )}
 
-      {/* VARSAYILAN MENÜ AKTAR ONAY MODALI */}
       {showImportConfirm && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
@@ -1595,12 +1615,11 @@ export default function App() {
         </div>
       )}
 
-      {/* TOAST NOTIFICATION */}
       {toast && (
-        <div
+        <div 
           className={`fixed bottom-24 right-4 sm:right-6 z-[300] flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl max-w-xs sm:max-w-sm border ${
-            toast.type === 'success' ? 'bg-emerald-600 border-emerald-500 text-white' :
-            toast.type === 'error'   ? 'bg-red-600 border-red-500 text-white' :
+            toast.type === 'success' ? 'bg-emerald-600 border-emerald-500 text-white' : 
+            toast.type === 'error'   ? 'bg-red-600 border-red-500 text-white' : 
                                        'bg-slate-700 border-slate-600 text-white'
           }`}
           style={{ animation: 'toastIn 0.35s cubic-bezier(.21,1.02,.73,1) both' }}
@@ -1687,12 +1706,10 @@ export default function App() {
           </section>
 
           <section id="lezzetler" className="w-full py-24 md:py-36 bg-[#0a0908] relative">
-            {/* Background elements */}
             <div className="absolute top-1/4 left-0 w-64 h-64 bg-[#c2784f]/10 rounded-full blur-[120px]"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[150px]"></div>
 
             <div className="w-full mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 relative z-10">
-              
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-16 gap-8">
                 <div>
                   <h2 className="text-[10px] sm:text-xs lg:text-sm font-black tracking-[0.4em] text-[#e09f7a] uppercase mb-4">Vitrinimiz</h2>
@@ -2466,7 +2483,7 @@ export default function App() {
                                   <h3 className="font-bold text-slate-800 text-lg leading-none mb-1 group-hover:text-[#c2784f] transition-colors">{person.name} {person.surname}</h3>
                                   {person.nickname && <p className="text-[#c2784f] font-black text-[10px] tracking-widest uppercase mt-1">"{person.nickname}"</p>}
                                   <span className="text-[10px] font-bold text-slate-400 block mt-2 uppercase tracking-widest">
-                                    Sıra: {person.order || 999} • <Star size={10} className="inline fill-[#c2784f] text-[#c2784f] -mt-0.5 ml-1"/> {avg} ({person.reviews?.length || 0} Yorum)
+                                     Sıra: {person.order || 999} • <Star size={10} className="inline fill-[#c2784f] text-[#c2784f] -mt-0.5 ml-1"/> {avg} ({person.reviews?.length || 0} Yorum)
                                   </span>
                                 </div>
                               </div>
@@ -2512,31 +2529,6 @@ export default function App() {
               </table>
             </div>
             )}
-            {/* CCN Teknoloji Geliştirici İmzası */}
-<div className="mt-12 pb-6 pt-4 border-t border-neutral-800/60 flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-neutral-400">
-  <span>Tasarım & Geliştirme:</span>
-  <a
-    href="https://affan-portfolio-gilt.vercel.app/"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-neutral-200 hover:text-white border border-neutral-700/80 hover:border-neutral-500 transition-all duration-200 group shadow-sm"
-  >
-    <span className="font-semibold tracking-wide">CCN TEKNOLOJİ</span>
-    <svg
-      className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-      />
-    </svg>
-  </a>
-</div>
           </div>
         ) : null}
       </main>
