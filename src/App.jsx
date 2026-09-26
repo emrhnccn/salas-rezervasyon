@@ -177,7 +177,7 @@ export default function App() {
   const [showTableMap, setShowTableMap] = useState(false);
 
   // --- TOAST NOTIFICATION STATE ---
-  const [toast, setToast] = useState(null); // { message, type: 'success'|'error'|'info' }
+  const [toast, setToast] = useState(null);
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
@@ -390,8 +390,9 @@ export default function App() {
     }));
   };
 
-  const submitRequest = async (e) => {
-    e.preventDefault();
+  // --- TALEP GÖNDERME (HEM DB HEM İSTEĞE BAĞLI WHATSAPP) ---
+  const submitRequest = async (e, sendToWhatsapp = false) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!user) return;
     if (!requestData.name?.trim() || !requestData.phone?.trim()) return;
 
@@ -409,7 +410,25 @@ export default function App() {
         createdAt: new Date().toISOString(), 
         createdBy: user.uid 
       };
+      
+      // 1. Firebase Veritabanına (Panele) Kaydet
       await addDoc(collection(db, 'reservationRequests'), submissionData);
+
+      // 2. Eğer WhatsApp ile de gönderilsin istenmişse doğrudan Salaaş WhatsApp hattına yönlendir
+      if (sendToWhatsapp) {
+        const typeName = typeLabels[submissionData.type] || submissionData.type;
+        const msg = `Merhaba Salaaş Cafe & Restaurant,\nWeb siteniz üzerinden yeni bir rezervasyon talebi oluşturdum:\n\n` +
+          `👤 İsim Soyisim: ${submissionData.name}\n` +
+          `📞 Telefon: ${submissionData.phone}\n` +
+          `📅 Tarih: ${submissionData.date}\n` +
+          `👥 Kişi Sayısı: ${submissionData.peopleCount} Kişi\n` +
+          `🏷️ Tür: ${typeName}\n` +
+          `📝 Not / Detay: ${submissionData.notes || 'Belirtilmedi'}\n\n` +
+          `Müsaitlik durumunu ve onayınızı rica ederim.`;
+
+        window.open(`https://wa.me/${WHATSAPP_NO}?text=${encodeURIComponent(msg)}`, '_blank');
+      }
+
       setRequestSuccess(true);
       setTimeout(() => { 
         setShowRequestModal(false); 
@@ -1028,7 +1047,7 @@ export default function App() {
 
   const historyStats = getHistoryData();
 
-  // --- RENDER MODÜLLERİ (YARDIMCI COMPONENTLER) ---
+  // --- RENDER MODÜLLERİ ---
   const renderNavbar = (isDark = false) => (
     <>
       <div className={`fixed top-0 left-0 w-full z-50 flex flex-col transition-all duration-700 ${isScrolled || isDark ? 'glass py-2' : 'bg-transparent py-4'} border-b ${isScrolled || isDark ? 'border-white/10' : 'border-transparent'}`}>
@@ -1097,7 +1116,7 @@ export default function App() {
     </>
   );
 
- const renderFooter = () => (
+  const renderFooter = () => (
     <footer id="iletisim" className="w-full bg-[#0a0908] text-slate-400 py-24 lg:py-32 relative z-10 border-t border-white/5 overflow-hidden">
       {/* Footer Arkaplan Süslemeleri */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#c2784f]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
@@ -1179,10 +1198,10 @@ export default function App() {
         </div>
       </div>
       
-      {/* ALT TELİF VE GELİŞTİRİCİ İMZASI */}
+      {/* ALT TELİF VE GELİŞTİRİCİ İMZASI (Telif Solda, CCN Teknoloji Sağda ve Turuncu Tonlarda) */}
       <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-12 lg:px-24 mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
         <p className="text-xs sm:text-sm font-medium text-slate-400 opacity-80 order-2 md:order-1">
-          © 2026 Salaaş Cafe Restaurant. Tüm hakları saklıdır.
+          © {new Date().getFullYear()} Salaaş Cafe Restaurant. Tüm hakları saklıdır.
         </p>
         
         <div className="flex items-center gap-2 text-xs text-slate-300 order-1 md:order-2">
@@ -1227,7 +1246,7 @@ export default function App() {
                     <p className="text-lg text-slate-400 font-light leading-relaxed">Rezervasyon talebiniz işletmemize başarıyla iletilmiştir. En kısa sürede sizinle iletişime geçip onay verilecektir.</p>
                  </div>
               ) : (
-                <form onSubmit={submitRequest} className="p-8 sm:p-10 space-y-6">
+                <form onSubmit={(e) => submitRequest(e, false)} className="p-8 sm:p-10 space-y-6">
                   {requestError && (
                     <div className="bg-red-500/10 text-red-400 p-4 rounded-2xl text-sm font-bold border border-red-500/20 flex items-center gap-3">
                       <AlertTriangle size={20} className="shrink-0" /> {requestError}
@@ -1284,9 +1303,23 @@ export default function App() {
                     <textarea name="notes" value={requestData.notes} onChange={handleRequestChange} rows="3" required={(requestData.type === 'dogum_gunu' || requestData.type === 'organizasyon')} className="w-full bg-white/5 text-white px-5 py-4 rounded-2xl border border-white/10 focus:border-[#c2784f] focus:ring-1 focus:ring-[#c2784f] outline-none font-medium transition-all resize-none text-sm placeholder-slate-600" placeholder="Özel isteklerinizi yazın."></textarea>
                   </div>
 
-                  <button type="submit" className="w-full btn-premium shine-effect font-black tracking-[0.2em] uppercase py-5 rounded-2xl mt-6 flex items-center justify-center gap-3 text-sm">
-                    Talebi Gönder <ArrowRight size={20} />
-                  </button>
+                  {/* İKİ ADET BUTON: SADECE GÖNDER & HEM GÖNDER HEM WHATSAPP'A İLET */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-3">
+                    <button 
+                      type="submit" 
+                      className="flex-1 bg-white/10 hover:bg-white/20 border border-white/15 text-white font-black tracking-[0.15em] uppercase py-4 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm"
+                    >
+                      Talebi Gönder <ArrowRight size={18} />
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      onClick={(e) => submitRequest(e, true)}
+                      className="flex-1 bg-[#25D366] hover:bg-[#20b858] text-white font-black tracking-[0.15em] uppercase py-4 rounded-2xl transition-all shadow-[0_0_25px_rgba(37,211,102,0.35)] hover:shadow-[0_0_30px_rgba(37,211,102,0.5)] flex items-center justify-center gap-2 text-xs sm:text-sm hover:-translate-y-0.5"
+                    >
+                      <MessageCircle size={20} /> Talebi Gönder & WhatsApp
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
@@ -1397,7 +1430,7 @@ export default function App() {
               ) : (
                  <div className="w-full h-48 flex items-center justify-center text-slate-600 bg-[#120f0d]"><UserSquare size={64} /></div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0908] via-[#0a0908]/50 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0908] via-[#0a0908]/60 to-transparent pointer-events-none"></div>
               
               <div className="absolute bottom-0 left-0 p-5 sm:p-6 text-white w-full">
                  <div className="flex justify-between items-end gap-3">
@@ -1453,7 +1486,6 @@ export default function App() {
                  )}
                </div>
                
-               {/* Yorum Ekleme Formu */}
                <div className="glass-panel p-5 sm:p-6 rounded-2xl border border-white/10 shadow-lg">
                  <h4 className="font-serif font-light text-xl text-white mb-5 text-center">Puan Verin</h4>
                  <form onSubmit={handleReviewSubmit} className="space-y-5">
@@ -2013,7 +2045,6 @@ export default function App() {
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }}></style>
 
       <header className={`bg-white text-slate-800 shadow-sm border-b border-slate-200 sticky z-20 print:hidden transition-colors duration-500 w-full top-0`}>
-        {/* Üst satır: Logo + Başlık + Tarih + Çıkış */}
         <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-20 py-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-4 shrink-0">
             <div className="h-8 sm:h-10 shrink-0 flex items-center justify-center cursor-pointer" onClick={() => setCurrentView('landing')}>
@@ -2034,7 +2065,6 @@ export default function App() {
             <button onClick={() => {setIsAuthenticated(false); setLoginUser(''); setLoginPass(''); setCurrentView('landing');}} className="shrink-0 bg-red-500 hover:bg-red-600 text-white px-3 py-2 lg:px-4 lg:py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-colors shadow-md whitespace-nowrap">ÇIKIŞ</button>
           </div>
         </div>
-        {/* Alt satır: Sekmeler — tam genişlik, her cihazda görünür */}
         <div className="w-full border-t border-slate-200">
           <div className="w-full overflow-x-auto hide-scrollbar">
             <div className="flex items-center min-w-max px-4 sm:px-8 lg:px-12 xl:px-20 py-2.5 gap-2">
